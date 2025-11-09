@@ -135,11 +135,12 @@ class GameNotifier extends AsyncNotifier<GameState> {
       ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
     );
     // Перемещаем свои корабли в BattleViewModelNotifier
-    ref.read(battleViewModelProvider.notifier).setShips(
-      mode: 'self',
-      ships: ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
-    );
-
+    ref.read(battleViewModelProvider.notifier)
+      ..setShips(
+        mode: 'self',
+        ships: ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
+      )
+      ..setMyMove(!(state.value!.game!.master ?? false));
     ref.read(navigationProvider.notifier).pushBattleScreen();
 
     final newState = GameState(

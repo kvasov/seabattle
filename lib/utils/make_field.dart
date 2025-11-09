@@ -14,6 +14,8 @@ List<List<CellState>> makeField(List<Ship> ships, int gridSize, [List<Shot> shot
       int x =
           ship.x + (ship.orientation == ShipOrientation.horizontal ? i : 0);
       int y = ship.y + (ship.orientation == ShipOrientation.vertical ? i : 0);
+
+      // Если хотя бы один выстрел попал в клетку корабля
       if (shots.any((shot) => shot.x == x && shot.y == y)) {
         // Проверяем все ли клетки корабля попали под огонь
         if (ship.isDead(shots)) {

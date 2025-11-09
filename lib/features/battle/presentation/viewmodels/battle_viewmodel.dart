@@ -1,6 +1,9 @@
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
+import 'package:seabattle/shared/providers/game_provider.dart';
+import 'package:seabattle/shared/providers/user_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -12,6 +15,7 @@ class BattleViewModelState {
   final String errorMessage;
   final int gridSize;
   final double cellSize;
+  final bool myMove;
 
   BattleViewModelState({
     required this.ships,
@@ -23,6 +27,7 @@ class BattleViewModelState {
     required this.errorMessage,
     required this.gridSize,
     required this.cellSize,
+    required this.myMove,
   });
 
   BattleViewModelState copyWith({
@@ -35,6 +40,7 @@ class BattleViewModelState {
     String? errorMessage,
     int? gridSize,
     double? cellSize,
+    bool? myMove,
   }) {
     return BattleViewModelState(
       ships: ships ?? this.ships,
@@ -46,6 +52,7 @@ class BattleViewModelState {
       errorMessage: errorMessage ?? this.errorMessage,
       gridSize: gridSize ?? this.gridSize,
       cellSize: cellSize ?? this.cellSize,
+      myMove: myMove ?? this.myMove,
     );
   }
 
@@ -73,6 +80,9 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   }
 
   void handleTapDown(TapDownDetails details) {
+    if (!state.value!.myMove) {
+      return;
+    }
     final localPosition = details.localPosition;
     debugPrint('⌖ localPosition: $localPosition');
     final x = (localPosition.dx ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
@@ -88,21 +98,57 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
     if (isHit(x, y)) {
       debugPrint('🎯 hit');
+
+      setMyMove(true);
     } else {
       debugPrint('🙅🏻‍♂️ miss');
+      setMyMove(false);
     }
+
+    sendShot(x, y);
 
     debugPrint('💚 state: ${state.value?.toString()}');
   }
 
   bool isHit(int x, int y) {
-    if (state.value?.opponentShips.any((ship) => ship.contains(x, y)) ?? false) {
-      debugPrint('🎯 ship: ${state.value?.opponentShips.firstWhere((ship) => ship.contains(x, y)).toString()}');
+    if (state.value?.opponentShips.any((ship) => ship.isWounded(x, y)) ?? false) {
       return true;
     } else {
       return false;
     }
   }
+
+  bool allOpponentShipsDead() {
+    return state.value?.opponentShips.every((ship) => ship.isDead(state.value!.shots)) ?? false;
+  }
+
+  bool allShipsDead() {
+    return state.value?.ships.every((ship) => ship.isDead(state.value!.opponentShots)) ?? false;
+  }
+
+  Future<void> sendShot(int x, int y) async {
+    final id = ref.read(gameNotifierProvider).value?.game?.id ?? 0;
+    final userUniqueId = ref.read(userUniqueIdProvider);
+    debugPrint('💚 sendShot - вызов');
+    state = const AsyncValue.loading();
+    try {
+      await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
+      if (allOpponentShipsDead()) {
+        debugPrint('🎉 WIN!!!');
+        // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.win);
+      }
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  void addOpponentShot(int x, int y) {
+    state = AsyncValue.data(
+      state.value!.copyWith(opponentShots: [...state.value!.opponentShots, Shot(x, y)]),
+    );
+  }
+
+
   void resetBattle() {
     state = AsyncValue.data(
       _initialState(),
@@ -113,6 +159,13 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     return state.maybeWhen(
       data: (value) => value,
       orElse: () => _initialState(),
+    );
+  }
+
+  void setMyMove(bool value) {
+    final current = _currentState();
+    state = AsyncValue.data(
+      current.copyWith(myMove: value),
     );
   }
 
@@ -127,6 +180,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       isLoading: false,
       isError: false,
       errorMessage: '',
+      myMove: false,
     );
   }
 }

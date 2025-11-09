@@ -42,7 +42,7 @@ class Ship {
     return 'Ship(x: $x, y: $y, size: $size, orientation: $orientation, dead: $dead)';
   }
 
-  bool contains(int x, int y) {
+  bool isWounded(int x, int y) {
     if (orientation == ShipOrientation.horizontal) {
       return this.x <= x && x <= this.x + size - 1 && this.y == y;
     } else {

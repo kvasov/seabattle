@@ -97,6 +97,27 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
               }
 
             }
+            // Если соперник отправил выстрел, то обновляем состояние
+            if (decoded['type'] == 'shot' && decoded['x'] != null && decoded['y'] != null) {
+              if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
+                final shotX = decoded['x'] as int;
+                final shotY = decoded['y'] as int;
+                debugPrint('💚 Получен выстрел соперника на клетку ($shotX, $shotY)');
+
+                final battleViewModelNotifier = ref.read(battleViewModelProvider.notifier);
+                battleViewModelNotifier.addOpponentShot(shotX, shotY);
+                if (decoded['isHit'] == true) {
+                  battleViewModelNotifier.setMyMove(false);
+                  if (battleViewModelNotifier.allShipsDead()) {
+                    debugPrint('☠️ LOSE!!!');
+                    // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.lose);
+                  }
+                } else {
+                  battleViewModelNotifier.setMyMove(true);
+                }
+              }
+
+            }
           } catch (e) {
             debugPrint('⚠️ Ошибка при обработке данных WebSocket: $e');
           }

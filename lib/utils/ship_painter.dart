@@ -140,13 +140,11 @@ class SeaBattlePainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5;
     for (int i = 0; i <= field.length; i++) {
-      // Vertical
       canvas.drawLine(
         Offset(i * cellSize, 0),
         Offset(i * cellSize, cellSize * field.length),
         gridPaint,
       );
-      // Horizontal
       canvas.drawLine(
         Offset(0, i * cellSize),
         Offset(cellSize * field.length, i * cellSize),
@@ -157,6 +155,7 @@ class SeaBattlePainter extends CustomPainter {
     // Рисуем корабли картинками
     if (shipsImagesCache != null && ships != null && ships!.isNotEmpty) {
       for (final ship in ships!) {
+        // Получаем картинку корабля
         final shipImage = shipsImagesCache!.imageForSize(ship.size);
         if (shipImage == null) continue;
 

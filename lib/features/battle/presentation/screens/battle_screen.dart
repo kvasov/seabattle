@@ -39,6 +39,14 @@ class BattleScreen extends ConsumerWidget {
               child: const Text('Cancel Game'),
             ),
           ),
+          if (battleViewModelState?.myMove == true)
+            Center(
+              child: Text('Ваш ход', style: TextStyle(color: Colors.green)),
+            ),
+          if (battleViewModelState?.myMove == false)
+            Center(
+              child: Text('Ход соперника', style: TextStyle(color: Colors.red)),
+            ),
         ],
       ),
     );

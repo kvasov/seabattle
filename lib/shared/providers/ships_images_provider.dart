@@ -1,8 +1,6 @@
 import 'dart:ui' as ui;
-
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
 
 class ShipsImagesCache {
   ShipsImagesCache(this._images);
@@ -16,7 +14,6 @@ class ShipsImagesCache {
 
 final shipsImagesProvider = FutureProvider<ShipsImagesCache>((ref) async {
   final images = <int, ui.Image>{};
-
   for (final entry in _assetsBySize.entries) {
     images[entry.key] = await _loadImage(entry.value);
   }
@@ -24,6 +21,7 @@ final shipsImagesProvider = FutureProvider<ShipsImagesCache>((ref) async {
   return ShipsImagesCache(images);
 });
 
+// Соответствие размера корабля (число палуб) пути к ассету.
 const Map<int, String> _assetsBySize = {
   1: 'assets/images/ships/x1.png',
   2: 'assets/images/ships/x2.png',
@@ -33,13 +31,14 @@ const Map<int, String> _assetsBySize = {
 
 Future<ui.Image> _loadImage(String assetPath) async {
   try {
+    // Читаем бинарные данные ассета из bundle.
     final data = await rootBundle.load(assetPath);
+    // Превращаем данные в кодек, чтобы получить ui.Image.
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
     final frame = await codec.getNextFrame();
-    debugPrint('frame: ${frame.image.width}x${frame.image.height}');
     return frame.image;
-  } catch (error, stack) {
-    debugPrint('❌ Ошибка загрузки $assetPath: $error');
-    throw error; // даст знать `FutureProvider`, что ассет не загрузился
+  } catch (error) {
+    // Пробрасываем ошибку выше, чтобы FutureProvider перешёл в состояние error.
+    rethrow;
   }
 }
