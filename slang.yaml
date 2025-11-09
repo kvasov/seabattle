@@ -1,0 +1,9 @@
+base_locale: en
+namespaces: true
+input_directory: assets/i18n
+input_file_pattern: .i18n.yaml
+output_directory: lib/app/i18n
+flutter_integration: true
+flat_map: false
+
+# dart run slang

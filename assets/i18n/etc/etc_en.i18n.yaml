@@ -1,0 +1,10 @@
+bottomNavigationBar:
+  settings: 'Settings'
+  home: 'Home'
+hours:
+  zero: ""
+  one: "$n hour"
+  other: "$n hours"
+language:
+  en: 'English'
+  ru: 'Russian'

@@ -1,0 +1,4 @@
+title: 'Sea Battle: place your ships'
+buttons:
+  startGame: 'Start game'
+  cancelGame: 'Cancel game'
