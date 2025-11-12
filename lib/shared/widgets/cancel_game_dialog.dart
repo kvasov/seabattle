@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
-import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
-import 'package:seabattle/features/battle/providers/battle_provider.dart';
 
 class CancelGameDialog extends ConsumerWidget {
   const CancelGameDialog({super.key});
@@ -30,8 +28,6 @@ class CancelGameDialog extends ConsumerWidget {
             final id = gameId;
             if (id != null) {
               ref.read(gameNotifierProvider.notifier).updateGame(id, GameAction.cancel);
-              ref.read(setupShipsViewModelProvider.notifier).clearShips();
-              ref.read(battleViewModelProvider.notifier).resetBattle();
             }
           },
           child: const Text('Да'),
@@ -52,8 +48,6 @@ class CanceledGameDialog extends ConsumerWidget {
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
-            ref.read(setupShipsViewModelProvider.notifier).clearShips();
-            ref.read(battleViewModelProvider.notifier).resetBattle();
             ref.read(navigationProvider.notifier).pushHomeScreen();
           },
           child: const Text('OK'),
@@ -63,3 +57,22 @@ class CanceledGameDialog extends ConsumerWidget {
   }
 }
 
+class AcceptedGameDialog extends ConsumerWidget {
+  const AcceptedGameDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text('Игра уже принята кем-то другим'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            ref.read(gameNotifierProvider.notifier).resetGame();
+            ref.read(navigationProvider.notifier).pushHomeScreen();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+}

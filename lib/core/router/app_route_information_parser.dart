@@ -32,6 +32,12 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
       if (path == 'setupShipsScreen') {
         return [AppRoute.setupShipsScreen()];
       }
+      if (path == 'loseModal') {
+        return [AppRoute.dialog(arguments: {'type': 'loseModal'})];
+      }
+      if (path == 'winModal') {
+        return [AppRoute.dialog(arguments: {'type': 'winModal'})];
+      }
     }
 
     // Неизвестный путь - возвращаемся на список рецептов.
@@ -43,7 +49,7 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
   @override
   RouteInformation restoreRouteInformation(List<AppRoute> configuration) {
     // Пустой стек или только главный экран - корневой путь
-    print('configuration: ${configuration}');
+    // debugPrint('🫀 configuration: ${configuration}');
     if (configuration.isEmpty || configuration.last.name == AppRoute.homeScreen().name) {
       return RouteInformation(uri: Uri.parse('/'));
     }
@@ -65,6 +71,10 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
         return RouteInformation(uri: Uri.parse('/setupShipsScreen'));
       case '/battleScreen':
         return RouteInformation(uri: Uri.parse('/battleScreen'));
+      case '/loseModal':
+        return RouteInformation(uri: Uri.parse('/loseModal'));
+      case '/winModal':
+        return RouteInformation(uri: Uri.parse('/winModal'));
       default:
         return RouteInformation(uri: Uri.parse('/'));
     }

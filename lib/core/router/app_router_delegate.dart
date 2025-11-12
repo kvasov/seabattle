@@ -12,6 +12,8 @@ import 'package:seabattle/features/qr/presentation/screens/generate_screen.dart'
 import 'package:seabattle/features/qr/presentation/screens/scan_screen.dart';
 import 'package:seabattle/features/ships_setup/presentation/screens/setup_ships_screen.dart';
 import 'package:seabattle/features/battle/presentation/screens/battle_screen.dart';
+import 'package:seabattle/features/battle/presentation/widgets/modal/lose_modal.dart';
+import 'package:seabattle/features/battle/presentation/widgets/modal/win_modal.dart';
 
 class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<List<AppRoute>> {
@@ -92,8 +94,9 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
       case '/dialog':
         final arguments = route.arguments ?? <String, dynamic>{};
         final dialogType = arguments['type'] as String?;
-        print('☎️ dialogType: $dialogType');
+        debugPrint('⚡️⚡️⚡️ dialogType: $dialogType');
         Widget dialogChild;
+        var barrierDismissible = true;
 
         switch (dialogType) {
           case 'cancelGame':
@@ -102,6 +105,17 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
           case 'canceledGame':
             dialogChild = const CanceledGameDialog();
             break;
+          case 'acceptedGame':
+            dialogChild = const AcceptedGameDialog();
+            break;
+          case 'loseModal':
+            dialogChild = const LoseModal();
+            barrierDismissible = false;
+            break;
+          case 'winModal':
+            dialogChild = const WinModal();
+            barrierDismissible = false;
+            break;
           default:
             dialogChild = const AlertDialog(title: Text('Dialog'));
         }
@@ -109,6 +123,7 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
         return DialogPage(
           key: ValueKey('${route.name}_$index'),
           child: dialogChild,
+          barrierDismissible: barrierDismissible,
         );
 
       case '/battleScreen':

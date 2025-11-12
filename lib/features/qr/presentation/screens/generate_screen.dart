@@ -36,6 +36,11 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
                 child: const Text('Create Game')
               ),
               Text(gameNotifier.value?.game?.id.toString() ?? ''),
+              if (gameNotifier.value?.game?.id != null)
+                TextButton(
+                  onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
+                  child: const Text('Cancel Game'),
+                ),
             ],
           ),
           error: (error, stackTrace) => Text('Error: $error'),

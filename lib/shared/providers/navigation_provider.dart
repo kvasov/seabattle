@@ -78,6 +78,22 @@ class NavigationNotifier extends Notifier<List<AppRoute>> {
     ));
   }
 
+  void pushAcceptedGameDialogScreen() {
+    pushRoute(AppRoute.dialog(
+      arguments: {
+        'type': 'acceptedGame',
+      },
+    ));
+  }
+
+  void pushLoseModal() {
+    pushRoute(AppRoute.dialog(arguments: {'type': 'loseModal'}));
+  }
+
+  void pushWinModal() {
+    pushRoute(AppRoute.dialog(arguments: {'type': 'winModal'}));
+  }
+
   void pushBattleScreen() {
     pushRoute(AppRoute.battleScreen());
   }

@@ -1,4 +1,4 @@
-
+import 'package:flutter/foundation.dart';
 import '../datasources/remote/qr_remote_datasource.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/core/result.dart';
@@ -28,8 +28,11 @@ class PrepareRepository {
   RequestOperation<GameModel> updateGame(int id, GameAction action, String userUniqueId) async {
     try {
       final response = await qrRemoteDataSource.updateGame(id, action, userUniqueId);
-      if (response.containsKey('id')) {
+      if (response.containsKey('id') && !response.containsKey('error')) {
         return Result.ok(GameModel.fromDto(GameModelDto(id: id, createdAt: DateTime.now())));
+      }
+      else if (response.containsKey('error')) {
+        return Result.error(Failure(description: response['error'] as String));
       } else {
         throw Exception('Response does not contain id key');
       }

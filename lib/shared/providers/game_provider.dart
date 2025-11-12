@@ -62,8 +62,10 @@ class GameNotifier extends AsyncNotifier<GameState> {
         errorMessage: '',
       );
       ref.read(webSocketNotifierProvider.notifier).connect(newGame!.id);
+
       // final newState = GameState(game: game.data, isLoading: false, isError: false, errorMessage: '');
       // ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
+
       state = AsyncValue.data(newState);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -76,32 +78,42 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> updateGame(int id, GameAction action) async {
-    debugPrint('💚 updateGame - вызов');
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
-      final newState = GameState(
-        game: game.data,
-        isLoading: false,
-        isError: false,
-        errorMessage: '',
-      );
+      if (game.isSuccess) {
+        debugPrint('❤️❤️❤️ updateGame - success');
+        state = AsyncValue.data(
+          GameState(
+            game: game.data,
+            isLoading: false,
+            isError: false,
+            errorMessage: '',
+          ),
+        );
 
-      if (action == GameAction.accept) {
-        // Принимаем игру, подключаемся к WebSocket
-        ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
-        // Переходим на экран расстановки кораблей
-        ref.read(navigationProvider.notifier).pushSetupShipsScreen();
-        // Игру принять может только slave
-        updateGameMaster(false);
-      } else if (action == GameAction.cancel) {
-        ref.read(navigationProvider.notifier).pushHomeScreen();
+        if (action == GameAction.accept) {
+          // Принимаем игру, подключаемся к WebSocket
+          ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
+          // Переходим на экран расстановки кораблей
+          ref.read(navigationProvider.notifier).pushSetupShipsScreen();
+          // Игру принять может только slave
+          updateGameMaster(false);
+        } else if (action == GameAction.cancel) {
+          debugPrint('🚫🚫🚫🚫🚫🚫 updateGame - cancel');
+          resetGame();
+        }
       }
-
-      state = AsyncValue.data(newState);
-
+      else if (game.isError) {
+        final failure = game.error;
+        debugPrint('🤍🤍🤍🤍🤍🤍 updateGame - error: ${failure?.description ?? 'Неизвестная ошибка'}');
+        if (failure?.description == 'already_accepted') {
+          ref.read(navigationProvider.notifier).pushAcceptedGameDialogScreen();
+        }
+        state = AsyncValue.error(game.error.toString(), StackTrace.current);
+      }
     } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+      state = AsyncValue.error(e.toString(), StackTrace.current);
     }
   }
 
@@ -167,6 +179,17 @@ class GameNotifier extends AsyncNotifier<GameState> {
         errorMessage: '',
       );
       state = AsyncValue.data(newState);
+
+      final setupShipsState = ref.read(setupShipsViewModelProvider);
+      final battleState = ref.read(battleViewModelProvider);
+
+      if (setupShipsState.hasValue) {
+        ref.read(setupShipsViewModelProvider.notifier).clearShips();
+      }
+      if (battleState.hasValue) {
+        ref.read(battleViewModelProvider.notifier).resetBattle();
+      }
+      ref.read(navigationProvider.notifier).pushHomeScreen();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

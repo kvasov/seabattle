@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
+import 'package:seabattle/shared/providers/navigation_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -135,6 +136,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
       if (allOpponentShipsDead()) {
         debugPrint('🎉 WIN!!!');
+        ref.read(navigationProvider.notifier).pushWinModal();
         // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.win);
       }
     } catch (e) {

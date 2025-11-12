@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 class DialogPage extends Page<dynamic> {
-  const DialogPage({super.key, required this.child});
+  const DialogPage({
+    super.key,
+    required this.child,
+    this.barrierDismissible = true,
+  });
+
   final Widget child;
+  final bool barrierDismissible;
 
   @override
   Route<dynamic> createRoute(BuildContext context) {
@@ -10,6 +16,7 @@ class DialogPage extends Page<dynamic> {
       context: context,
       builder: (context) => child,
       settings: this,
+      barrierDismissible: barrierDismissible,
     );
   }
 }

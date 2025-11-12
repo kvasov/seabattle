@@ -109,7 +109,9 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                 if (decoded['isHit'] == true) {
                   battleViewModelNotifier.setMyMove(false);
                   if (battleViewModelNotifier.allShipsDead()) {
-                    debugPrint('☠️ LOSE!!!');
+                    debugPrint('☠️ LOSE!');
+                    ref.read(navigationProvider.notifier).pushLoseModal();
+                    // TODO: обновить статистику в HIVE
                     // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.lose);
                   }
                 } else {
