@@ -46,8 +46,8 @@ class NavigationNotifier extends Notifier<List<AppRoute>> {
     pushRoute(AppRoute.settings());
   }
 
-  void pushHomeScreen() {
-    pushRoute(AppRoute.homeScreen());
+  void goToHomeScreen() {
+    state = [AppRoute.homeScreen()];
   }
 
   void pushCreateGameScreen() {

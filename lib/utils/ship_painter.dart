@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
@@ -11,6 +12,8 @@ class SeaBattlePainter extends CustomPainter {
   final List<List<CellState>> field;
   final double cellSize;
   final List<Ship>? ships;
+  final Animation<double>? waveAnimation;
+  final double rotationAmplitude;
 
   SeaBattlePainter({
     this.myShips = true,
@@ -19,10 +22,13 @@ class SeaBattlePainter extends CustomPainter {
     required this.field,
     required this.cellSize,
     this.ships,
-  });
+    this.waveAnimation,
+    this.rotationAmplitude = 0.05,
+  }) : super(repaint: waveAnimation);
 
   @override
   void paint(Canvas canvas, Size size) {
+    // debugPrint('🤍🧡🤍💚🤍🩵🤍🤎🤍 paint: ${waveAnimation?.value}');
     // Заливка пустых клеток
     final emptyPaint =
         Paint()
@@ -168,31 +174,34 @@ class SeaBattlePainter extends CustomPainter {
           height,
         );
 
-        if (ship.orientation == ShipOrientation.vertical) {
-          canvas.save();
-          final center = rect.center;
-          canvas.translate(center.dx, center.dy);
-          canvas.rotate(math.pi / 2);
-          final rotatedRect = Rect.fromCenter(
-            center: Offset.zero,
-            width: rect.height,
-            height: rect.width,
-          );
-          paintImage(
-            canvas: canvas,
-            rect: rotatedRect,
-            image: shipImage,
-            fit: BoxFit.fill,
-          );
-          canvas.restore();
-        } else {
-          paintImage(
-            canvas: canvas,
-            rect: rect,
-            image: shipImage,
-            fit: BoxFit.fill,
-          );
-        }
+        final shipPhaseOffset = (ship.x / 10 * math.pi + ship.y / 10 * math.pi) + math.pi / ship.size;
+        final animationPhase = (waveAnimation?.value ?? 0.0) * math.pi;
+        final phase = animationPhase + shipPhaseOffset;
+
+        final swayOffset = math.sin(phase) * cellSize * 0.06;
+        final tiltAngle = math.sin(phase) * rotationAmplitude;
+
+        canvas.save();
+        final center = rect.center;
+        canvas.translate(center.dx + swayOffset, center.dy);
+        final baseRotation = ship.orientation == ShipOrientation.vertical ? math.pi / 2 : 0.0;
+        canvas.rotate(baseRotation + tiltAngle);
+
+        final drawWidth = ship.orientation == ShipOrientation.horizontal ? rect.width : rect.height;
+        final drawHeight = ship.orientation == ShipOrientation.horizontal ? rect.height : rect.width;
+        final drawRect = Rect.fromCenter(
+          center: Offset.zero,
+          width: drawWidth,
+          height: drawHeight,
+        );
+
+        paintImage(
+          canvas: canvas,
+          rect: drawRect,
+          image: shipImage,
+          fit: BoxFit.fill,
+        );
+        canvas.restore();
       }
     }
 
@@ -221,6 +230,8 @@ class SeaBattlePainter extends CustomPainter {
 
   // Нужно перерисовывать только если изменилась сетка
   @override
-  bool shouldRepaint(covariant SeaBattlePainter oldDelegate) =>
-      oldDelegate.field.toString() != field.toString();
+  bool shouldRepaint(covariant SeaBattlePainter oldDelegate) {
+    debugPrint('🤍🤍🤍🤍🤍🤍 shouldRepaint: ${oldDelegate.waveAnimation != waveAnimation}');
+    return oldDelegate.waveAnimation != waveAnimation;
+  }
 }

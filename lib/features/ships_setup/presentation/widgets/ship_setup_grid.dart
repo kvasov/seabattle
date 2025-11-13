@@ -6,11 +6,38 @@ import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
 
-class ShipSetupGrid extends ConsumerWidget {
+class ShipSetupGrid extends ConsumerStatefulWidget {
   const ShipSetupGrid({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ShipSetupGrid> createState() => _ShipSetupGridState();
+}
+
+class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTickerProviderStateMixin {
+  late final AnimationController _waveController;
+  late final Animation<double> _waveAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _waveController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+    _waveAnimation = CurvedAnimation(
+      parent: _waveController,
+      curve: Curves.linear,
+    );
+  }
+
+  @override
+  void dispose() {
+    _waveController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final setupShipsViewModel = ref.watch(setupShipsViewModelProvider);
     final setupShipsViewModelState = setupShipsViewModel.value;
     final field = setupShipsViewModelState != null
@@ -36,6 +63,7 @@ class ShipSetupGrid extends ConsumerWidget {
           cellSize: cellSize,
           shipsImagesCache: cache,
           ships: ships,
+          waveAnimation: _waveAnimation,
         ),
       ),
       error: (error, stack) => Center(child: Text(error.toString())),

@@ -53,18 +53,8 @@ class GameNotifier extends AsyncNotifier<GameState> {
       // TODO: handle error
       final game = await ref.read(prepareRepositoryProvider).createGame();
 
-      // ONLY FOR TESTING
-      final newGame = game.data?.copyWith(id: 6, master: true);
-      final newState = GameState(
-        game: newGame,
-        isLoading: false,
-        isError: false,
-        errorMessage: '',
-      );
-      ref.read(webSocketNotifierProvider.notifier).connect(newGame!.id);
-
-      // final newState = GameState(game: game.data, isLoading: false, isError: false, errorMessage: '');
-      // ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
+      final newState = GameState(game: game.data, isLoading: false, isError: false, errorMessage: '');
+      ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
 
       state = AsyncValue.data(newState);
     } catch (e) {
@@ -100,7 +90,6 @@ class GameNotifier extends AsyncNotifier<GameState> {
           // Игру принять может только slave
           updateGameMaster(false);
         } else if (action == GameAction.cancel) {
-          debugPrint('🚫🚫🚫🚫🚫🚫 updateGame - cancel');
           resetGame();
         }
       }
@@ -109,6 +98,8 @@ class GameNotifier extends AsyncNotifier<GameState> {
         debugPrint('🤍🤍🤍🤍🤍🤍 updateGame - error: ${failure?.description ?? 'Неизвестная ошибка'}');
         if (failure?.description == 'already_accepted') {
           ref.read(navigationProvider.notifier).pushAcceptedGameDialogScreen();
+        } else if (failure?.description == 'cancelled') {
+          ref.read(navigationProvider.notifier).pushCanceledGameDialogScreen();
         }
         state = AsyncValue.error(game.error.toString(), StackTrace.current);
       }
@@ -189,7 +180,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
       if (battleState.hasValue) {
         ref.read(battleViewModelProvider.notifier).resetBattle();
       }
-      ref.read(navigationProvider.notifier).pushHomeScreen();
+      ref.read(navigationProvider.notifier).goToHomeScreen();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

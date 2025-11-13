@@ -1,22 +1,24 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/foundation.dart';
+import 'package:seabattle/core/storage/storage_models.dart';
 
 class HiveStorage {
-  static const String recipesListBoxName = 'recipes_list';
-  static const String recipeBoxName = 'recipe';
-  static const String recipeImagesBoxName = 'recipe_images';
+  static const String settingsBoxName = 'settings';
+  static const String statisticsBoxName = 'statistics';
 
   static Future<void> init() async {
     try {
       await Hive.initFlutter();
 
-      // if (!Hive.isAdapterRegistered(0)) {
-      //   Hive.registerAdapter(RecipeDtoAdapter());
-      // }
+      if (!Hive.isAdapterRegistered(0)) {
+        Hive.registerAdapter(SettingsModelAdapter());
+      }
+      if (!Hive.isAdapterRegistered(1)) {
+        Hive.registerAdapter(StatisticsAdapter());
+      }
 
-      // await Hive.openBox(recipesListBoxName);
-      // await Hive.openBox(recipeBoxName);
-      // await Hive.openBox(recipeImagesBoxName);
+      await Hive.openBox(settingsBoxName);
+      await Hive.openBox(statisticsBoxName);
 
       if (kDebugMode) {
         await debugPrintBoxes();
@@ -26,9 +28,8 @@ class HiveStorage {
     }
   }
 
-  static Box get recipesListBox => Hive.box(recipesListBoxName);
-  static Box get recipeBox => Hive.box(recipeBoxName);
-  static Box get recipeImagesBox => Hive.box(recipeImagesBoxName);
+  static Box get settingsBox => Hive.box(settingsBoxName);
+  static Box get statisticsBox => Hive.box(statisticsBoxName);
 
   // Удаляет конкретный бокс по имени
   static Future<void> deleteBox(String boxName) async {
@@ -57,7 +58,7 @@ class HiveStorage {
         debugPrint('Deleting all boxes...');
       }
 
-      final knownBoxes = [recipesListBoxName, recipeBoxName, recipeImagesBoxName];
+      final knownBoxes = [settingsBoxName, statisticsBoxName];
 
       for (final boxName in knownBoxes) {
         await deleteBox(boxName);
@@ -98,7 +99,7 @@ class HiveStorage {
         debugPrint('Clearing all boxes...');
       }
 
-      final knownBoxes = [recipesListBoxName, recipeBoxName, recipeImagesBoxName];
+      final knownBoxes = [settingsBoxName, statisticsBoxName];
 
       for (final boxName in knownBoxes) {
         await clearBox(boxName);
@@ -123,7 +124,7 @@ class HiveStorage {
 
   static Future<void> debugPrintBoxes() async {
     debugPrint('=== Hive Boxes Debug Info ===');
-    final knownBoxes = [recipesListBoxName, recipeBoxName, recipeImagesBoxName];
+    final knownBoxes = [settingsBoxName, statisticsBoxName];
     for (final boxName in knownBoxes) {
       try {
         final box = Hive.box(boxName);

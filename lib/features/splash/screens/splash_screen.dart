@@ -19,7 +19,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     Timer(Duration(milliseconds: 500), () {
       if (!mounted) return;
-      ref.read(navigationProvider.notifier).pushHomeScreen();
+      ref.read(navigationProvider.notifier).goToHomeScreen();
     });
   }
 

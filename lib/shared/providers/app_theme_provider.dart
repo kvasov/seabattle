@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/features/settings/providers/settings_provider.dart';
 
 class AppThemeState {
   const AppThemeState({
@@ -20,11 +21,45 @@ class AppThemeState {
 
 class AppThemeNotifier extends Notifier<AppThemeState> {
   @override
-  AppThemeState build() => const AppThemeState(themeMode: ThemeMode.system, seedColor: Colors.teal);
+  AppThemeState build() {
+    // Используем watch() чтобы гарантировать инициализацию AsyncNotifier
+    final settingsAsync = ref.watch(settingsViewModelProvider);
+    final currentSettings = settingsAsync.value?.settings;
 
-  void setThemeMode(ThemeMode mode) => state = state.copyWith(themeMode: mode);
+    return AppThemeState(
+      themeMode: currentSettings?.themeMode ?? ThemeMode.system,
+      seedColor: currentSettings?.seedColor ?? Colors.teal,
+    );
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    // Сначала обновляем локальное состояние для перерисовки UI
+    state = state.copyWith(themeMode: mode);
+
+    // Затем сохраняем в хранилище
+    final settingsAsync = ref.read(settingsViewModelProvider);
+    final currentSettings = settingsAsync.value?.settings;
+
+    if (currentSettings != null) {
+      ref.read(settingsViewModelProvider.notifier).saveSettings(
+        currentSettings.copyWith(
+          themeModeIndex: currentSettings.convertThemeModeToInt(mode),
+        ),
+      );
+    } else {
+      debugPrint('⚠️ setThemeMode: currentSettings == null, настройки еще не загружены');
+    }
+  }
+
   void toggleDark(bool isDark) => setThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
-  void setSeedColor(Color color) => state = state.copyWith(seedColor: color);
+  void setSeedColor(Color color) {
+    state = state.copyWith(seedColor: color);
+    final settingsAsync = ref.read(settingsViewModelProvider);
+    final currentSettings = settingsAsync.value?.settings;
+    if (currentSettings != null) {
+      ref.read(settingsViewModelProvider.notifier).saveSettings(currentSettings.copyWith(seedColor: color));
+    }
+  }
 }
 
 final appThemeProvider = NotifierProvider<AppThemeNotifier, AppThemeState>(() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/core/storage/hive_storage.dart';
 import 'package:seabattle/shared/providers/app_theme_provider.dart';
 import 'package:seabattle/shared/providers/locale_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
@@ -76,6 +77,12 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                     ],
                   ),
+                  TextButton(onPressed: () {
+                    HiveStorage.debugPrintBox(HiveStorage.settingsBoxName);
+                  }, child: Text('Вывести все настройки из HiveStorage.settingsBoxName')),
+                  TextButton(onPressed: () {
+                    HiveStorage.clearBox(HiveStorage.settingsBoxName);
+                  }, child: Text('Стереть все настройки из settingsBoxName')),
                 ],
               ),
             ),

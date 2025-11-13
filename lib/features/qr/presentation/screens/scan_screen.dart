@@ -34,6 +34,10 @@ class _ScanQRScreenState extends ConsumerState<ScanQRScreen> {
               onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(6, GameAction.accept),
               child: const Text('Accept Game #6')
             ),
+            TextButton(
+              onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(0, GameAction.accept),
+              child: const Text('Accept last game in DB')
+            ),
           ],
         ),
       ),

@@ -48,7 +48,7 @@ class CanceledGameDialog extends ConsumerWidget {
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
-            ref.read(navigationProvider.notifier).pushHomeScreen();
+            ref.read(navigationProvider.notifier).goToHomeScreen();
           },
           child: const Text('OK'),
         ),
@@ -68,7 +68,7 @@ class AcceptedGameDialog extends ConsumerWidget {
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
-            ref.read(navigationProvider.notifier).pushHomeScreen();
+            ref.read(navigationProvider.notifier).goToHomeScreen();
           },
           child: const Text('OK'),
         ),

@@ -49,7 +49,7 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
   @override
   RouteInformation restoreRouteInformation(List<AppRoute> configuration) {
     // Пустой стек или только главный экран - корневой путь
-    // debugPrint('🫀 configuration: ${configuration}');
+    debugPrint('🫀 configuration: ${configuration}');
     if (configuration.isEmpty || configuration.last.name == AppRoute.homeScreen().name) {
       return RouteInformation(uri: Uri.parse('/'));
     }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import '../datasources/remote/qr_remote_datasource.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/core/result.dart';
