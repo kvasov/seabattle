@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/core/storage/storage_models.dart';
 import 'package:seabattle/features/settings/providers/settings_provider.dart';
 
 class AppThemeState {
@@ -28,7 +29,7 @@ class AppThemeNotifier extends Notifier<AppThemeState> {
 
     return AppThemeState(
       themeMode: currentSettings?.themeMode ?? ThemeMode.system,
-      seedColor: currentSettings?.seedColor ?? Colors.teal,
+      seedColor: currentSettings?.seedColor ?? Color(currentSettings?.seedColorValue ?? 0),
     );
   }
 
@@ -52,12 +53,15 @@ class AppThemeNotifier extends Notifier<AppThemeState> {
   }
 
   void toggleDark(bool isDark) => setThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+
   void setSeedColor(Color color) {
     state = state.copyWith(seedColor: color);
     final settingsAsync = ref.read(settingsViewModelProvider);
     final currentSettings = settingsAsync.value?.settings;
     if (currentSettings != null) {
-      ref.read(settingsViewModelProvider.notifier).saveSettings(currentSettings.copyWith(seedColor: color));
+      ref.read(settingsViewModelProvider.notifier).saveSettings(
+        currentSettings.copyWith(seedColorValue: SettingsModel.colorToInt(color)),
+      );
     }
   }
 }

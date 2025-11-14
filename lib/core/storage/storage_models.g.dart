@@ -16,15 +16,13 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    // Обработка миграции: если seedColorValue отсутствует (старые данные), используем значение по умолчанию
-    final seedColorValue = fields[5] as int? ?? Colors.teal.value;
     return SettingsModel(
       language: fields[0] as String,
       isSoundEnabled: fields[1] as bool,
       isAnimationsEnabled: fields[2] as bool,
       isVibrationEnabled: fields[3] as bool,
       themeModeIndex: fields[4] as int,
-      seedColor: Color(seedColorValue),
+      seedColorValue: fields[5] as int,
     );
   }
 
@@ -57,30 +55,39 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
           typeId == other.typeId;
 }
 
-class StatisticsAdapter extends TypeAdapter<Statistics> {
+class StatisticsModelAdapter extends TypeAdapter<StatisticsModel> {
   @override
   final int typeId = 1;
 
   @override
-  Statistics read(BinaryReader reader) {
+  StatisticsModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Statistics(
+    return StatisticsModel(
       totalGames: fields[0] as int,
       totalWins: fields[1] as int,
+      totalHits: fields[2] as int,
+      totalShots: fields[3] as int,
+      totalCancelled: fields[4] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Statistics obj) {
+  void write(BinaryWriter writer, StatisticsModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.totalGames)
       ..writeByte(1)
-      ..write(obj.totalWins);
+      ..write(obj.totalWins)
+      ..writeByte(2)
+      ..write(obj.totalHits)
+      ..writeByte(3)
+      ..write(obj.totalShots)
+      ..writeByte(4)
+      ..write(obj.totalCancelled);
   }
 
   @override
@@ -89,7 +96,7 @@ class StatisticsAdapter extends TypeAdapter<Statistics> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is StatisticsAdapter &&
+      other is StatisticsModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

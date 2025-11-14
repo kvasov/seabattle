@@ -97,6 +97,10 @@ class NavigationNotifier extends Notifier<List<AppRoute>> {
   void pushBattleScreen() {
     pushRoute(AppRoute.battleScreen());
   }
+
+  void pushStatisticsScreen() {
+    pushRoute(AppRoute.statisticsScreen());
+  }
 }
 
 final navigationProvider = NotifierProvider<NavigationNotifier, List<AppRoute>>(() {

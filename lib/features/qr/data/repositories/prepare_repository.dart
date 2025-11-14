@@ -28,7 +28,22 @@ class PrepareRepository {
     try {
       final response = await qrRemoteDataSource.updateGame(id, action, userUniqueId);
       if (response.containsKey('id') && !response.containsKey('error')) {
-        return Result.ok(GameModel.fromDto(GameModelDto(id: id, createdAt: DateTime.now())));
+        final responseId = response['id'] as int;
+        DateTime createdAt = DateTime.now();
+        if (response.containsKey('createdAt')) {
+          try {
+            createdAt = DateTime.parse(response['createdAt'] as String);
+          } catch (e) {
+            createdAt = DateTime.now();
+          }
+        }
+
+        return Result.ok(GameModel.fromDto(
+          GameModelDto(
+            id: responseId,
+            createdAt: createdAt,
+          )
+        ));
       }
       else if (response.containsKey('error')) {
         return Result.error(Failure(description: response['error'] as String));

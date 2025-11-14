@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
+import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 
 class BattleViewModelState {
@@ -80,7 +81,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     debugPrint('💚 state: ${state.value?.toString()}');
   }
 
-  void handleTapDown(TapDownDetails details) {
+  Future<void> handleTapDown(TapDownDetails details) async {
     if (!state.value!.myMove) {
       return;
     }
@@ -98,11 +99,9 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     );
 
     if (isHit(x, y)) {
-      debugPrint('🎯 hit');
-
+      await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalHits');
       setMyMove(true);
     } else {
-      debugPrint('🙅🏻‍♂️ miss');
       setMyMove(false);
     }
 
@@ -134,10 +133,11 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     state = const AsyncValue.loading();
     try {
       await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
+      await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
       if (allOpponentShipsDead()) {
         debugPrint('🎉 WIN!!!');
         ref.read(navigationProvider.notifier).pushWinModal();
-        // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.win);
+        await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
       }
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

@@ -14,7 +14,7 @@ class HiveStorage {
         Hive.registerAdapter(SettingsModelAdapter());
       }
       if (!Hive.isAdapterRegistered(1)) {
-        Hive.registerAdapter(StatisticsAdapter());
+        Hive.registerAdapter(StatisticsModelAdapter());
       }
 
       await Hive.openBox(settingsBoxName);

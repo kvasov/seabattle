@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
@@ -53,7 +54,9 @@ class GameNotifier extends AsyncNotifier<GameState> {
       // TODO: handle error
       final game = await ref.read(prepareRepositoryProvider).createGame();
 
-      final newState = GameState(game: game.data, isLoading: false, isError: false, errorMessage: '');
+      // При создании игры устанавливаем master = true (создатель игры)
+      final gameWithMaster = game.data?.copyWith(master: true);
+      final newState = GameState(game: gameWithMaster, isLoading: false, isError: false, errorMessage: '');
       ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
 
       state = AsyncValue.data(newState);
@@ -71,6 +74,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
+      debugPrint('💚!!!!!!!💚💚 updateGame - game: ${game.data?.id}');
       if (game.isSuccess) {
         debugPrint('❤️❤️❤️ updateGame - success');
         state = AsyncValue.data(
@@ -89,6 +93,14 @@ class GameNotifier extends AsyncNotifier<GameState> {
           ref.read(navigationProvider.notifier).pushSetupShipsScreen();
           // Игру принять может только slave
           updateGameMaster(false);
+          // Увеличиваем общее количество игр в стейте и сохраняем в базу данных
+          // но сначала убеждаемся, что провайдер статистики инициализирован
+          final statisticsState = ref.read(statisticsViewModelProvider);
+          if (!statisticsState.hasValue) {
+            debugPrint('💚💚💚 updateGame: провайдер статистики не инициализирован, инициализируем...');
+            await ref.read(statisticsViewModelProvider.future);
+          }
+          await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
         } else if (action == GameAction.cancel) {
           resetGame();
         }
@@ -138,12 +150,14 @@ class GameNotifier extends AsyncNotifier<GameState> {
       ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
     );
     // Перемещаем свои корабли в BattleViewModelNotifier
+    final isMaster = state.value!.game!.master ?? false;
+    final myMove = !isMaster;
     ref.read(battleViewModelProvider.notifier)
       ..setShips(
         mode: 'self',
         ships: ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
       )
-      ..setMyMove(!(state.value!.game!.master ?? false));
+      ..setMyMove(myMove);
     ref.read(navigationProvider.notifier).pushBattleScreen();
 
     final newState = GameState(

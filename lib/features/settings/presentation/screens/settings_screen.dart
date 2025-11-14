@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/core/storage/hive_storage.dart';
+import 'package:seabattle/features/settings/providers/settings_provider.dart';
 import 'package:seabattle/shared/providers/app_theme_provider.dart';
 import 'package:seabattle/shared/providers/locale_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/shared/providers/navigation_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -83,9 +85,15 @@ class SettingsScreen extends ConsumerWidget {
                   TextButton(onPressed: () {
                     HiveStorage.clearBox(HiveStorage.settingsBoxName);
                   }, child: Text('Стереть все настройки из settingsBoxName')),
+                  Text('language: ${ref.read(settingsViewModelProvider).value?.settings?.language}'),
                 ],
               ),
             ),
+          ),
+          Card(
+            child: TextButton(onPressed: () {
+              ref.read(navigationProvider.notifier).pushStatisticsScreen();
+            }, child: Text('Перейти к статистике')),
           ),
         ],
       ),

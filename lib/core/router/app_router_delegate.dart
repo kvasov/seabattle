@@ -14,6 +14,7 @@ import 'package:seabattle/features/ships_setup/presentation/screens/setup_ships_
 import 'package:seabattle/features/battle/presentation/screens/battle_screen.dart';
 import 'package:seabattle/features/battle/presentation/widgets/modal/lose_modal.dart';
 import 'package:seabattle/features/battle/presentation/widgets/modal/win_modal.dart';
+import 'package:seabattle/features/statistics/presentation/screens/statistics_screen.dart';
 
 class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<List<AppRoute>> {
@@ -128,6 +129,10 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
 
       case '/battleScreen':
         screen = const BattleScreen();
+        break;
+
+      case '/statisticsScreen':
+        screen = const StatisticsScreen();
         break;
 
       default:

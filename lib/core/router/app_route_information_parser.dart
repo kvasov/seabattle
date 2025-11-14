@@ -38,6 +38,9 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
       if (path == 'winModal') {
         return [AppRoute.dialog(arguments: {'type': 'winModal'})];
       }
+      if (path == 'statisticsScreen') {
+        return [AppRoute.statisticsScreen()];
+      }
     }
 
     // Неизвестный путь - возвращаемся на список рецептов.
@@ -75,6 +78,8 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
         return RouteInformation(uri: Uri.parse('/loseModal'));
       case '/winModal':
         return RouteInformation(uri: Uri.parse('/winModal'));
+      case '/statisticsScreen':
+        return RouteInformation(uri: Uri.parse('/statisticsScreen'));
       default:
         return RouteInformation(uri: Uri.parse('/'));
     }

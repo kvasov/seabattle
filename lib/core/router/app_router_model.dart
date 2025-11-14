@@ -41,6 +41,10 @@ class AppRoute extends Equatable {
     return const AppRoute(name: '/battleScreen');
   }
 
+  factory AppRoute.statisticsScreen() {
+    return const AppRoute(name: '/statisticsScreen');
+  }
+
   @override
   List<Object?> get props => [name, arguments];
 }

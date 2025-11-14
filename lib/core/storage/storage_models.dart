@@ -23,7 +23,6 @@ class SettingsModel {
 
   @HiveField(5)
   final int seedColorValue;
-  // Значение цвета как int (Color.value)
 
   SettingsModel({
     required this.language,
@@ -31,10 +30,17 @@ class SettingsModel {
     required this.isAnimationsEnabled,
     required this.isVibrationEnabled,
     required this.themeModeIndex,
-    required Color seedColor,
-  }) : seedColorValue = seedColor.value;
+    required this.seedColorValue,
+  });
 
-  // Геттер для получения Color из значения
+  static int colorToInt(Color color) {
+    final a = (color.a * 255.0).round() & 0xff;
+    final r = (color.r * 255.0).round() & 0xff;
+    final g = (color.g * 255.0).round() & 0xff;
+    final b = (color.b * 255.0).round() & 0xff;
+    return (a << 24) | (r << 16) | (g << 8) | b;
+  }
+
   Color get seedColor => Color(seedColorValue);
 
   SettingsModel copyWith({
@@ -43,7 +49,7 @@ class SettingsModel {
     bool? isAnimationsEnabled,
     bool? isVibrationEnabled,
     int? themeModeIndex,
-    Color? seedColor,
+    int? seedColorValue,
   }) {
     return SettingsModel(
       language: language ?? this.language,
@@ -51,7 +57,7 @@ class SettingsModel {
       isAnimationsEnabled: isAnimationsEnabled ?? this.isAnimationsEnabled,
       isVibrationEnabled: isVibrationEnabled ?? this.isVibrationEnabled,
       themeModeIndex: themeModeIndex ?? this.themeModeIndex,
-      seedColor: seedColor ?? this.seedColor,
+      seedColorValue: seedColorValue ?? this.seedColorValue,
     );
   }
 
@@ -83,15 +89,43 @@ class SettingsModel {
 }
 
 @HiveType(typeId: 1)
-class Statistics {
+class StatisticsModel {
   @HiveField(0)
   final int totalGames;
 
   @HiveField(1)
   final int totalWins;
 
-  const Statistics({
+  @HiveField(2)
+  final int totalHits;
+
+  @HiveField(3)
+  final int totalShots;
+
+  @HiveField(4)
+  final int totalCancelled;
+
+  StatisticsModel({
     required this.totalGames,
     required this.totalWins,
+    required this.totalHits,
+    required this.totalShots,
+    required this.totalCancelled,
   });
+
+  StatisticsModel copyWith({
+    int? totalGames,
+    int? totalWins,
+    int? totalHits,
+    int? totalShots,
+    int? totalCancelled,
+  }) {
+    return StatisticsModel(
+      totalGames: totalGames ?? this.totalGames,
+      totalWins: totalWins ?? this.totalWins,
+      totalHits: totalHits ?? this.totalHits,
+      totalShots: totalShots ?? this.totalShots,
+      totalCancelled: totalCancelled ?? this.totalCancelled,
+    );
+  }
 }

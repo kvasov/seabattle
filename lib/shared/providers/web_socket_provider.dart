@@ -8,6 +8,7 @@ import 'package:seabattle/shared/providers/user_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
+import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 
 class WebSocketState {
   final WebSocketChannel? channel;
@@ -58,15 +59,23 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
 
       // Сохраняем подписку для возможности отмены
       _subscription = channel.stream.listen(
-        (data) {
+        (data) async {
           // debugPrint('☎️ WebSocket raw data: $data');
           try {
             final decoded = json.decode(data);
             // debugPrint('☎️ WebSocket decoded: $decoded');
             if (decoded['mode'] == 'accepted') {
+              final statisticsState = ref.read(statisticsViewModelProvider);
+              if (!statisticsState.hasValue) {
+                debugPrint('Провайдер статистики не инициализирован, инициализируем...');
+                await ref.read(statisticsViewModelProvider.future);
+              }
+              await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
               ref.read(navigationProvider.notifier).pushSetupShipsScreen();
             }
             if (decoded['mode'] == 'cancelled') {
+              await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalCancelled');
+
               if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
                 // Если игру отменили не мы, то показываем сообщение
                 ref.read(navigationProvider.notifier).pushCanceledGameDialogScreen();
@@ -110,9 +119,8 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                   battleViewModelNotifier.setMyMove(false);
                   if (battleViewModelNotifier.allShipsDead()) {
                     debugPrint('☠️ LOSE!');
+                    await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalLosses');
                     ref.read(navigationProvider.notifier).pushLoseModal();
-                    // TODO: обновить статистику в HIVE
-                    // ref.read(gameNotifierProvider.notifier).setGameResult(GameResult.lose);
                   }
                 } else {
                   battleViewModelNotifier.setMyMove(true);

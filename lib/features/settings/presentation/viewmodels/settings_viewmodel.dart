@@ -25,12 +25,10 @@ class SettingsViewModelNotifier extends AsyncNotifier<SettingsViewModelState> {
           isAnimationsEnabled: true,
           isVibrationEnabled: true,
           themeModeIndex: settings?.convertThemeModeToInt(ThemeMode.system) ?? 0,
-          seedColor: Colors.teal,
+          seedColorValue: SettingsModel.colorToInt(Colors.teal),
         );
         debugPrint('🤍🧡🤍 build: сохраняем новые настройки');
         await ref.read(settingsRepositoryProvider).saveSettings(settings);
-      } else {
-        debugPrint('🧡🤍❤️ build: settings != null, используем существующие настройки');
       }
 
       return SettingsViewModelState(settings: settings);
