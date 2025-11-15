@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/legend.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/pie_chart_widget.dart';
 
 class GamesPieWidget extends ConsumerWidget {
-  const GamesPieWidget({super.key});
+  const GamesPieWidget({
+    super.key,
+    required this.totalGames,
+    required this.totalWins,
+    required this.totalLosses,
+    required this.totalCancelled,
+  });
+
+  final int totalGames;
+  final int totalWins;
+  final int totalLosses;
+  final int totalCancelled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
     final maxWidthPieChart = MediaQuery.of(context).size.width * 0.5;
-
-    final statistics = ref.watch(statisticsViewModelProvider);
-    final totalGames = statistics.value?.statistics?.totalGames ?? 0;
-    final totalWins = statistics.value?.statistics?.totalWins ?? 0;
-    final totalLosses = totalGames - totalWins;
-    final totalCancelled = statistics.value?.statistics?.totalCancelled ?? 0;
 
     final colorLosses = Theme.of(context).colorScheme.error;
     final colorWins = Theme.of(context).colorScheme.primary;

@@ -2,12 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/games_pie_widget.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/hits_shots_widget.dart';
+import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 
 class StatisticsScreen extends ConsumerWidget {
   const StatisticsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+
+    final statistics = ref.watch(statisticsViewModelProvider);
+    final totalGames = statistics.value?.statistics?.totalGames ?? 0;
+    final totalWins = statistics.value?.statistics?.totalWins ?? 0;
+    final totalCancelled = statistics.value?.statistics?.totalCancelled ?? 0;
+    final totalLosses = totalGames - totalWins - totalCancelled;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -25,9 +34,17 @@ class StatisticsScreen extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                GamesPieWidget(),
-                SizedBox(height: 20),
-                HitsShotsWidget(),
+                if (totalGames > 0) ...[
+                  GamesPieWidget(
+                    totalGames: totalGames,
+                    totalWins: totalWins,
+                    totalLosses: totalLosses,
+                    totalCancelled: totalCancelled,
+                  ),
+                  SizedBox(height: 20),
+                  HitsShotsWidget(),
+                ] else
+                  const Center(child: Text('No games played yet')),
               ],
             ),
           ),
