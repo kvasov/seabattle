@@ -22,6 +22,8 @@ dependencies:
   equatable: ^2.0.7
   web_socket_channel: ^3.0.3
   fl_chart: ^1.1.1
+  pigeon: ^22.7.2
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:

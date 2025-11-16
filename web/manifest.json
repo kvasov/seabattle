@@ -1,6 +1,6 @@
 {
-    "name": "morskoy_boy",
-    "short_name": "morskoy_boy",
+    "name": "seabattle",
+    "short_name": "seabattle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
