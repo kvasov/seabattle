@@ -1,8 +1,11 @@
 import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/shared/entities/ship.dart';
+import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
+import 'package:seabattle/utils/cursor_position_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dart:math';
 
 class SetupShipsViewModelState {
@@ -15,6 +18,8 @@ class SetupShipsViewModelState {
   final String errorMessage;
   final int gridSize;
   final double cellSize;
+  final GridPosition? cursorPosition;
+  final bool? isCursorVisible;
 
   SetupShipsViewModelState({
     required this.ships,
@@ -26,6 +31,8 @@ class SetupShipsViewModelState {
     required this.errorMessage,
     required this.gridSize,
     required this.cellSize,
+    this.cursorPosition,
+    this.isCursorVisible,
   });
 
   SetupShipsViewModelState copyWith({
@@ -38,6 +45,8 @@ class SetupShipsViewModelState {
     String? errorMessage,
     int? gridSize,
     double? cellSize,
+    GridPosition? cursorPosition,
+    bool? isCursorVisible,
   }) {
     return SetupShipsViewModelState(
       ships: ships ?? this.ships,
@@ -49,6 +58,8 @@ class SetupShipsViewModelState {
       errorMessage: errorMessage ?? this.errorMessage,
       gridSize: gridSize ?? this.gridSize,
       cellSize: cellSize ?? this.cellSize,
+      cursorPosition: cursorPosition ?? this.cursorPosition,
+      isCursorVisible: isCursorVisible ?? this.isCursorVisible,
     );
   }
 }
@@ -56,6 +67,10 @@ class SetupShipsViewModelState {
 class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState> {
   @override
   Future<SetupShipsViewModelState> build() async {
+    // Используем ref.read() вместо ref.watch() чтобы избежать циклической зависимости
+    final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
+    debugPrint('💚! isConnected: $isConnected');
+
     return SetupShipsViewModelState(
       ships: [],
       shipsToPlace: shipsToPlaceDefault,
@@ -66,45 +81,40 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
       isLoading: false,
       isError: false,
       errorMessage: '',
+      cursorPosition: GridPosition(0, 0),
+      isCursorVisible: isConnected,
     );
   }
 
-  // List<List<CellState>> get field {
-  //   // Генерируем поле с учетом кораблей и запретных зон
-  //   final f = List.generate(
-  //     state.value!.gridSize,
-  //     (_) => List.generate(state.value!.gridSize, (_) => CellState.empty),
-  //   );
-  //   for (final ship in state.value!.ships) {
-  //     // Сначала отмечаем клетки корабля
-  //     final shipCells = <Offset>[];
-  //     for (int i = 0; i < ship.size; i++) {
-  //       int x =
-  //           ship.x + (ship.orientation == ShipOrientation.horizontal ? i : 0);
-  //       int y = ship.y + (ship.orientation == ShipOrientation.vertical ? i : 0);
-  //       f[y][x] = CellState.ship;
-  //       shipCells.add(Offset(x.toDouble(), y.toDouble()));
-  //     }
-  //     // Теперь отмечаем запретные зоны только вокруг каждой палубы
-  //     for (final cell in shipCells) {
-  //       for (int dx = -1; dx <= 1; dx++) {
-  //         for (int dy = -1; dy <= 1; dy++) {
-  //           int nx = cell.dx.toInt() + dx;
-  //           int ny = cell.dy.toInt() + dy;
-  //           if (nx >= 0 && nx < state.value!.gridSize && ny >= 0 && ny < state.value!.gridSize) {
-  //             if (f[ny][nx] == CellState.empty) {
-  //               f[ny][nx] = CellState.forbidden;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return f;
-  // }
+  void handleESP32Message(String value) {
+    // debugPrint('⌖ handleESP32Message: $value');
+    if (value == 'fire') {
+      if (canPlaceShip(state.value!.cursorPosition!.x, state.value!.cursorPosition!.y, state.value!.selectedShipSize, state.value!.selectedOrientation)) {
+        placeShip(state.value!.cursorPosition!.x, state.value!.cursorPosition!.y);
+      }
+    } else {
+      setCursorPosition(value);
+    }
+  }
+
+  void setCursorPosition(String value) {
+    final newCursorPosition = calculateNewCursorPosition(
+      state.value!.cursorPosition,
+      value,
+      state.value!.gridSize,
+    );
+    final newState = state.value!.copyWith(
+      cursorPosition: newCursorPosition,
+    );
+    state = AsyncValue.data(newState);
+  }
 
   bool canPlaceShip(int x, int y, int size, ShipOrientation orientation) {
-    final field = makeField(state.value!.ships, state.value!.gridSize);
+    final field = makeField(
+      ships: state.value!.ships,
+      gridSize: state.value!.gridSize,
+      isCursorVisible: state.value!.isCursorVisible ?? false,
+    );
     // Для каждой палубы
     for (int i = 0; i < size; i++) {
       int nx = x + (orientation == ShipOrientation.horizontal ? i : 0);
@@ -144,10 +154,13 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     final y = (localPosition.dy ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
     debugPrint('⌖ x: $x, y: $y');
     // Получаем глобальные координаты относительно экрана
-    final globalPosition = details.globalPosition;
-    debugPrint('⌖ globalPosition: $globalPosition');
+    // final globalPosition = details.globalPosition;
+    // debugPrint('⌖ globalPosition: $globalPosition');
 
-    // Проверяем, можно ли поставить корабль
+    placeShip(x, y);
+  }
+
+  void placeShip(int x, int y) {
     if (state.value!.shipsToPlace[state.value!.selectedShipSize]! > 0 &&
         canPlaceShip(x, y, state.value!.selectedShipSize, state.value!.selectedOrientation)) {
 
@@ -167,9 +180,50 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
         selectedShipSize: newSelectedShipSize,
       );
 
-      debugPrint('⌖ shipsToPlace: $newShipsToPlace');
-
       state = AsyncValue.data(newState);
+      firstAvailablePosition();
+      if (countNeedPlaceShips() == 0) {
+        state = AsyncValue.data(
+          state.value!.copyWith(isCursorVisible: false),
+        );
+      }
+    }
+  }
+
+  void firstAvailablePosition() {
+    final startY = state.value!.cursorPosition!.y;
+    final startX = state.value!.cursorPosition!.x;
+    int y = startY;
+    int iterations = 0;
+    const maxIterations = 1000; // Защита от бесконечного цикла
+
+    while (iterations < maxIterations) {
+      // Начинаем с текущей позиции x для первой строки, затем с 0 для остальных
+      final startXForRow = (y == startY) ? startX : 0;
+
+      for (int x = startXForRow; x < state.value!.gridSize; x++) {
+        if (canPlaceShip(x, y, state.value!.selectedShipSize, state.value!.selectedOrientation)) {
+          GridPosition newCursorPosition = GridPosition(x, y);
+          state = AsyncValue.data(
+            state.value!.copyWith(cursorPosition: newCursorPosition),
+          );
+          return; // Нашли позицию, выходим
+        }
+      }
+
+      // Переходим на следующую строку
+      y++;
+      if (y >= state.value!.gridSize) {
+        y = 0;
+      }
+
+      // Если вернулись к начальной позиции, значит проверили все поле
+      if (y == startY && iterations > 0) {
+        debugPrint('⚠️ firstAvailablePosition: Не найдено доступной позиции для размещения корабля');
+        return;
+      }
+
+      iterations++;
     }
   }
 
@@ -197,6 +251,7 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
       final newState = state.value!.copyWith(
         ships: state.value!.ships,
         shipsToPlace: newShipsToPlace,
+        isCursorVisible: true,
       );
       state = AsyncValue.data(newState);
     }
@@ -237,6 +292,7 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     final newState = state.value!.copyWith(
       ships: [],
       shipsToPlace: shipsToPlaceDefault,
+      isCursorVisible: true,
     );
     state = AsyncValue.data(newState);
   }

@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
@@ -228,10 +227,8 @@ class SeaBattlePainter extends CustomPainter {
     }
   }
 
-  // Нужно перерисовывать только если изменилась сетка
   @override
   bool shouldRepaint(covariant SeaBattlePainter oldDelegate) {
-    debugPrint('🤍🤍🤍🤍🤍🤍 shouldRepaint: ${oldDelegate.waveAnimation != waveAnimation}');
     return oldDelegate.waveAnimation != waveAnimation;
   }
 }

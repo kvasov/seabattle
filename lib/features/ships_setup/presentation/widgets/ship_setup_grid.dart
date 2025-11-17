@@ -5,6 +5,7 @@ import 'package:seabattle/utils/ship_painter.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
+import 'package:seabattle/utils/cursor.dart';
 
 class ShipSetupGrid extends ConsumerStatefulWidget {
   const ShipSetupGrid({super.key});
@@ -42,8 +43,10 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
     final setupShipsViewModelState = setupShipsViewModel.value;
     final field = setupShipsViewModelState != null
         ? makeField(
-            setupShipsViewModelState.ships,
-            setupShipsViewModelState.gridSize,
+            ships: setupShipsViewModelState.ships,
+            gridSize: setupShipsViewModelState.gridSize,
+            cursorPosition: setupShipsViewModelState.cursorPosition,
+            isCursorVisible: setupShipsViewModelState.isCursorVisible ?? false,
           )
         : null;
     final cellSize = setupShipsViewModelState?.cellSize ?? 0;
@@ -51,20 +54,38 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
     final ships = setupShipsViewModelState?.ships;
     final shipsImages = ref.watch(shipsImagesProvider);
 
+    final cursorPosition = setupShipsViewModelState?.cursorPosition;
+    bool isCursorVisible = setupShipsViewModelState?.isCursorVisible ?? false;
+    debugPrint('💚! isCursorVisible: ${setupShipsViewModelState?.isCursorVisible}');
+
     final gridWidget = shipsImages.when(
-      data: (cache) => CustomPaint(
-        size: Size(cellSize * gridSize, cellSize * gridSize),
-        painter: SeaBattlePainter(
-          field: field ??
-              List.generate(
-                gridSize,
-                (_) => List.generate(gridSize, (_) => CellState.empty),
-              ),
-          cellSize: cellSize,
-          shipsImagesCache: cache,
-          ships: ships,
-          waveAnimation: _waveAnimation,
-        ),
+      data: (cache) => Stack(
+        children: [
+          CustomPaint(
+            size: Size(cellSize * gridSize, cellSize * gridSize),
+            painter: SeaBattlePainter(
+              field: field ??
+                  List.generate(
+                    gridSize,
+                    (_) => List.generate(gridSize, (_) => CellState.empty),
+                  ),
+              cellSize: cellSize,
+              shipsImagesCache: cache,
+              ships: ships,
+              waveAnimation: _waveAnimation,
+            ),
+          ),
+          if (cursorPosition != null && isCursorVisible)
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              left: cursorPosition.x * cellSize,
+              top: cursorPosition.y * cellSize,
+              width: cellSize,
+              height: cellSize,
+              child: const CursorPainter(),
+            ),
+        ],
       ),
       error: (error, stack) => Center(child: Text(error.toString())),
       loading: () => const Center(child: CircularProgressIndicator()),

@@ -133,7 +133,7 @@ class BluetoothDeviceApiImpl(
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.d("💛 BLE", "Connected to GATT server")
+                // Log.d("💛 BLE", "Connected to GATT server")
                 connected = true
 
                 mainHandler.post {
@@ -145,7 +145,7 @@ class BluetoothDeviceApiImpl(
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 
-                Log.d("💛 BLE", "Disconnected")
+                // Log.d("💛 BLE", "Disconnected")
                 connected = false
 
                 mainHandler.post {
@@ -162,7 +162,7 @@ class BluetoothDeviceApiImpl(
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
-                Log.d("💛 BLE", "Services discovered")
+                // Log.d("💛 BLE", "Services discovered")
 
                 subscribeToNotify(gatt)
 
@@ -205,11 +205,11 @@ class BluetoothDeviceApiImpl(
 
             // Выводим строку, отправленную с ESP32
             val stringValue = String(bytes, Charsets.UTF_8)
-            Log.d("💛 BLE", "Received from ESP32: $stringValue")
+            // Log.d("💛 BLE", "Received from ESP32: $stringValue")
 
             // Выводим байты в hex формате для отладки
             val hexString = bytes.joinToString(" ") { "%02X".format(it) }
-            Log.d("💛 BLE", "Received bytes (hex): $hexString")
+            // Log.d("💛 BLE", "Received bytes (hex): $hexString")
 
             // Вызываем callback на главном потоке
             mainHandler.post {

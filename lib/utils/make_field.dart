@@ -1,7 +1,13 @@
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:flutter/material.dart';
 
-List<List<CellState>> makeField(List<Ship> ships, int gridSize, [List<Shot> shots = const []]) {
+List<List<CellState>> makeField({
+  required List<Ship> ships,
+  required int gridSize,
+  List<Shot> shots = const [],
+  GridPosition? cursorPosition,
+  bool isCursorVisible = true,
+}) {
   // Генерируем поле с учетом кораблей и запретных зон
   final f = List.generate(
     gridSize,
@@ -55,5 +61,6 @@ List<List<CellState>> makeField(List<Ship> ships, int gridSize, [List<Shot> shot
       }
     }
   }
+
   return f;
 }

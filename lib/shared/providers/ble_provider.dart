@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/generated/api.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
+import 'package:seabattle/shared/providers/navigation_provider.dart';
+import 'package:seabattle/features/battle/providers/battle_provider.dart';
 
 
 class BleDevice {
@@ -49,12 +52,17 @@ class BleState {
 }
 
 class BleNotifier extends AsyncNotifier<BleState> {
+  static bool _callbackInitialized = false;
+
   @override
   BleState build() {
-    // Настраиваем callback для получения строк от BLE устройства
-    BluetoothDataCallback.setUp(
-      _BluetoothDataCallbackImpl(this),
-    );
+    // Настраиваем callback для получения строк от BLE устройства только один раз
+    if (!_callbackInitialized) {
+      BluetoothDataCallback.setUp(
+        _BluetoothDataCallbackImpl(this),
+      );
+      _callbackInitialized = true;
+    }
 
     return BleState(isScanning: false, devices: [], isConnected: false, error: '');
   }
@@ -62,13 +70,33 @@ class BleNotifier extends AsyncNotifier<BleState> {
   final BluetoothScannerApi _bleScanner = BluetoothScannerApi();
   final BluetoothDeviceApi _bleDevice = BluetoothDeviceApi();
   bool isConnected = false;
+  String? _lastReceivedValue;
+  DateTime? _lastReceivedTime;
 
-  void _onStringReceived(String value) {
+  Future<void> _onStringReceived(String value) async {
+    final now = DateTime.now();
+
+    // Защита от дублирования: игнорируем повторные вызовы с тем же значением в течение 100ms
+    if (_lastReceivedValue == value &&
+        _lastReceivedTime != null &&
+        now.difference(_lastReceivedTime!) < const Duration(milliseconds: 100)) {
+      debugPrint('🔗 Ignoring duplicate message: $value');
+      return;
+    }
+
+    _lastReceivedValue = value;
+    _lastReceivedTime = now;
+
     debugPrint('🔗 Received string from ESP32: $value');
     state = AsyncValue.data(
       state.value?.copyWith(receivedString: value) ??
           BleState(isScanning: false, devices: [], isConnected: isConnected, error: '', receivedString: value),
     );
+    if (ref.read(navigationProvider).last.name == '/setupShipsScreen') {
+      ref.read(setupShipsViewModelProvider.notifier).handleESP32Message(value);
+    } else if (ref.read(navigationProvider).last.name == '/battleScreen') {
+      await ref.read(battleViewModelProvider.notifier).handleESP32Message(value);
+    }
   }
 
   void _onConnectionStatusChanged(bool isConnected) {
@@ -110,7 +138,7 @@ class BleNotifier extends AsyncNotifier<BleState> {
 
     state = AsyncValue.loading();
     try {
-      final devices = await _bleScanner.startScanning(5000);
+      final devices = await _bleScanner.startScanning(3000);
       state = AsyncValue.data(BleState(isScanning: false, devices: devices, isConnected: isConnected, error: ''));
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

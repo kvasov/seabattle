@@ -63,7 +63,17 @@ class GameModel {
 
   @override
   String toString() {
-    return 'GameModel(id: $id, name: $name, ships: $ships, opponentShips: $opponentShips, createdAt: $createdAt, cancelled: $cancelled, accepted: $accepted, ready: $ready, opponentReady: $opponentReady, master: $master)';
+    return '''GameModel(
+      id: $id,
+      name: $name,
+      ships: $ships,
+      opponentShips: $opponentShips,
+      createdAt: $createdAt,
+      cancelled: $cancelled,
+      accepted: $accepted,
+      ready: $ready,
+      opponentReady: $opponentReady,
+      master: $master)''';
   }
 }
 

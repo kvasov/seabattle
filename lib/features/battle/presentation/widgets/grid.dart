@@ -4,7 +4,9 @@ import 'package:seabattle/utils/ship_painter.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
+import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
+import 'package:seabattle/utils/cursor.dart';
 
 class BattleGrid extends ConsumerStatefulWidget {
   const BattleGrid({
@@ -55,10 +57,57 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
       ? battleViewModelState?.opponentShots ?? []
       : battleViewModelState?.shots ?? [];
     final field = battleViewModelState != null
-      ? makeField(ships, battleViewModelState.gridSize, shots)
+      ? makeField(
+          ships: ships,
+          gridSize: battleViewModelState.gridSize,
+          shots: shots,
+          isCursorVisible: true,
+        )
       : null;
     final cellSize = battleViewModelState?.cellSize ?? 0;
     final gridSize = battleViewModelState?.gridSize ?? 0;
+    final bleNotifier = ref.read(bleNotifierProvider);
+    final bool isCursorVisible = widget.myShips
+      ? false
+      : bleNotifier.value?.isConnected ?? false
+        ? true
+        : false;
+    final GridPosition? cursorPosition = battleViewModelState?.cursorPosition;
+
+
+    final gridWidget = shipsImages.when(
+      data: (cache) => Stack(
+        children: [
+          CustomPaint(
+              size: Size(cellSize * gridSize, cellSize * gridSize),
+              painter: SeaBattlePainter(
+                myShips: widget.myShips,
+                ships: ships,
+                battleMode: true,
+                field: field ?? List.generate(
+                  gridSize,
+                  (_) => List.generate(gridSize, (_) => CellState.empty),
+                ),
+                cellSize: cellSize,
+                shipsImagesCache: cache,
+                waveAnimation: _waveAnimation,
+              ),
+            ),
+          if (cursorPosition != null && isCursorVisible && battleViewModelState?.myMove == true)
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              left: cursorPosition.x * cellSize,
+              top: cursorPosition.y * cellSize,
+              width: cellSize,
+              height: cellSize,
+              child: const CursorPainter(),
+            ),
+        ],
+      ),
+      error: (error, stack) => Center(child: Text(error.toString())),
+      loading: () => Center(child: CircularProgressIndicator()),
+    );
 
     return GestureDetector(
       onTapDown: (details) {
@@ -66,26 +115,7 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
           ref.read(battleViewModelProvider.notifier).handleTapDown(details);
         }
       },
-      child:
-      shipsImages.when(
-        data: (cache) => CustomPaint(
-          size: Size(cellSize * gridSize, cellSize * gridSize),
-          painter: SeaBattlePainter(
-            myShips: widget.myShips,
-            ships: ships,
-            battleMode: true,
-            field: field ?? List.generate(
-              gridSize,
-              (_) => List.generate(gridSize, (_) => CellState.empty),
-            ),
-            cellSize: cellSize,
-            shipsImagesCache: cache,
-            waveAnimation: _waveAnimation,
-          ),
-        ),
-        error: (error, stack) => Center(child: Text(error.toString())),
-        loading: () => Center(child: CircularProgressIndicator()),
-      ),
+      child: gridWidget
     );
   }
 }

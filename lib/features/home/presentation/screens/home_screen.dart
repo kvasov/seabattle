@@ -111,6 +111,9 @@ class HomeScreen extends ConsumerWidget {
                       TextButton(onPressed: () {
                         ref.read(bleNotifierProvider.notifier).sendInt(1);
                       }, child: Text('Send 1')),
+                      Center(
+                        child: Text('RC Enabled: ${ref.watch(bleNotifierProvider).value?.isConnected ?? false}'),
+                      ),
                     ]
                   else
                     for (var device in bleState.value?.devices ?? [])

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
+import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/features/ships_setup/presentation/widgets/ship_type_button.dart';
 import 'package:seabattle/features/ships_setup/presentation/widgets/ship_setup_grid.dart';
@@ -107,6 +108,14 @@ class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
             const SizedBox(height: 8),
             Center(
               child: Text('GameID: ${ref.watch(gameNotifierProvider).value?.game?.id ?? 0}'),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text('Cursor Position: ${setupShipsViewModelState?.cursorPosition?.toString() ?? 'null'}'),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text('RC Enabled: ${ref.watch(bleNotifierProvider).value?.isConnected ?? false}'),
             ),
           ],
         ),

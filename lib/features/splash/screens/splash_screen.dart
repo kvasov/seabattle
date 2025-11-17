@@ -32,9 +32,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             begin: Alignment(-1, -0.2),
             end: Alignment(1.0, 0.8),
             colors: [
-              Color(0xFF2ECC71),
-              Color(0xFF2ECC71),
-              Color(0xFF175A33),
+              Color.fromARGB(255, 57, 64, 164),
+              Color.fromARGB(255, 100, 100, 100),
+              Color.fromARGB(255, 17, 90, 51),
             ],
             stops: [0.0, 0.3, 1],
           ),
@@ -48,7 +48,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               children: [
                 TextMaskWidget(),
                 SizedBox(height: 64),
-                const Center(child: CircularProgressIndicator())
+                const Center(child: CircularProgressIndicator(color: Colors.white))
               ],
             ),
           ),

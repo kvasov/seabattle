@@ -6,6 +6,8 @@ import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
+import 'package:seabattle/utils/cursor_position_utils.dart';
+import 'package:seabattle/shared/providers/ble_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -18,6 +20,7 @@ class BattleViewModelState {
   final int gridSize;
   final double cellSize;
   final bool myMove;
+  final GridPosition? cursorPosition;
 
   BattleViewModelState({
     required this.ships,
@@ -30,6 +33,7 @@ class BattleViewModelState {
     required this.gridSize,
     required this.cellSize,
     required this.myMove,
+    this.cursorPosition,
   });
 
   BattleViewModelState copyWith({
@@ -43,6 +47,7 @@ class BattleViewModelState {
     int? gridSize,
     double? cellSize,
     bool? myMove,
+    GridPosition? cursorPosition,
   }) {
     return BattleViewModelState(
       ships: ships ?? this.ships,
@@ -55,12 +60,21 @@ class BattleViewModelState {
       gridSize: gridSize ?? this.gridSize,
       cellSize: cellSize ?? this.cellSize,
       myMove: myMove ?? this.myMove,
+      cursorPosition: cursorPosition ?? this.cursorPosition,
     );
   }
 
   @override
   String toString() {
-    return 'BattleViewModelState(ships: ${ships.length}, shots: ${shots.length}, opponentShips: ${opponentShips.length}, opponentShots: ${opponentShots.length}, isLoading: $isLoading, isError: $isError, errorMessage: $errorMessage, gridSize: $gridSize, cellSize: $cellSize)';
+    return '''BattleViewModelState(
+     ships: ${ships.length},
+     shots: ${shots.length},
+     opponentShips: ${opponentShips.length},
+     opponentShots: ${opponentShots.length},
+     isLoading: $isLoading,
+     isError: $isError,
+     errorMessage: $errorMessage,
+     gridSize: $gridSize, cellSize: $cellSize, myMove: $myMove, cursorPosition: $cursorPosition)''';
   }
 }
 
@@ -70,6 +84,33 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     return _initialState();
   }
 
+  Future<void> handleESP32Message(String value) async {
+    // debugPrint('⌖ handleESP32Message: $value');
+    if (value == 'fire') {
+      if (!state.value!.myMove) {
+        return;
+      }
+      await makeShot(state.value!.cursorPosition!.x, state.value!.cursorPosition!.y);
+    } else {
+      setCursorPosition(value);
+    }
+  }
+
+  void setCursorPosition(String value) {
+    final newCursorPosition = calculateNewCursorPosition(
+      state.value!.cursorPosition,
+      value,
+      state.value!.gridSize,
+    );
+    final newState = state.value!.copyWith(
+      cursorPosition: newCursorPosition,
+    );
+    state = AsyncValue.data(newState);
+  }
+
+
+
+
   void setShips({required String mode, required List<Ship> ships}) {
     final currentState = _currentState();
     state = AsyncValue.data(
@@ -78,22 +119,33 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
           : currentState.copyWith(opponentShips: ships),
     );
 
-    debugPrint('💚 state: ${state.value?.toString()}');
+    // debugPrint('💚 state: ${state.value?.toString()}');
   }
 
   Future<void> handleTapDown(TapDownDetails details) async {
-    if (!state.value!.myMove) {
+    final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
+    if (!state.value!.myMove || isConnected) {
       return;
     }
     final localPosition = details.localPosition;
-    debugPrint('⌖ localPosition: $localPosition');
+    // debugPrint('⌖ localPosition: $localPosition');
     final x = (localPosition.dx ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
     final y = (localPosition.dy ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
-    debugPrint('⌖ x: $x, y: $y');
-    final globalPosition = details.globalPosition;
-    debugPrint('⌖ globalPosition: $globalPosition');
+    // debugPrint('⌖ x: $x, y: $y');
+    // final globalPosition = details.globalPosition;
+    // debugPrint('⌖ globalPosition: $globalPosition');
 
+    await makeShot(x, y);
+
+    // debugPrint('💚 state: ${state.value?.toString()}');
+  }
+
+  Future<void> makeShot(int x, int y) async {
     final shot = Shot(x, y);
+    if (state.value?.shots.any((shot) => shot.x == x && shot.y == y) ?? false) {
+      debugPrint('💚 shot already made');
+      return;
+    }
     state = AsyncValue.data(
       state.value!.copyWith(shots: [...state.value!.shots, shot]),
     );
@@ -106,8 +158,6 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
 
     sendShot(x, y);
-
-    debugPrint('💚 state: ${state.value?.toString()}');
   }
 
   bool isHit(int x, int y) {
@@ -129,13 +179,13 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   Future<void> sendShot(int x, int y) async {
     final id = ref.read(gameNotifierProvider).value?.game?.id ?? 0;
     final userUniqueId = ref.read(userUniqueIdProvider);
-    debugPrint('💚 sendShot - вызов');
+    // debugPrint('💚 sendShot - вызов');
     state = const AsyncValue.loading();
     try {
       await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
       await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
       if (allOpponentShipsDead()) {
-        debugPrint('🎉 WIN!!!');
+        // debugPrint('🎉 WIN!!!');
         ref.read(navigationProvider.notifier).pushWinModal();
         await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
       }
@@ -183,6 +233,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       isError: false,
       errorMessage: '',
       myMove: false,
+      cursorPosition: GridPosition(0, 0),
     );
   }
 }

@@ -29,7 +29,7 @@ class GameState {
     String? errorMessage,
   }) {
     return GameState(
-      game: game ?? this.game,
+      game: game != null ? game : this.game,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -56,7 +56,13 @@ class GameNotifier extends AsyncNotifier<GameState> {
 
       // При создании игры устанавливаем master = true (создатель игры)
       final gameWithMaster = game.data?.copyWith(master: true);
-      final newState = GameState(game: gameWithMaster, isLoading: false, isError: false, errorMessage: '');
+      final currentState = state.value;
+      final newState = GameState(
+        game: gameWithMaster,
+        isLoading: false,
+        isError: false,
+        errorMessage: '',
+      );
       ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
 
       state = AsyncValue.data(newState);
@@ -71,6 +77,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> updateGame(int id, GameAction action) async {
+    final currentState = state.value;
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
@@ -124,9 +131,10 @@ class GameNotifier extends AsyncNotifier<GameState> {
 
   // Режим игрока master/slave
   void updateGameMaster(bool master) {
+    final currentState = state.value;
     state = const AsyncValue.loading();
     try {
-      final newGame = state.value?.game?.copyWith(master: master);
+      final newGame = currentState?.game?.copyWith(master: master);
       final newState = GameState(
         game: newGame,
         isLoading: false,
@@ -140,6 +148,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> startGame() async {
+    final currentState = state.value;
     final newGame = state.value?.game?.copyWith(ready: true);
 
     state = const AsyncValue.loading();
@@ -160,12 +169,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
       ..setMyMove(myMove);
     ref.read(navigationProvider.notifier).pushBattleScreen();
 
-    final newState = GameState(
-      game: newGame,
-      isLoading: false,
-      isError: false,
-      errorMessage: '',
-    );
+    final newState = currentState!.copyWith(game: newGame);
     state = AsyncValue.data(newState);
   }
 
@@ -175,6 +179,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   void resetGame() {
+    final currentState = state.value;
     state = const AsyncValue.loading();
     try {
       final newState = GameState(

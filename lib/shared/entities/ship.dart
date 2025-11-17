@@ -1,4 +1,14 @@
-enum CellState { empty, ship, forbidden, wound, miss, dead }
+import 'package:equatable/equatable.dart';
+
+enum CellState {
+  empty,
+  ship,
+  forbidden,
+  wound,
+  miss,
+  dead,
+  cursor
+}
 
 enum ShipOrientation { horizontal, vertical }
 
@@ -79,4 +89,18 @@ class Shot {
       'y': y,
     };
   }
+}
+
+/// Позиция курсора в игровом поле
+class GridPosition extends Equatable {
+  final int x;
+  final int y;
+
+  const GridPosition(this.x, this.y);
+
+  @override
+  String toString() => 'GridPosition(x: $x, y: $y)';
+
+  @override
+  List<Object> get props => [x, y];
 }

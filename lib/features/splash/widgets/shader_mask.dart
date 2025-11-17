@@ -86,12 +86,12 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
               );
             },
             child: Text(
-              'OTUS\nFOOD',
+              'SEA\nBATTLE',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontVariations: [FontVariation('wght', 900)],
-                fontSize: 95,
+                fontSize: 75,
                 height: 0.9
               ),
             ),

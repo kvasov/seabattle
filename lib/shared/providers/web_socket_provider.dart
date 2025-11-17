@@ -9,6 +9,7 @@ import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
+import 'package:seabattle/core/constants/host.dart';
 
 class WebSocketState {
   final WebSocketChannel? channel;
@@ -54,7 +55,7 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
 
     state = const AsyncValue.loading();
     try {
-      final channel = WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:8888/ws'));
+      final channel = WebSocketChannel.connect(Uri.parse('ws://$host/ws'));
       _currentChannel = channel;
 
       // Сохраняем подписку для возможности отмены
