@@ -1,6 +1,7 @@
 import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
+import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor_position_utils.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,6 @@ class SetupShipsViewModelState {
   final bool isError;
   final String errorMessage;
   final int gridSize;
-  final double cellSize;
   final GridPosition? cursorPosition;
   final bool? isCursorVisible;
 
@@ -30,7 +30,6 @@ class SetupShipsViewModelState {
     required this.isError,
     required this.errorMessage,
     required this.gridSize,
-    required this.cellSize,
     this.cursorPosition,
     this.isCursorVisible,
   });
@@ -44,7 +43,6 @@ class SetupShipsViewModelState {
     bool? isError,
     String? errorMessage,
     int? gridSize,
-    double? cellSize,
     GridPosition? cursorPosition,
     bool? isCursorVisible,
   }) {
@@ -57,7 +55,6 @@ class SetupShipsViewModelState {
       isError: isError ?? this.isError,
       errorMessage: errorMessage ?? this.errorMessage,
       gridSize: gridSize ?? this.gridSize,
-      cellSize: cellSize ?? this.cellSize,
       cursorPosition: cursorPosition ?? this.cursorPosition,
       isCursorVisible: isCursorVisible ?? this.isCursorVisible,
     );
@@ -77,7 +74,6 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
       selectedOrientation: ShipOrientation.horizontal,
       selectedShipSize: 4,
       gridSize: 10,
-      cellSize: 32,
       isLoading: false,
       isError: false,
       errorMessage: '',
@@ -150,8 +146,10 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
   void handleTapDown(TapDownDetails details) {
     final localPosition = details.localPosition;
     debugPrint('⌖ localPosition: $localPosition');
-    final x = (localPosition.dx ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
-    final y = (localPosition.dy ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
+
+    final cellSize = ref.watch(cellSizeProvider);
+    final x = (localPosition.dx ~/ cellSize).clamp(0, state.value!.gridSize - 1);
+    final y = (localPosition.dy ~/ cellSize).clamp(0, state.value!.gridSize - 1);
     debugPrint('⌖ x: $x, y: $y');
     // Получаем глобальные координаты относительно экрана
     // final globalPosition = details.globalPosition;

@@ -5,6 +5,7 @@ import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
+import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor.dart';
 
@@ -64,7 +65,10 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
           isCursorVisible: true,
         )
       : null;
-    final cellSize = battleViewModelState?.cellSize ?? 0;
+
+    ref.read(cellSizeProvider.notifier).init(context);
+    final cellSize = ref.watch(cellSizeProvider);
+
     final gridSize = battleViewModelState?.gridSize ?? 0;
     final bleNotifier = ref.read(bleNotifierProvider);
     final bool isCursorVisible = widget.myShips

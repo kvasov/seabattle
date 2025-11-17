@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
+import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/utils/ship_painter.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/utils/make_field.dart';
@@ -49,7 +50,9 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
             isCursorVisible: setupShipsViewModelState.isCursorVisible ?? false,
           )
         : null;
-    final cellSize = setupShipsViewModelState?.cellSize ?? 0;
+
+    ref.read(cellSizeProvider.notifier).init(context);
+    final cellSize = ref.watch(cellSizeProvider);
     final gridSize = setupShipsViewModelState?.gridSize ?? 0;
     final ships = setupShipsViewModelState?.ships;
     final shipsImages = ref.watch(shipsImagesProvider);

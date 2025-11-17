@@ -8,6 +8,7 @@ import 'package:seabattle/features/statistics/providers/statistics_provider.dart
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/utils/cursor_position_utils.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
+import 'package:seabattle/shared/providers/ui_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -18,7 +19,6 @@ class BattleViewModelState {
   final bool isError;
   final String errorMessage;
   final int gridSize;
-  final double cellSize;
   final bool myMove;
   final GridPosition? cursorPosition;
 
@@ -31,7 +31,6 @@ class BattleViewModelState {
     required this.isError,
     required this.errorMessage,
     required this.gridSize,
-    required this.cellSize,
     required this.myMove,
     this.cursorPosition,
   });
@@ -45,7 +44,6 @@ class BattleViewModelState {
     bool? isError,
     String? errorMessage,
     int? gridSize,
-    double? cellSize,
     bool? myMove,
     GridPosition? cursorPosition,
   }) {
@@ -58,7 +56,6 @@ class BattleViewModelState {
       isError: isError ?? this.isError,
       errorMessage: errorMessage ?? this.errorMessage,
       gridSize: gridSize ?? this.gridSize,
-      cellSize: cellSize ?? this.cellSize,
       myMove: myMove ?? this.myMove,
       cursorPosition: cursorPosition ?? this.cursorPosition,
     );
@@ -74,7 +71,7 @@ class BattleViewModelState {
      isLoading: $isLoading,
      isError: $isError,
      errorMessage: $errorMessage,
-     gridSize: $gridSize, cellSize: $cellSize, myMove: $myMove, cursorPosition: $cursorPosition)''';
+     gridSize: $gridSize, myMove: $myMove, cursorPosition: $cursorPosition)''';
   }
 }
 
@@ -129,8 +126,9 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
     final localPosition = details.localPosition;
     // debugPrint('⌖ localPosition: $localPosition');
-    final x = (localPosition.dx ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
-    final y = (localPosition.dy ~/ state.value!.cellSize).clamp(0, state.value!.gridSize - 1);
+    final cellSize = ref.watch(cellSizeProvider);
+    final x = (localPosition.dx ~/ cellSize).clamp(0, state.value!.gridSize - 1);
+    final y = (localPosition.dy ~/ cellSize).clamp(0, state.value!.gridSize - 1);
     // debugPrint('⌖ x: $x, y: $y');
     // final globalPosition = details.globalPosition;
     // debugPrint('⌖ globalPosition: $globalPosition');
@@ -228,7 +226,6 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       opponentShips: [],
       opponentShots: [],
       gridSize: 10,
-      cellSize: 32,
       isLoading: false,
       isError: false,
       errorMessage: '',
