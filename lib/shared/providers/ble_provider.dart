@@ -130,20 +130,20 @@ class BleNotifier extends AsyncNotifier<BleState> {
   Future<void> startScanning() async {
     if (Platform.isAndroid) {
       final bluetooth = await Permission.bluetooth.request();
-      // log('bluetooth: ${bluetooth.toString()}');
+      log('bluetooth: ${bluetooth.toString()}');
       final location = await Permission.location.request();
-      // log('location: ${location.toString()}');
+      log('location: ${location.toString()}');
       final bluetoothScan = await Permission.bluetoothScan.request();
-      // log('bluetoothScan: ${bluetoothScan.toString()}');
+      log('bluetoothScan: ${bluetoothScan.toString()}');
       final bluetoothConnect = await Permission.bluetoothConnect.request();
-      // log('bluetoothConnect: ${bluetoothConnect.toString()}');
+      log('bluetoothConnect: ${bluetoothConnect.toString()}');
       final nearbyDevices = await Permission.nearbyWifiDevices.request();
-      // log('nearbyWifiDevices: ${nearbyDevices.toString()}');
+      log('nearbyWifiDevices: ${nearbyDevices.toString()}');
     } else if (Platform.isIOS) {
       final bluetooth = await Permission.bluetooth.request();
-      // log('bluetooth: ${bluetooth.toString()}');
+      log('bluetooth: ${bluetooth.toString()}');
       final locationWhenInUse = await Permission.locationWhenInUse.request();
-      // log('locationWhenInUse: ${locationWhenInUse.toString()}');
+      log('locationWhenInUse: ${locationWhenInUse.toString()}');
     }
 
     final currentState = state.value;
