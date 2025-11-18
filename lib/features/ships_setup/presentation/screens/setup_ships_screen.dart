@@ -7,6 +7,8 @@ import 'package:seabattle/features/ships_setup/presentation/widgets/ship_type_bu
 import 'package:seabattle/features/ships_setup/presentation/widgets/ship_setup_grid.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
+import 'package:seabattle/shared/widgets/drawer.dart';
+import 'package:seabattle/shared/widgets/menu_btn.dart';
 
 class SetupShipsScreen extends ConsumerStatefulWidget {
   const SetupShipsScreen({super.key});
@@ -16,6 +18,8 @@ class SetupShipsScreen extends ConsumerStatefulWidget {
 }
 
 class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final t = context.t;
@@ -24,101 +28,112 @@ class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
     final setupShipsViewModelState = setupShipsViewModel.value;
     final setupShipsViewModelNotifier = ref.read(setupShipsViewModelProvider.notifier);
 
-
     return Scaffold(
-      appBar: AppBar(title: Text(t.setupships.title)),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 8),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (final s in [4, 3])
-                          ShipTypeButton(shipSize: s),
-                      ],
+      key: _scaffoldKey,
+      drawer: DrawerWidget(),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 8),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (final s in [4, 3])
+                                ShipTypeButton(shipSize: s),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (final s in [2, 1])
+                                ShipTypeButton(shipSize: s),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.rotate_90_degrees_ccw),
+                                tooltip: 'Повернуть',
+                                onPressed:
+                                    () => ref.read(setupShipsViewModelProvider.notifier).rotateSelectedOrientation(),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.undo),
+                                tooltip: 'Удалить последний',
+                                onPressed: () => ref.read(setupShipsViewModelProvider.notifier).removeLastShip(),
+                              ),
+                              IconButton(
+                                disabledColor: Colors.grey.shade300,
+                                icon: const Icon(Icons.auto_awesome),
+                                tooltip: 'А',
+                                onPressed: setupShipsViewModelState != null &&
+                                          setupShipsViewModelNotifier.countNeedPlaceShips() > 0
+                                    ? () => ref.read(setupShipsViewModelProvider.notifier).autoPlaceShips()
+                                    : null,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.clear),
+                                tooltip: 'Очистить',
+                                onPressed: () => ref.read(setupShipsViewModelProvider.notifier).clearShips(),
+                              ),
+                              Text(setupShipsViewModelNotifier.countNeedPlaceShips().toString()),
+                            ]
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: ShipSetupGrid(),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () => ref.read(gameNotifierProvider.notifier).startGame(),
+                      child: Text(t.setupships.buttons.startGame),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (final s in [2, 1])
-                          ShipTypeButton(shipSize: s),
-                      ],
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
+                      child: Text(t.setupships.buttons.cancelGame),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.rotate_90_degrees_ccw),
-                          tooltip: 'Повернуть',
-                          onPressed:
-                              () => ref.read(setupShipsViewModelProvider.notifier).rotateSelectedOrientation(),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.undo),
-                          tooltip: 'Удалить последний',
-                          onPressed: () => ref.read(setupShipsViewModelProvider.notifier).removeLastShip(),
-                        ),
-                        IconButton(
-                          disabledColor: Colors.grey.shade300,
-                          icon: const Icon(Icons.auto_awesome),
-                          tooltip: 'А',
-                          onPressed: setupShipsViewModelState != null &&
-                                    setupShipsViewModelNotifier.countNeedPlaceShips() > 0
-                              ? () => ref.read(setupShipsViewModelProvider.notifier).autoPlaceShips()
-                              : null,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.clear),
-                          tooltip: 'Очистить',
-                          onPressed: () => ref.read(setupShipsViewModelProvider.notifier).clearShips(),
-                        ),
-                        Text(setupShipsViewModelNotifier.countNeedPlaceShips().toString()),
-                      ]
-                    )
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: ShipSetupGrid(),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: ElevatedButton(
-                onPressed: () => ref.read(gameNotifierProvider.notifier).startGame(),
-                child: Text(t.setupships.buttons.startGame),
+                  ),
+                  // const SizedBox(height: 8),
+                  // Center(
+                  //   child: Text('GameID: ${ref.watch(gameNotifierProvider).value?.game?.id ?? 0}'),
+                  // ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text('GameID: ${ref.watch(gameNotifierProvider).value?.game?.id ?? 0}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text('Cursor Position: ${setupShipsViewModelState?.cursorPosition?.toString() ?? 'null'}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text('RC Enabled: ${ref.watch(bleNotifierProvider).value?.isConnected ?? false}'),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Center(
-              child: TextButton(
-                onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
-                child: Text(t.setupships.buttons.cancelGame),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text('GameID: ${ref.watch(gameNotifierProvider).value?.game?.id ?? 0}'),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text('Cursor Position: ${setupShipsViewModelState?.cursorPosition?.toString() ?? 'null'}'),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text('RC Enabled: ${ref.watch(bleNotifierProvider).value?.isConnected ?? false}'),
-            ),
-          ],
-        ),
+          ),
+          MenuBtn(scaffoldKey: _scaffoldKey),
+        ],
       ),
     );
   }

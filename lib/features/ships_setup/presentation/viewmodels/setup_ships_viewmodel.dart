@@ -64,7 +64,6 @@ class SetupShipsViewModelState {
 class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState> {
   @override
   Future<SetupShipsViewModelState> build() async {
-    // Используем ref.read() вместо ref.watch() чтобы избежать циклической зависимости
     final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
     debugPrint('💚! isConnected: $isConnected');
 
@@ -82,11 +81,21 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     );
   }
 
+  void updateIsConnected(bool isConnected) {
+    final newState = state.value!.copyWith(isCursorVisible: isConnected);
+    state = AsyncValue.data(newState);
+  }
+
   void handleESP32Message(String value) {
     // debugPrint('⌖ handleESP32Message: $value');
     if (value == 'fire') {
       if (canPlaceShip(state.value!.cursorPosition!.x, state.value!.cursorPosition!.y, state.value!.selectedShipSize, state.value!.selectedOrientation)) {
         placeShip(state.value!.cursorPosition!.x, state.value!.cursorPosition!.y);
+        if (countNeedPlaceShips() == 0) {
+          state = AsyncValue.data(
+            state.value!.copyWith(isCursorVisible: false),
+          );
+        }
       }
     } else {
       setCursorPosition(value);
@@ -155,7 +164,9 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     // final globalPosition = details.globalPosition;
     // debugPrint('⌖ globalPosition: $globalPosition');
 
-    placeShip(x, y);
+    if (state.value!.isCursorVisible == false) {
+      placeShip(x, y);
+    }
   }
 
   void placeShip(int x, int y) {
@@ -275,6 +286,10 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
           }
         }
       }
+
+      state = AsyncValue.data(
+        state.value!.copyWith(isCursorVisible: false),
+      );
     }
   }
 

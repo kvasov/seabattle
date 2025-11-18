@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
-import 'package:seabattle/shared/providers/ble_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -10,8 +9,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
-
-    final bleState = ref.watch(bleNotifierProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -87,40 +84,6 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(bleNotifierProvider.notifier).startScanning();
-                  },
-                  child: Text('Scan'),
-                ),
-                if (bleState.isLoading)
-                  const CircularProgressIndicator(),
-                if (bleState.hasError)
-                  Text('Error: ${bleState.error}'),
-                if (bleState.value != null)
-                  Text('Devices: ${bleState.value?.devices.length ?? 0}'),
-                if (bleState.value != null)
-                  if (bleState.value?.isConnected ?? false)
-                    ...[
-                      const Text('🔗 Connected'),
-                      if (bleState.value?.receivedString != null)
-                        Text('Received: ${bleState.value?.receivedString}'),
-                      TextButton(onPressed: () {
-                        ref.read(bleNotifierProvider.notifier).disconnect();
-                      }, child: Text('Disconnect')),
-                      TextButton(onPressed: () {
-                        ref.read(bleNotifierProvider.notifier).sendInt(1);
-                      }, child: Text('Send 1')),
-                      Center(
-                        child: Text('RC Enabled: ${ref.watch(bleNotifierProvider).value?.isConnected ?? false}'),
-                      ),
-                    ]
-                  else
-                    for (var device in bleState.value?.devices ?? [])
-                      TextButton(onPressed: () {
-                        ref.read(bleNotifierProvider.notifier).connectToDevice(device.deviceAddress);
-                      }, child: Text('Device: ${device.deviceName} (${device.deviceAddress})')),
-
               ],
             ),
           ),

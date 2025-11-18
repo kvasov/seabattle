@@ -33,18 +33,9 @@ class DrawerWidget extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  t.etc.bottomNavigationBar.home,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
                   'Морской бой',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white,
                     fontSize: 16,
                   ),
                 ),
@@ -76,29 +67,6 @@ class DrawerWidget extends ConsumerWidget {
             },
           ),
           Divider(),
-          if (bleState.value != null && bleState.value!.isConnected)
-            ListTile(
-              leading: Icon(Icons.bluetooth_connected, color: Colors.green),
-              title: Text('🔗 Подключено'),
-              subtitle: Text('BLE устройство подключено'),
-              trailing: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  Navigator.pop(context);
-                  ref.read(bleNotifierProvider.notifier).disconnect();
-                },
-              ),
-            )
-          else
-            ListTile(
-              leading: Icon(Icons.bluetooth_disabled, color: Colors.grey),
-              title: Text('BLE не подключен'),
-              subtitle: Text('Нажмите для сканирования'),
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(bleNotifierProvider.notifier).startScanning();
-              },
-            ),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
+import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
@@ -117,6 +118,7 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                 final battleViewModelNotifier = ref.read(battleViewModelProvider.notifier);
                 battleViewModelNotifier.addOpponentShot(shotX, shotY);
                 if (decoded['isHit'] == true) {
+                  ref.read(bleNotifierProvider.notifier).sendInt(1);
                   battleViewModelNotifier.setMyMove(false);
                   if (battleViewModelNotifier.allShipsDead()) {
                     debugPrint('☠️ LOSE!');
