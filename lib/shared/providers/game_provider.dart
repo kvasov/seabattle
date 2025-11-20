@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 import 'package:seabattle/shared/entities/game.dart';
@@ -69,22 +70,36 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> updateGame(int id, GameAction action) async {
+    debugPrint('🔄🤍 updateGame: id: $id, action: $action');
     final currentState = state.value;
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
+      debugPrint('🔄🤍 updateGame: получен результат - isSuccess: ${game.isSuccess}, isError: ${game.isError}, data: ${game.data}, error: ${game.error}');
+      debugPrint('🔄🤍 updateGame: currentState = $currentState');
       if (game.isSuccess) {
-        state = AsyncValue.data(
-          currentState!.copyWith(
-            game: game.data,
-          ),
+        // Создаем новое состояние, используя currentState если он есть, иначе создаем новое
+        final newState = currentState?.copyWith(
+          game: game.data,
+        ) ?? GameState(
+          game: game.data,
+          isLoading: false,
+          isError: false,
+          errorMessage: '',
         );
-
+        state = AsyncValue.data(newState);
+        debugPrint('🔄🤍!!!!!!!!!! updateGame: id: $id, action: $action');
         if (action == GameAction.accept) {
+          debugPrint('🔄🤍 updateGame: action == GameAction.accept');
+          // Игру принять может только slave - обновляем master флаг перед переходом
+          final gameWithMaster = game.data!.copyWith(master: false);
+          state = AsyncValue.data(
+            newState.copyWith(
+              game: gameWithMaster,
+            ),
+          );
+
           ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
-          ref.read(navigationProvider.notifier).pushSetupShipsScreen();
-          // Игру принять может только slave
-          updateGameMaster(false);
           // Увеличиваем общее количество игр в стейте и сохраняем в базу данных
           // но сначала убеждаемся, что провайдер статистики инициализирован
           final statisticsState = ref.read(statisticsViewModelProvider);
@@ -92,11 +107,15 @@ class GameNotifier extends AsyncNotifier<GameState> {
             await ref.read(statisticsViewModelProvider.future);
           }
           await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
+
+          // Переход на экран расстановки кораблей после всех обновлений
+          ref.read(navigationProvider.notifier).goToSetupShipsScreen();
         } else if (action == GameAction.cancel) {
           resetGame();
         }
       }
       else if (game.isError) {
+        debugPrint('🔄🤍 updateGame: ошибка - ${game.error}');
         final failure = game.error;
         if (failure?.description == 'already_accepted') {
           ref.read(navigationProvider.notifier).pushAcceptedGameDialogScreen();
@@ -104,8 +123,12 @@ class GameNotifier extends AsyncNotifier<GameState> {
           ref.read(navigationProvider.notifier).pushCanceledGameDialogScreen();
         }
         state = AsyncValue.error(game.error.toString(), StackTrace.current);
+      } else {
+        debugPrint('🔄🤍 updateGame: неизвестное состояние - ни success, ни error');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('🔄🤍 updateGame: исключение - $e');
+      debugPrint('🔄🤍 updateGame: stackTrace - $stackTrace');
       state = AsyncValue.error(e.toString(), StackTrace.current);
     }
   }

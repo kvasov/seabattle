@@ -58,8 +58,8 @@ class NavigationNotifier extends Notifier<List<AppRoute>> {
     pushRoute(AppRoute.scanQRScreen());
   }
 
-  void pushSetupShipsScreen() {
-    pushRoute(AppRoute.setupShipsScreen());
+  void goToSetupShipsScreen() {
+    state = [AppRoute.setupShipsScreen()];
   }
 
   void pushCancelGameDialogScreen() {

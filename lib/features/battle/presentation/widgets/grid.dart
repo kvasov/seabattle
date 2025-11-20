@@ -6,6 +6,7 @@ import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
+import 'package:seabattle/shared/providers/cheater_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor.dart';
 
@@ -78,7 +79,7 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
         : false;
     final GridPosition? cursorPosition = battleViewModelState?.cursorPosition;
 
-
+    final isCheater = ref.watch(cheaterProvider).isCheater;
     final gridWidget = shipsImages.when(
       data: (cache) => Stack(
         children: [
@@ -95,6 +96,7 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
                 cellSize: cellSize,
                 shipsImagesCache: cache,
                 waveAnimation: _waveAnimation,
+                isCheaterMode: isCheater,
               ),
             ),
           if (cursorPosition != null && isCursorVisible && battleViewModelState?.myMove == true)
