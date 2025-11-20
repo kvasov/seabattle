@@ -185,10 +185,14 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
         }
       }
 
+      // Если все корабли размещены, оставляем текущий selectedShipSize
+      // чтобы избежать проблем с null
+      final finalSelectedShipSize = newSelectedShipSize ?? state.value!.selectedShipSize;
+
       final newState = state.value!.copyWith(
         ships: [...state.value!.ships, Ship(x, y, state.value!.selectedShipSize, state.value!.selectedOrientation)],
         shipsToPlace: newShipsToPlace,
-        selectedShipSize: newSelectedShipSize,
+        selectedShipSize: finalSelectedShipSize,
       );
 
       state = AsyncValue.data(newState);
@@ -259,10 +263,11 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
       final last = state.value!.ships.removeLast();
       Map<int, int> newShipsToPlace = {...state.value!.shipsToPlace, last.size: state.value!.shipsToPlace[last.size]! + 1};
 
+      final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
       final newState = state.value!.copyWith(
         ships: state.value!.ships,
         shipsToPlace: newShipsToPlace,
-
+        isCursorVisible: isConnected,
       );
       state = AsyncValue.data(newState);
     }
@@ -304,10 +309,11 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
   }
 
   void clearShips() {
+    final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
     final newState = state.value!.copyWith(
       ships: [],
       shipsToPlace: shipsToPlaceDefault,
-
+      isCursorVisible: isConnected,
     );
     state = AsyncValue.data(newState);
   }

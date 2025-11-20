@@ -13,5 +13,12 @@ class MainActivity : FlutterActivity() {
         val dataCallback = BluetoothDataCallback(flutterEngine.dartExecutor.binaryMessenger)
         val deviceApi = BluetoothDeviceApiImpl(this, dataCallback)
         BluetoothDeviceApi.setUp(flutterEngine.dartExecutor.binaryMessenger, deviceApi)
+
+        val accelerometerCallback = AccelerometerDataCallback(flutterEngine.dartExecutor.binaryMessenger)
+        val accelerometerApiImpl = Accelerometer(this)
+        accelerometerApiImpl.setCallback(accelerometerCallback)
+
+        AccelerometerApi.setUp(flutterEngine.dartExecutor.binaryMessenger, accelerometerApiImpl)
+        // AccelerometerDataCallback.setUp(...) → удалить
     }
 }

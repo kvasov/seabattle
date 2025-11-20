@@ -68,6 +68,10 @@ class CheaterNotifier extends Notifier<CheaterState> {
       }
     }
   }
+
+  void resetCheaterMode() {
+    state = state.copyWith(isCheater: false);
+  }
 }
 
 final cheaterProvider = NotifierProvider<CheaterNotifier, CheaterState>(() {

@@ -116,6 +116,34 @@ struct ConnectionResult {
   }
 }
 
+/// Generated class from Pigeon that represents data sent in messages.
+struct AccelerometerData {
+  var x: Double
+  var y: Double
+  var z: Double
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> AccelerometerData? {
+    let x = pigeonVar_list[0] as! Double
+    let y = pigeonVar_list[1] as! Double
+    let z = pigeonVar_list[2] as! Double
+
+    return AccelerometerData(
+      x: x,
+      y: y,
+      z: z
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      x,
+      y,
+      z,
+    ]
+  }
+}
+
 private class ApiPigeonCodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
@@ -123,6 +151,8 @@ private class ApiPigeonCodecReader: FlutterStandardReader {
       return BluetoothScanResult.fromList(self.readValue() as! [Any?])
     case 130:
       return ConnectionResult.fromList(self.readValue() as! [Any?])
+    case 131:
+      return AccelerometerData.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
     }
@@ -136,6 +166,9 @@ private class ApiPigeonCodecWriter: FlutterStandardWriter {
       super.writeValue(value.toList())
     } else if let value = value as? ConnectionResult {
       super.writeByte(130)
+      super.writeValue(value.toList())
+    } else if let value = value as? AccelerometerData {
+      super.writeByte(131)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -324,6 +357,83 @@ class BluetoothDataCallback: BluetoothDataCallbackProtocol {
     let channelName: String = "dev.flutter.pigeon.seabattle.BluetoothDataCallback.onError\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([errorMessageArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(PigeonError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+}
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol AccelerometerApi {
+  func startAccelerometer(completion: @escaping (Result<Bool, Error>) -> Void)
+  func stopAccelerometer(completion: @escaping (Result<Bool, Error>) -> Void)
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class AccelerometerApiSetup {
+  static var codec: FlutterStandardMessageCodec { ApiPigeonCodec.shared }
+  /// Sets up an instance of `AccelerometerApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: AccelerometerApi?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    let startAccelerometerChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.seabattle.AccelerometerApi.startAccelerometer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      startAccelerometerChannel.setMessageHandler { _, reply in
+        api.startAccelerometer { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      startAccelerometerChannel.setMessageHandler(nil)
+    }
+    let stopAccelerometerChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.seabattle.AccelerometerApi.stopAccelerometer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      stopAccelerometerChannel.setMessageHandler { _, reply in
+        api.stopAccelerometer { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      stopAccelerometerChannel.setMessageHandler(nil)
+    }
+  }
+}
+/// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
+protocol AccelerometerDataCallbackProtocol {
+  func onAccelerometerDataReceived(data dataArg: AccelerometerData, completion: @escaping (Result<Void, PigeonError>) -> Void)
+}
+class AccelerometerDataCallback: AccelerometerDataCallbackProtocol {
+  private let binaryMessenger: FlutterBinaryMessenger
+  private let messageChannelSuffix: String
+  init(binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String = "") {
+    self.binaryMessenger = binaryMessenger
+    self.messageChannelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+  }
+  var codec: ApiPigeonCodec {
+    return ApiPigeonCodec.shared
+  }
+  func onAccelerometerDataReceived(data dataArg: AccelerometerData, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.seabattle.AccelerometerDataCallback.onAccelerometerDataReceived\(messageChannelSuffix)"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([dataArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return

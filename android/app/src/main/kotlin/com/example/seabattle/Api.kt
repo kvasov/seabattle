@@ -90,6 +90,30 @@ data class ConnectionResult (
     )
   }
 }
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class AccelerometerData (
+  val x: Double,
+  val y: Double,
+  val z: Double
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): AccelerometerData {
+      val x = pigeonVar_list[0] as Double
+      val y = pigeonVar_list[1] as Double
+      val z = pigeonVar_list[2] as Double
+      return AccelerometerData(x, y, z)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      x,
+      y,
+      z,
+    )
+  }
+}
 private open class ApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -103,6 +127,11 @@ private open class ApiPigeonCodec : StandardMessageCodec() {
           ConnectionResult.fromList(it)
         }
       }
+      131.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AccelerometerData.fromList(it)
+        }
+      }
       else -> super.readValueOfType(type, buffer)
     }
   }
@@ -114,6 +143,10 @@ private open class ApiPigeonCodec : StandardMessageCodec() {
       }
       is ConnectionResult -> {
         stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      is AccelerometerData -> {
+        stream.write(131)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -300,6 +333,85 @@ class BluetoothDataCallback(private val binaryMessenger: BinaryMessenger, privat
     val channelName = "dev.flutter.pigeon.seabattle.BluetoothDataCallback.onError$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
     channel.send(listOf(errorMessageArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+        } else {
+          callback(Result.success(Unit))
+        }
+      } else {
+        callback(Result.failure(createConnectionError(channelName)))
+      } 
+    }
+  }
+}
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface AccelerometerApi {
+  fun startAccelerometer(callback: (Result<Boolean>) -> Unit)
+  fun stopAccelerometer(callback: (Result<Boolean>) -> Unit)
+
+  companion object {
+    /** The codec used by AccelerometerApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      ApiPigeonCodec()
+    }
+    /** Sets up an instance of `AccelerometerApi` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: AccelerometerApi?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.seabattle.AccelerometerApi.startAccelerometer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.startAccelerometer{ result: Result<Boolean> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.seabattle.AccelerometerApi.stopAccelerometer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.stopAccelerometer{ result: Result<Boolean> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
+/** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
+class AccelerometerDataCallback(private val binaryMessenger: BinaryMessenger, private val messageChannelSuffix: String = "") {
+  companion object {
+    /** The codec used by AccelerometerDataCallback. */
+    val codec: MessageCodec<Any?> by lazy {
+      ApiPigeonCodec()
+    }
+  }
+  fun onAccelerometerDataReceived(dataArg: AccelerometerData, callback: (Result<Unit>) -> Unit)
+{
+    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    val channelName = "dev.flutter.pigeon.seabattle.AccelerometerDataCallback.onAccelerometerDataReceived$separatedMessageChannelSuffix"
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+    channel.send(listOf(dataArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))

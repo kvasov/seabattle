@@ -9,6 +9,7 @@ import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/utils/cursor_position_utils.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
+import 'package:seabattle/shared/providers/accelerometer_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -105,9 +106,6 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     state = AsyncValue.data(newState);
   }
 
-
-
-
   void setShips({required String mode, required List<Ship> ships}) {
     final currentState = _currentState();
     state = AsyncValue.data(
@@ -115,13 +113,12 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
           ? currentState.copyWith(ships: ships)
           : currentState.copyWith(opponentShips: ships),
     );
-
-    // debugPrint('💚 state: ${state.value?.toString()}');
   }
 
   Future<void> handleTapDown(TapDownDetails details) async {
+    final accelerometerData = ref.read(accelerometerNotifierProvider).value;
     final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
-    if (!state.value!.myMove || isConnected) {
+    if (!state.value!.myMove || isConnected || (accelerometerData?.isReceivingData ?? false)) {
       return;
     }
     final localPosition = details.localPosition;
@@ -138,10 +135,22 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     // debugPrint('💚 state: ${state.value?.toString()}');
   }
 
+  Future<void> handleBallTapDown(int ballX, int ballY) async {
+    debugPrint('💚❤️ handleBallTapDown: $ballX, $ballY');
+    if (!state.value!.myMove) {
+      return;
+    }
+    final cellSize = ref.watch(cellSizeProvider);
+    final x = (ballX ~/ cellSize).clamp(0, state.value!.gridSize - 1);
+    final y = (ballY ~/ cellSize).clamp(0, state.value!.gridSize - 1);
+    debugPrint('💚❤️ x: $x, y: $y');
+    await makeShot(x, y);
+  }
+
   Future<void> makeShot(int x, int y) async {
+    debugPrint('💚❤️ makeShot: $x, $y');
     final shot = Shot(x, y);
     if (state.value?.shots.any((shot) => shot.x == x && shot.y == y) ?? false) {
-      debugPrint('💚 shot already made');
       return;
     }
     state = AsyncValue.data(
@@ -175,6 +184,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   }
 
   Future<void> sendShot(int x, int y) async {
+    debugPrint('💚❤️ sendShot: $x, $y');
     final id = ref.read(gameNotifierProvider).value?.game?.id ?? 0;
     final userUniqueId = ref.read(userUniqueIdProvider);
     // debugPrint('💚 sendShot - вызов');

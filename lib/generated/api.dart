@@ -77,6 +77,37 @@ class ConnectionResult {
   }
 }
 
+class AccelerometerData {
+  AccelerometerData({
+    required this.x,
+    required this.y,
+    required this.z,
+  });
+
+  double x;
+
+  double y;
+
+  double z;
+
+  Object encode() {
+    return <Object?>[
+      x,
+      y,
+      z,
+    ];
+  }
+
+  static AccelerometerData decode(Object result) {
+    result as List<Object?>;
+    return AccelerometerData(
+      x: result[0]! as double,
+      y: result[1]! as double,
+      z: result[2]! as double,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -91,6 +122,9 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is ConnectionResult) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
+    }    else if (value is AccelerometerData) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -103,6 +137,8 @@ class _PigeonCodec extends StandardMessageCodec {
         return BluetoothScanResult.decode(readValue(buffer)!);
       case 130: 
         return ConnectionResult.decode(readValue(buffer)!);
+      case 131: 
+        return AccelerometerData.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -344,6 +380,109 @@ abstract class BluetoothDataCallback {
               'Argument for dev.flutter.pigeon.seabattle.BluetoothDataCallback.onError was null, expected non-null String.');
           try {
             api.onError(arg_errorMessage!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+  }
+}
+
+class AccelerometerApi {
+  /// Constructor for [AccelerometerApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  AccelerometerApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  Future<bool> startAccelerometer() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.seabattle.AccelerometerApi.startAccelerometer$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as bool?)!;
+    }
+  }
+
+  Future<bool> stopAccelerometer() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.seabattle.AccelerometerApi.stopAccelerometer$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as bool?)!;
+    }
+  }
+}
+
+abstract class AccelerometerDataCallback {
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  void onAccelerometerDataReceived(AccelerometerData data);
+
+  static void setUp(AccelerometerDataCallback? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
+    messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.seabattle.AccelerometerDataCallback.onAccelerometerDataReceived$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.seabattle.AccelerometerDataCallback.onAccelerometerDataReceived was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AccelerometerData? arg_data = (args[0] as AccelerometerData?);
+          assert(arg_data != null,
+              'Argument for dev.flutter.pigeon.seabattle.AccelerometerDataCallback.onAccelerometerDataReceived was null, expected non-null AccelerometerData.');
+          try {
+            api.onAccelerometerDataReceived(arg_data!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
