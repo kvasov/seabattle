@@ -27,6 +27,14 @@ class ConnectionResult {
   String? errorMessage;
 }
 
+// Данные акселерометра
+class AccelerometerData {
+  AccelerometerData({required this.x, required this.y, required this.z});
+  double x;
+  double y;
+  double z;
+}
+
 // API для сканирования BLE устройств
 @HostApi()
 abstract class BluetoothScannerApi {
@@ -66,5 +74,28 @@ abstract class BluetoothDataCallback {
   // Вызывается при ошибке
   void onError(String errorMessage);
 }
+
+
+// API для работы с акселерометром
+@HostApi()
+abstract class AccelerometerApi {
+  // Включить прием данных от акселерометра
+  @async
+  bool startAccelerometer();
+
+  // Отключить прием данных от акселерометра
+  @async
+  bool stopAccelerometer();
+}
+
+// Callback API для получения данных от акселерометра (от платформы к Dart)
+@FlutterApi()
+abstract class AccelerometerDataCallback {
+  // Вызывается когда получены данные от акселерометра
+  void onAccelerometerDataReceived(AccelerometerData data);
+}
+
+
+
 
 // dart run pigeon --input pigeons/api.dart

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 import 'package:seabattle/shared/entities/game.dart';
+import 'package:seabattle/shared/providers/accelerometer_provider.dart';
+import 'package:seabattle/shared/providers/cheater_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
@@ -198,6 +200,8 @@ class GameNotifier extends AsyncNotifier<GameState> {
       if (battleState.hasValue) {
         ref.read(battleViewModelProvider.notifier).resetBattle();
       }
+      ref.read(cheaterProvider.notifier).resetCheaterMode();
+      ref.read(accelerometerNotifierProvider.notifier).disconnect();
       ref.read(navigationProvider.notifier).goToHomeScreen();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

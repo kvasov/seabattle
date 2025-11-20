@@ -20,7 +20,6 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   Widget build(BuildContext context) {
     final gameState = ref.watch(gameNotifierProvider).value;
     final battleViewModelState = ref.watch(battleViewModelProvider).value;
-    debugPrint('💚 battleViewModelState: ${battleViewModelState?.toString()}');
 
     return Scaffold(
       key: _scaffoldKey,
@@ -42,24 +41,37 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               ],
               if (gameState?.isError == true)
                 Text(gameState?.errorMessage ?? ''),
-              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  battleViewModelState?.myMove == true ? 'Ваш ход' : 'Ход соперника',
+                  style: TextStyle(
+                    color: battleViewModelState?.myMove == true ? Colors.green : Colors.red
+                  )
+                ),
+              ),
+
+
               Center(
                 child: BattleGrid(myShips: true),
               ),
               Center(
-                child: TextButton(
-                  onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
-                  child: const Text('Cancel Game'),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 128, 128, 128),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: const Text('Cancel Game'),
+                  ),
                 ),
               ),
-              if (battleViewModelState?.myMove == true)
-                Center(
-                  child: Text('Ваш ход', style: TextStyle(color: Colors.green)),
-                ),
-              if (battleViewModelState?.myMove == false)
-                Center(
-                  child: Text('Ход соперника', style: TextStyle(color: Colors.red)),
-                ),
+
             ],
           ),
           MenuBtn(scaffoldKey: _scaffoldKey),

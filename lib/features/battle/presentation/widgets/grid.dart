@@ -9,6 +9,8 @@ import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/shared/providers/cheater_provider.dart';
 import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor.dart';
+import 'package:seabattle/features/battle/presentation/widgets/ball.dart';
+import 'package:seabattle/shared/providers/accelerometer_provider.dart';
 
 class BattleGrid extends ConsumerStatefulWidget {
   const BattleGrid({
@@ -80,6 +82,8 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
     final GridPosition? cursorPosition = battleViewModelState?.cursorPosition;
 
     final isCheater = ref.watch(cheaterProvider).isCheater;
+    final accelerometerBallData = ref.watch(accelerometerNotifierProvider).value;
+
     final gridWidget = shipsImages.when(
       data: (cache) => Stack(
         children: [
@@ -109,6 +113,9 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
               height: cellSize,
               child: const CursorPainter(),
             ),
+          if (!widget.myShips && (accelerometerBallData?.isReceivingData == true))
+            BallWidget(containerSize: cellSize * gridSize),
+
         ],
       ),
       error: (error, stack) => Center(child: Text(error.toString())),

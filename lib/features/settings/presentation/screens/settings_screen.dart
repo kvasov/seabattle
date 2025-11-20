@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/settings/presentation/widgets/ble.dart';
+import 'package:seabattle/features/settings/presentation/widgets/accelerometer.dart';
 import 'package:seabattle/features/settings/presentation/widgets/color_scheme.dart';
 import 'package:seabattle/features/settings/presentation/widgets/locale.dart';
 import 'package:seabattle/features/settings/presentation/widgets/theme.dart';
@@ -32,6 +33,8 @@ class SettingsScreen extends ConsumerWidget {
             }, child: Text('Перейти к статистике')),
           ),
           const BLEWidget(),
+          const SizedBox(height: 12),
+          const AccelerometerBallWidget(),
         ],
       ),
     );
