@@ -72,4 +72,19 @@ class StatisticsViewModelNotifier extends AsyncNotifier<StatisticsViewModelState
         statistics: (await ref.read(statisticsRepositoryProvider).getStatistics()).data),
     );
   }
+
+  Future<void> clearStatistics() async {
+    state = AsyncValue.data(
+      StatisticsViewModelState(
+        statistics: StatisticsModel(
+          totalGames: 0,
+          totalWins: 0,
+          totalHits: 0,
+          totalShots: 0,
+          totalCancelled: 0,
+        ),
+      ),
+    );
+    await ref.read(statisticsRepositoryProvider).saveStatistics(state.value!.statistics!);
+  }
 }

@@ -53,5 +53,7 @@
 	<array>
 		<string>bluetooth-central</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>For scanning QR codes</string>
 </dict>
 </plist>

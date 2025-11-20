@@ -64,7 +64,9 @@ class SetupShipsViewModelState {
 class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState> {
   @override
   Future<SetupShipsViewModelState> build() async {
-    final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
+    // Проверяем состояние подключения ESP (по умолчанию false, если провайдер еще не инициализирован)
+    final bleStateAsync = ref.read(bleNotifierProvider);
+    final isConnected = bleStateAsync.value?.isConnected ?? false;
     debugPrint('💚! isConnected: $isConnected');
 
     return SetupShipsViewModelState(
@@ -260,7 +262,7 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
       final newState = state.value!.copyWith(
         ships: state.value!.ships,
         shipsToPlace: newShipsToPlace,
-        isCursorVisible: true,
+
       );
       state = AsyncValue.data(newState);
     }
@@ -305,7 +307,7 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     final newState = state.value!.copyWith(
       ships: [],
       shipsToPlace: shipsToPlaceDefault,
-      isCursorVisible: true,
+
     );
     state = AsyncValue.data(newState);
   }

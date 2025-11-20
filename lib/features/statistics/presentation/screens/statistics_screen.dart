@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/games_pie_widget.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/hits_shots_widget.dart';
+import 'package:seabattle/features/statistics/presentation/widgets/reset_btn.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 
 class StatisticsScreen extends ConsumerWidget {
@@ -43,6 +44,8 @@ class StatisticsScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 20),
                   HitsShotsWidget(),
+                  SizedBox(height: 20),
+                  ResetStatisticsButton(),
                 ] else
                   const Center(child: Text('No games played yet')),
               ],

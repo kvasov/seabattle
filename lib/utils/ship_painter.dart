@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
+import 'package:seabattle/shared/providers/cheater_provider.dart';
 
 class SeaBattlePainter extends CustomPainter {
   final bool? myShips;
@@ -13,7 +14,7 @@ class SeaBattlePainter extends CustomPainter {
   final List<Ship>? ships;
   final Animation<double>? waveAnimation;
   final double rotationAmplitude;
-
+  final bool? isCheaterMode;
   SeaBattlePainter({
     this.myShips = true,
     this.shipsImagesCache,
@@ -23,6 +24,7 @@ class SeaBattlePainter extends CustomPainter {
     this.ships,
     this.waveAnimation,
     this.rotationAmplitude = 0.05,
+    this.isCheaterMode = false,
   }) : super(repaint: waveAnimation);
 
   @override
@@ -199,6 +201,9 @@ class SeaBattlePainter extends CustomPainter {
           rect: drawRect,
           image: shipImage,
           fit: BoxFit.fill,
+          opacity: myShips == false
+            ? isCheaterMode == true ? 0.3 : 0
+            : 1,
         );
         canvas.restore();
       }

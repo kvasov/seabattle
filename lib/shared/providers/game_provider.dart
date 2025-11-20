@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 import 'package:seabattle/shared/entities/game.dart';
@@ -29,7 +29,7 @@ class GameState {
     String? errorMessage,
   }) {
     return GameState(
-      game: game != null ? game : this.game,
+      game: game ?? this.game,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -49,22 +49,15 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> createGame() async {
+    final currentState = state.value;
     state = const AsyncValue.loading();
     try {
-      // TODO: handle error
       final game = await ref.read(prepareRepositoryProvider).createGame();
-
-      // При создании игры устанавливаем master = true (создатель игры)
       final gameWithMaster = game.data?.copyWith(master: true);
-      final currentState = state.value;
-      final newState = GameState(
+      final newState = currentState!.copyWith(
         game: gameWithMaster,
-        isLoading: false,
-        isError: false,
-        errorMessage: '',
       );
       ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
-
       state = AsyncValue.data(newState);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -77,57 +70,68 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> updateGame(int id, GameAction action) async {
+    debugPrint('🔄🤍 updateGame: id: $id, action: $action');
     final currentState = state.value;
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
-      debugPrint('💚!!!!!!!💚💚 updateGame - game: ${game.data?.id}');
+      debugPrint('🔄🤍 updateGame: получен результат - isSuccess: ${game.isSuccess}, isError: ${game.isError}, data: ${game.data}, error: ${game.error}');
+      debugPrint('🔄🤍 updateGame: currentState = $currentState');
       if (game.isSuccess) {
-        debugPrint('❤️❤️❤️ updateGame - success');
-        state = AsyncValue.data(
-          GameState(
-            game: game.data,
-            isLoading: false,
-            isError: false,
-            errorMessage: '',
-          ),
+        // Создаем новое состояние, используя currentState если он есть, иначе создаем новое
+        final newState = currentState?.copyWith(
+          game: game.data,
+        ) ?? GameState(
+          game: game.data,
+          isLoading: false,
+          isError: false,
+          errorMessage: '',
         );
-
+        state = AsyncValue.data(newState);
+        debugPrint('🔄🤍!!!!!!!!!! updateGame: id: $id, action: $action');
         if (action == GameAction.accept) {
-          // Принимаем игру, подключаемся к WebSocket
+          debugPrint('🔄🤍 updateGame: action == GameAction.accept');
+          // Игру принять может только slave - обновляем master флаг перед переходом
+          final gameWithMaster = game.data!.copyWith(master: false);
+          state = AsyncValue.data(
+            newState.copyWith(
+              game: gameWithMaster,
+            ),
+          );
+
           ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
-          // Переходим на экран расстановки кораблей
-          ref.read(navigationProvider.notifier).pushSetupShipsScreen();
-          // Игру принять может только slave
-          updateGameMaster(false);
           // Увеличиваем общее количество игр в стейте и сохраняем в базу данных
           // но сначала убеждаемся, что провайдер статистики инициализирован
           final statisticsState = ref.read(statisticsViewModelProvider);
           if (!statisticsState.hasValue) {
-            debugPrint('💚💚💚 updateGame: провайдер статистики не инициализирован, инициализируем...');
             await ref.read(statisticsViewModelProvider.future);
           }
           await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
+
+          // Переход на экран расстановки кораблей после всех обновлений
+          ref.read(navigationProvider.notifier).goToSetupShipsScreen();
         } else if (action == GameAction.cancel) {
           resetGame();
         }
       }
       else if (game.isError) {
+        debugPrint('🔄🤍 updateGame: ошибка - ${game.error}');
         final failure = game.error;
-        debugPrint('🤍🤍🤍🤍🤍🤍 updateGame - error: ${failure?.description ?? 'Неизвестная ошибка'}');
         if (failure?.description == 'already_accepted') {
           ref.read(navigationProvider.notifier).pushAcceptedGameDialogScreen();
         } else if (failure?.description == 'cancelled') {
           ref.read(navigationProvider.notifier).pushCanceledGameDialogScreen();
         }
         state = AsyncValue.error(game.error.toString(), StackTrace.current);
+      } else {
+        debugPrint('🔄🤍 updateGame: неизвестное состояние - ни success, ни error');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('🔄🤍 updateGame: исключение - $e');
+      debugPrint('🔄🤍 updateGame: stackTrace - $stackTrace');
       state = AsyncValue.error(e.toString(), StackTrace.current);
     }
   }
-
-
 
   // Режим игрока master/slave
   void updateGameMaster(bool master) {
@@ -135,11 +139,8 @@ class GameNotifier extends AsyncNotifier<GameState> {
     state = const AsyncValue.loading();
     try {
       final newGame = currentState?.game?.copyWith(master: master);
-      final newState = GameState(
+      final newState = currentState!.copyWith(
         game: newGame,
-        isLoading: false,
-        isError: false,
-        errorMessage: '',
       );
       state = AsyncValue.data(newState);
     } catch (e) {
@@ -174,12 +175,10 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   void cancelGame() {
-    debugPrint('🚫 cancelGame');
     ref.read(navigationProvider.notifier).pushCancelGameDialogScreen();
   }
 
   void resetGame() {
-    final currentState = state.value;
     state = const AsyncValue.loading();
     try {
       final newState = GameState(

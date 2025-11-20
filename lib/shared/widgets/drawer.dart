@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
-import 'package:seabattle/shared/providers/ble_provider.dart';
+import 'package:seabattle/shared/providers/cheater_provider.dart';
 
 class DrawerWidget extends ConsumerWidget {
   const DrawerWidget({super.key});
@@ -10,8 +10,6 @@ class DrawerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
-
-    final bleState = ref.watch(bleNotifierProvider);
 
     return Drawer(
       child: ListView(
@@ -32,6 +30,9 @@ class DrawerWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                GestureDetector(onTap: () {
+                  ref.read(cheaterProvider.notifier).trySetCheaterMode();
+                }, child: Image.asset('assets/images/splash_bg.jpg', width: 100, height: 100)),
                 Text(
                   'Морской бой',
                   style: TextStyle(
