@@ -17,7 +17,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
 
-    Timer(Duration(milliseconds: 500), () {
+    Timer(Duration(milliseconds: 4000), () {
       if (!mounted) return;
       ref.read(navigationProvider.notifier).goToHomeScreen();
     });
@@ -32,11 +32,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             begin: Alignment(-1, -0.2),
             end: Alignment(1.0, 0.8),
             colors: [
-              Color.fromARGB(255, 57, 64, 164),
-              Color.fromARGB(255, 100, 100, 100),
-              Color.fromARGB(255, 17, 90, 51),
+              Color.fromARGB(255, 11, 89, 141),
+              Color.fromARGB(255, 160, 193, 213),
+              Color.fromARGB(255, 221, 209, 185),
             ],
-            stops: [0.0, 0.3, 1],
+            stops: [0.0, 0.6, 1],
           ),
         ),
         child: Center(

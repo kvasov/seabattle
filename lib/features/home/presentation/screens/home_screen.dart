@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
-import 'package:seabattle/shared/providers/accelerometer_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -13,15 +11,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-
-
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-
-
-
-
 
     return Scaffold(
       body: SafeArea(
@@ -93,7 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                        ),
+                      ),
                     ],
                   ),
                 ),

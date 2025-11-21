@@ -96,7 +96,7 @@ class _BallWidgetState extends ConsumerState<BallWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) {
-        ref.read(battleViewModelProvider.notifier).handleBallTapDown(_ballX.toInt(), _ballY.toInt());
+        ref.read(battleViewModelProvider.notifier).handleBallTapDown((_ballX + _ballSize / 2).toInt(), (_ballY + _ballSize / 2).toInt());
       },
       child: Container(
         width: widget.containerSize,

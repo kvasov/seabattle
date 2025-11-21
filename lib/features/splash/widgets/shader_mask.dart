@@ -86,13 +86,13 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
               );
             },
             child: Text(
-              'SEA\nBATTLE',
+              'МОРСКОЙ\nБОЙ',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontVariations: [FontVariation('wght', 900)],
-                fontSize: 75,
-                height: 0.9
+                fontSize: 65,
+                height: 1.2
               ),
             ),
           ),

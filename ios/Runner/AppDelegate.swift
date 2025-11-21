@@ -16,21 +16,32 @@ import CoreBluetooth
     GeneratedPluginRegistrant.register(with: self)
 
     if let controller = window?.rootViewController as? FlutterViewController {
+      let messenger = controller.binaryMessenger
 
       // Scanner
       BluetoothScannerApiSetup.setUp(
-        binaryMessenger: controller.binaryMessenger,
+        binaryMessenger: messenger,
         api: BluetoothScanner()
       )
 
       // Data callback → Dart
-      dataCallback = BluetoothDataCallback(binaryMessenger: controller.binaryMessenger)
+      dataCallback = BluetoothDataCallback(binaryMessenger: messenger)
 
       // Device API (connect/send/receive)
       deviceApi = BluetoothDeviceApiImpl(dataCallback: dataCallback!)
       BluetoothDeviceApiSetup.setUp(
-        binaryMessenger: controller.binaryMessenger,
+        binaryMessenger: messenger,
         api: deviceApi!
+      )
+
+
+      // ACCELEROMETER
+      let accelerometerCallback = AccelerometerDataCallback(binaryMessenger: messenger)
+      let accelerometerApiImpl = Accelerometer()
+      accelerometerApiImpl.setCallback(callback: accelerometerCallback)
+      AccelerometerApiSetup.setUp(
+          binaryMessenger: messenger,
+          api: accelerometerApiImpl
       )
     }
 
