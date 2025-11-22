@@ -1,16 +1,24 @@
+import 'package:flutter/foundation.dart';
 import '../datasources/remote/qr_remote_datasource.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/core/result.dart';
 import 'package:seabattle/shared/entities/ship.dart';
+import 'package:seabattle/core/services/network_info_service.dart';
 
 class PrepareRepository {
   final QRRemoteDataSource qrRemoteDataSource;
+  final NetworkInfoService networkInfo;
 
   PrepareRepository({
     required this.qrRemoteDataSource,
+    required this.networkInfo,
   });
 
   RequestOperation<GameModel> createGame() async {
+    final isConnected = await networkInfo.isConnected;
+    if (!isConnected) {
+      return Result.error(Failure(description: 'No internet connection'));
+    }
     try {
       final response = await qrRemoteDataSource.createGame();
       if (response.containsKey('id')) {
@@ -25,6 +33,10 @@ class PrepareRepository {
   }
 
   RequestOperation<GameModel> updateGame(int id, GameAction action, String userUniqueId) async {
+    final isConnected = await networkInfo.isConnected;
+    if (!isConnected) {
+      return Result.error(Failure(description: 'No internet connection'));
+    }
     try {
       final response = await qrRemoteDataSource.updateGame(id, action, userUniqueId);
       if (response.containsKey('id') && !response.containsKey('error')) {
@@ -56,6 +68,11 @@ class PrepareRepository {
   }
 
   RequestOperation<void> sendShipsToOpponent(int id, String userUniqueId, List<Ship> ships) async {
+    final isConnected = await networkInfo.isConnected;
+    if (!isConnected) {
+      debugPrint('🔥 No internet connection');
+      return Result.error(Failure(description: 'No internet connection'));
+    }
     try {
       await qrRemoteDataSource.sendShipsToOpponent(id, userUniqueId, ships);
       return Result.ok(null);

@@ -55,13 +55,35 @@ class GameNotifier extends AsyncNotifier<GameState> {
     state = const AsyncValue.loading();
     try {
       final game = await ref.read(prepareRepositoryProvider).createGame();
-      final gameWithMaster = game.data?.copyWith(master: true);
-      final newState = currentState!.copyWith(
+      final gameData = game.data;
+      if (gameData == null) {
+        // throw Exception('Failed to create game: game data is null');
+        if (game.isError) {
+          state = AsyncValue.error(game.error?.description ?? 'Unknown error', StackTrace.current);
+          return;
+        }
+        state = AsyncValue.data(currentState!.copyWith(
+          game: gameData,
+          isLoading: false,
+          isError: false,
+          errorMessage: '',
+        ));
+        return;
+      }
+
+      final gameWithMaster = gameData.copyWith(master: true);
+      final newState = (currentState ?? GameState(
+        game: null,
+        isLoading: false,
+        isError: false,
+        errorMessage: '',
+      )).copyWith(
         game: gameWithMaster,
       );
-      ref.read(webSocketNotifierProvider.notifier).connect(game.data!.id);
+      ref.read(webSocketNotifierProvider.notifier).connect(gameData.id);
       state = AsyncValue.data(newState);
     } catch (e) {
+      debugPrint('🔄🤍 createGame: исключение - $e');
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
@@ -75,6 +97,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
     debugPrint('🔄🤍 updateGame: id: $id, action: $action');
     final currentState = state.value;
     state = const AsyncValue.loading();
+
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
       debugPrint('🔄🤍 updateGame: получен результат - isSuccess: ${game.isSuccess}, isError: ${game.isError}, data: ${game.data}, error: ${game.error}');
@@ -124,7 +147,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
         } else if (failure?.description == 'cancelled') {
           ref.read(navigationProvider.notifier).pushCanceledGameDialogScreen();
         }
-        state = AsyncValue.error(game.error.toString(), StackTrace.current);
+        state = AsyncValue.error(game.error?.description ?? 'Unknown error', StackTrace.current);
       } else {
         debugPrint('🔄🤍 updateGame: неизвестное состояние - ни success, ни error');
       }
@@ -156,11 +179,16 @@ class GameNotifier extends AsyncNotifier<GameState> {
 
     state = const AsyncValue.loading();
     // Нужно отправить данные о своих кораблях сопернику
-    await ref.read(prepareRepositoryProvider).sendShipsToOpponent(
+    final result = await ref.read(prepareRepositoryProvider).sendShipsToOpponent(
       state.value?.game?.id ?? 0,
       ref.read(userUniqueIdProvider),
       ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
     );
+    if (result.isError) {
+      debugPrint('🔥 startGame: ошибка - ${result.error}');
+      state = AsyncValue.error(result.error?.description ?? 'Unknown error', StackTrace.current);
+      return;
+    }
     // Перемещаем свои корабли в BattleViewModelNotifier
     final isMaster = state.value!.game!.master ?? false;
     final myMove = !isMaster;
@@ -202,7 +230,6 @@ class GameNotifier extends AsyncNotifier<GameState> {
       }
       ref.read(cheaterProvider.notifier).resetCheaterMode();
       ref.read(accelerometerNotifierProvider.notifier).disconnect();
-      ref.read(navigationProvider.notifier).goToHomeScreen();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

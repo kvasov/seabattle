@@ -45,8 +45,13 @@ class QrScanViewModelNotifier extends AsyncNotifier<QrScanState> {
       qrCode: barcodes.barcodes.firstOrNull?.displayValue ?? '',
     ));
   }
-}
 
-final qrScanViewModelProvider = AsyncNotifierProvider<QrScanViewModelNotifier, QrScanState>(
-  () => QrScanViewModelNotifier(),
-);
+  void reset() {
+    state = AsyncValue.data(QrScanState(
+      qrCode: '',
+      isLoading: false,
+      isError: false,
+      errorMessage: '',
+    ));
+  }
+}

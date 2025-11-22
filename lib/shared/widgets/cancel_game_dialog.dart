@@ -14,7 +14,7 @@ class CancelGameDialog extends ConsumerWidget {
 
     return AlertDialog(
       title: const Text('Отменить игру?'),
-      content: Text('Вы уверены, что хотите отменить игру #${gameId}?'),
+      content: Text('Вы уверены, что хотите отменить игру #$gameId?'),
       actions: [
         TextButton(
           onPressed: () {
@@ -23,11 +23,18 @@ class CancelGameDialog extends ConsumerWidget {
           child: const Text('Нет'),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.of(context).pop();
             final id = gameId;
             if (id != null) {
-              ref.read(gameNotifierProvider.notifier).updateGame(id, GameAction.cancel);
+              // Ждем завершения операции отмены игры
+              await ref.read(gameNotifierProvider.notifier).updateGame(id, GameAction.cancel);
+              // Проверяем состояние провайдера после завершения операции
+              final gameState = ref.read(gameNotifierProvider);
+              if (gameState.value?.isError != true) {
+                debugPrint('🔥 cancelGameDialog: ошибки нет, переходим на homeScreen');
+                ref.read(navigationProvider.notifier).goToHomeScreen();
+              }
             }
           },
           child: const Text('Да'),

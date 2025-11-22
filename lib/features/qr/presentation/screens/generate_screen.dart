@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
+import 'package:seabattle/shared/widgets/my_error_widget.dart';
 import 'package:qr_bar_code/qr/qr.dart';
 
 class GenerateQRScreen extends ConsumerStatefulWidget {
@@ -21,8 +22,21 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
     final gameNotifier = ref.watch(gameNotifierProvider);
     return Scaffold(
       appBar: AppBar(
+
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 20,
+          fontWeight: FontWeight.bold
+        ),
+
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+            ref.read(gameNotifierProvider.notifier).resetGame();
+          } ,
           icon: const Icon(Icons.arrow_back),
         ),
         title: const Text('Создание игры'),
@@ -42,24 +56,28 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
                 ),
               Text(gameNotifier.value?.game?.id.toString() ?? ''),
               if (gameNotifier.value?.game?.id != null) ...[
-                TextButton(
-                  onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
-                  child: const Text('Отменить игру'),
-                ),
                 QRCode(
                   data: gameNotifier.value?.game?.id.toString() ?? '',
                   size: 300,
                   padding: const EdgeInsets.all(10.0),
                   backgroundColor: Colors.transparent,
-                  gapless: false,
-                  eyeStyle: const QREyeStyle(eyeShape: QREyeShape.circle, color: Colors.black),
-                  dataModuleStyle: const QRDataModuleStyle(dataModuleShape: QRDataModuleShape.circle, color: Colors.black),
+                ),
+                SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
+                  child: const Text('Отменить игру'),
                 ),
               ],
             ],
             ),
           ),
-          error: (error, stackTrace) => Text('Error: $error'),
+          error: (error, stackTrace) => MyErrorWidget(error: 'Error: $error', retryCallback: () {
+            if (gameNotifier.value?.game?.id != null) {
+              ref.read(gameNotifierProvider.notifier).cancelGame();
+            } else {
+              ref.read(gameNotifierProvider.notifier).createGame();
+            }
+          } ),
           loading: () => const Center(child: CircularProgressIndicator()),
         ),
     );

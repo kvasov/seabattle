@@ -12,7 +12,7 @@ class LocaleNotifier extends Notifier<Locale> {
 
     if (currentSettings != null) {
       final appLocale = currentSettings.language == 'ru' ? AppLocale.ru : AppLocale.en;
-      LocaleSettings.setLocaleSync(appLocale);
+      LocaleSettings.setLocale(appLocale);
     }
 
     return Locale(currentSettings?.language ?? 'ru');

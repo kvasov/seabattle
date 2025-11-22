@@ -5,8 +5,8 @@ import 'package:seabattle/features/qr/presentation/widgets/bg_wave.dart';
 import 'package:seabattle/features/qr/presentation/widgets/periscope_ruler.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/entities/game.dart';
-import 'package:seabattle/features/qr/presentation/viewmodels/qr_scan_viewmodel.dart';
-
+import 'package:seabattle/features/qr/providers/qr_scan_viewmodel_provider.dart';
+import 'package:seabattle/shared/widgets/my_error_widget.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ScanQRScreen extends ConsumerStatefulWidget {
@@ -23,6 +23,12 @@ class _ScanQRScreenState extends ConsumerState<ScanQRScreen> with WidgetsBinding
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(qrScanViewModelProvider.notifier).reset();
+        ref.read(gameNotifierProvider.notifier).resetGame();
+      }
+    });
   }
 
   @override
@@ -49,6 +55,7 @@ class _ScanQRScreenState extends ConsumerState<ScanQRScreen> with WidgetsBinding
 
   @override
   Widget build(BuildContext context) {
+    final gameNotifier = ref.watch(gameNotifierProvider);
     final qrScanNotifier = ref.read(qrScanViewModelProvider.notifier);
     final qrScanState = ref.watch(qrScanViewModelProvider);
     final qrCode = qrScanState.value?.qrCode;
@@ -57,72 +64,83 @@ class _ScanQRScreenState extends ConsumerState<ScanQRScreen> with WidgetsBinding
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+            ref.read(qrScanViewModelProvider.notifier).reset();
+          },
           icon: const Icon(Icons.arrow_back),
         ),
         title: const Text('Сканирование QR-кода'),
       ),
       body:
-        Center(
-          child: Column(
-            children: [
-              Text('Scan QR Screen'),
-              TextButton(
-                onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(0, GameAction.accept),
-                child: const Text('Accept last game in DB')
-              ),
+        gameNotifier.when(
+          data: (data) =>
+            Center(
+              child: Column(
+                children: [
+                  Text('Scan QR Screen'),
+                  TextButton(
+                    onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(0, GameAction.accept),
+                    child: const Text('Accept last game in DB')
+                  ),
 
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      height: 300,
-                      child: MobileScanner(
-                        controller: controller,
-                        onDetect: qrScanNotifier.handleBarcode,
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 300,
-                      child: Container(
-                        color: const Color.fromARGB(103, 62, 184, 228),
-                        child: null,
-                      ),
-                    ),
-                    Positioned.fill(
-                      bottom: 0,
-                      child: BgWave(),
-                    ),
-                    Positioned.fill(
-                      child: PeriscopeRuler(),
-                    ),
-                    Positioned.fill(
-                      child: PeriscopeOverlay(),
-                    ),
-                  ],
-                ),
-              ),
-
-              if (qrCode?.isNotEmpty == true)
-                if (gameId != null)
-                  ElevatedButton(
-                    onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(gameId, GameAction.accept),
-                    child: Text('Принять игру #$gameId')
-                  )
-                else
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Неверный QR-код',
-                      style: const TextStyle(color: Colors.red),
+                    padding: const EdgeInsets.all(24.0),
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 300,
+                          child: MobileScanner(
+                            controller: controller,
+                            onDetect: qrScanNotifier.handleBarcode,
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 300,
+                          child: Container(
+                            color: const Color.fromARGB(103, 62, 184, 228),
+                            child: null,
+                          ),
+                        ),
+                        Positioned.fill(
+                          bottom: 0,
+                          child: BgWave(),
+                        ),
+                        Positioned.fill(
+                          child: PeriscopeRuler(),
+                        ),
+                        Positioned.fill(
+                          child: PeriscopeOverlay(),
+                        ),
+                      ],
                     ),
                   ),
-            ],
+
+                  if (qrCode?.isNotEmpty == true)
+                    if (gameId != null)
+                      ElevatedButton(
+                        onPressed: () => ref.read(gameNotifierProvider.notifier).updateGame(gameId, GameAction.accept),
+                        child: Text('Принять игру #$gameId')
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Неверный QR-код',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                ],
+              ),
+            ),
+          error: (error, stackTrace) => MyErrorWidget(
+            error: 'Error: $error',
+            retryCallback: () => ref.read(gameNotifierProvider.notifier).updateGame(gameId ?? 0, GameAction.accept)
           ),
-        )
+          loading: () => const Center(child: CircularProgressIndicator()),
+        ),
     );
   }
 }

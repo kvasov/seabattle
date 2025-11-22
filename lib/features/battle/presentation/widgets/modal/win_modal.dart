@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
+import 'package:seabattle/shared/providers/navigation_provider.dart';
 
 class WinModal extends ConsumerWidget {
   const WinModal({super.key});
@@ -13,6 +14,7 @@ class WinModal extends ConsumerWidget {
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
+            ref.read(navigationProvider.notifier).goToHomeScreen();
           },
           child: const Text('OK'),
         ),

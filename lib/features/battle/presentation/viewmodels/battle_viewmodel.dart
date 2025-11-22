@@ -22,6 +22,7 @@ class BattleViewModelState {
   final int gridSize;
   final bool myMove;
   final GridPosition? cursorPosition;
+  final Shot? lastShot;
 
   BattleViewModelState({
     required this.ships,
@@ -34,6 +35,7 @@ class BattleViewModelState {
     required this.gridSize,
     required this.myMove,
     this.cursorPosition,
+    this.lastShot,
   });
 
   BattleViewModelState copyWith({
@@ -47,6 +49,7 @@ class BattleViewModelState {
     int? gridSize,
     bool? myMove,
     GridPosition? cursorPosition,
+    Shot? lastShot,
   }) {
     return BattleViewModelState(
       ships: ships ?? this.ships,
@@ -59,6 +62,7 @@ class BattleViewModelState {
       gridSize: gridSize ?? this.gridSize,
       myMove: myMove ?? this.myMove,
       cursorPosition: cursorPosition ?? this.cursorPosition,
+      lastShot: lastShot ?? this.lastShot,
     );
   }
 
@@ -72,7 +76,7 @@ class BattleViewModelState {
      isLoading: $isLoading,
      isError: $isError,
      errorMessage: $errorMessage,
-     gridSize: $gridSize, myMove: $myMove, cursorPosition: $cursorPosition)''';
+     gridSize: $gridSize, myMove: $myMove, cursorPosition: $cursorPosition, lastShot: $lastShot)''';
   }
 }
 
@@ -184,21 +188,49 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   }
 
   Future<void> sendShot(int x, int y) async {
+    final lastShot = Shot(x, y);
+    state = AsyncValue.data(
+      state.value!.copyWith(lastShot: lastShot),
+    );
     debugPrint('💚❤️ sendShot: $x, $y');
     final id = ref.read(gameNotifierProvider).value?.game?.id ?? 0;
     final userUniqueId = ref.read(userUniqueIdProvider);
     // debugPrint('💚 sendShot - вызов');
-    state = const AsyncValue.loading();
+    // state = const AsyncValue.loading();
     try {
-      await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
-      await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
-      if (allOpponentShipsDead()) {
-        // debugPrint('🎉 WIN!!!');
-        ref.read(navigationProvider.notifier).pushWinModal();
-        await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
+      final result = await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
+      if (result.isError) {
+        debugPrint('💚❤️♠️ sendShot error: ${result.error?.description ?? 'Unknown error'}');
+        state = AsyncValue.data(
+          state.value!.copyWith(isError: true, errorMessage: result.error?.description ?? 'Unknown error'),
+        );
+      } else {
+        state = AsyncValue.data(
+          state.value!.copyWith(isError: false, errorMessage: ''),
+        );
+        await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
+        if (allOpponentShipsDead()) {
+          // debugPrint('🎉 WIN!!!');
+          ref.read(navigationProvider.notifier).pushWinModal();
+          await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
+        }
       }
+
     } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+      debugPrint('💚❤️♠️ sendShot error: $e');
+      state = AsyncValue.data(
+        state.value!.copyWith(isError: true, errorMessage: e.toString()),
+      );
+    }
+  }
+
+  void sendLastShot() {
+    debugPrint('💚❤️♠️ sendLastShot');
+    final lastShot = state.value!.lastShot;
+    debugPrint('💚❤️♠️ lastShot: $lastShot');
+    if (lastShot != null) {
+      debugPrint('💚❤️♠️ sendLastShot - вызов sendShot');
+      sendShot(lastShot.x, lastShot.y);
     }
   }
 
