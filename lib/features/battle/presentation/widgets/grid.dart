@@ -88,21 +88,21 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
       data: (cache) => Stack(
         children: [
           CustomPaint(
-              size: Size(cellSize * gridSize, cellSize * gridSize),
-              painter: SeaBattlePainter(
-                myShips: widget.myShips,
-                ships: ships,
-                battleMode: true,
-                field: field ?? List.generate(
-                  gridSize,
-                  (_) => List.generate(gridSize, (_) => CellState.empty),
-                ),
-                cellSize: cellSize,
-                shipsImagesCache: cache,
-                waveAnimation: _waveAnimation,
-                isCheaterMode: isCheater,
+            size: Size(cellSize * gridSize, cellSize * gridSize),
+            painter: SeaBattlePainter(
+              myShips: widget.myShips,
+              ships: ships,
+              battleMode: true,
+              field: field ?? List.generate(
+                gridSize,
+                (_) => List.generate(gridSize, (_) => CellState.empty),
               ),
+              cellSize: cellSize,
+              shipsImagesCache: cache,
+              waveAnimation: _waveAnimation,
+              isCheaterMode: isCheater,
             ),
+          ),
           if (cursorPosition != null && isCursorVisible && battleViewModelState?.myMove == true)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
