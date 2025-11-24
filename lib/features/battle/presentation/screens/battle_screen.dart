@@ -87,15 +87,6 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               Center(
                 child: BattleGrid(myShips: false),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-              //   child: Text(
-              //     battleViewModelState?.myMove == true ? 'Ваш ход' : 'Ход соперника',
-              //     style: TextStyle(
-              //       color: battleViewModelState?.myMove == true ? Colors.green : Colors.red
-              //     )
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: ArrowRive(),

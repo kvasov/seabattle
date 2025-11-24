@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/utils/ship_painter.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
+import 'package:seabattle/features/battle/presentation/widgets/dead_ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
@@ -115,6 +116,8 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
             ),
           if (!widget.myShips && (accelerometerBallData?.isReceivingData == true))
             BallWidget(containerSize: cellSize * gridSize),
+          if (battleViewModelState?.showDeathOfShip == true && !widget.myShips)
+            DeadShipWidget(ship: battleViewModelState!.lastDeadShip!, gridSize: gridSize),
 
         ],
       ),

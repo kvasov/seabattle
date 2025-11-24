@@ -30,7 +30,6 @@ class SeaBattlePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // debugPrint('🤍🧡🤍💚🤍🩵🤍🤎🤍 paint: ${waveAnimation?.value}');
     // Заливка пустых клеток
     final emptyPaint =
         Paint()

@@ -73,7 +73,11 @@ class Ship {
       }
     }
     return true;
+  }
 
+  // проверить убит ли корабль этим выстрелом
+  bool isDeadByShot(Shot shot, List<Shot> shots) {
+    return isWounded(shot.x, shot.y) && isDead(shots);
   }
 }
 

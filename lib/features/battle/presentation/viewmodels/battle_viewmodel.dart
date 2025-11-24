@@ -1,6 +1,7 @@
-import 'package:seabattle/shared/entities/ship.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/core/constants/ships.dart';
+import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
@@ -25,6 +26,8 @@ class BattleViewModelState {
   final bool myMove;
   final GridPosition? cursorPosition;
   final Shot? lastShot;
+  final bool? showDeathOfShip;
+  final Ship? lastDeadShip;
 
   BattleViewModelState({
     required this.ships,
@@ -38,6 +41,8 @@ class BattleViewModelState {
     required this.myMove,
     this.cursorPosition,
     this.lastShot,
+    this.showDeathOfShip = false,
+    this.lastDeadShip,
   });
 
   BattleViewModelState copyWith({
@@ -52,6 +57,8 @@ class BattleViewModelState {
     bool? myMove,
     GridPosition? cursorPosition,
     Shot? lastShot,
+    bool? showDeathOfShip,
+    Ship? lastDeadShip,
   }) {
     return BattleViewModelState(
       ships: ships ?? this.ships,
@@ -65,6 +72,8 @@ class BattleViewModelState {
       myMove: myMove ?? this.myMove,
       cursorPosition: cursorPosition ?? this.cursorPosition,
       lastShot: lastShot ?? this.lastShot,
+      showDeathOfShip: showDeathOfShip ?? this.showDeathOfShip,
+      lastDeadShip: lastDeadShip ?? this.lastDeadShip,
     );
   }
 
@@ -165,6 +174,18 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
     if (isHit(x, y)) {
       await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalHits');
+      for (var ship in state.value?.opponentShips ?? []) {
+        if (ship.isDeadByShot(shot, state.value!.shots)) {
+          state = AsyncValue.data(
+            state.value!.copyWith(showDeathOfShip: true, lastDeadShip: ship),
+          );
+          Future.delayed(const Duration(milliseconds: shipExplosionDuration), () {
+            state = AsyncValue.data(
+              state.value!.copyWith(showDeathOfShip: false, lastDeadShip: null),
+            );
+          });
+        }
+      }
       setMyMove(true);
     } else {
       setMyMove(false);
