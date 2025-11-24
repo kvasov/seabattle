@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/shared/providers/vibration_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

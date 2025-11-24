@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/settings/presentation/widgets/ble.dart';
 import 'package:seabattle/features/settings/presentation/widgets/accelerometer.dart';
 import 'package:seabattle/features/settings/presentation/widgets/color_scheme.dart';
+import 'package:seabattle/features/settings/presentation/widgets/vibration.dart';
 import 'package:seabattle/features/settings/presentation/widgets/locale.dart';
 import 'package:seabattle/features/settings/presentation/widgets/theme.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
@@ -35,6 +36,8 @@ class SettingsScreen extends ConsumerWidget {
           const BLEWidget(),
           const SizedBox(height: 12),
           const AccelerometerBallWidget(),
+          const SizedBox(height: 12),
+          const VibrationWidget(),
         ],
       ),
     );

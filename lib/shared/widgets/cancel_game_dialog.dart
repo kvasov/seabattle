@@ -4,11 +4,16 @@ import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 
-class CancelGameDialog extends ConsumerWidget {
+class CancelGameDialog extends ConsumerStatefulWidget {
   const CancelGameDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CancelGameDialog> createState() => _CancelGameDialogState();
+}
+
+class _CancelGameDialogState extends ConsumerState<CancelGameDialog> {
+  @override
+  Widget build(BuildContext context) {
     final gameState = ref.watch(gameNotifierProvider);
     final gameId = gameState.value?.game?.id;
 
@@ -24,16 +29,31 @@ class CancelGameDialog extends ConsumerWidget {
         ),
         TextButton(
           onPressed: () async {
-            Navigator.of(context).pop();
             final id = gameId;
-            if (id != null) {
-              // Ждем завершения операции отмены игры
-              await ref.read(gameNotifierProvider.notifier).updateGame(id, GameAction.cancel);
-              // Проверяем состояние провайдера после завершения операции
-              final gameState = ref.read(gameNotifierProvider);
-              if (gameState.value?.isError != true) {
+            if (id == null) {
+              Navigator.of(context).pop();
+              return;
+            }
+
+            // Сохраняем ссылки на провайдеры ДО закрытия диалога
+            final gameNotifier = ref.read(gameNotifierProvider.notifier);
+            final navigationNotifier = ref.read(navigationProvider.notifier);
+
+            // Закрываем диалог
+            Navigator.of(context).pop();
+
+            // Ждем завершения операции отмены игры
+            await gameNotifier.updateGame(id, GameAction.cancel);
+
+            // Проверяем состояние провайдера после завершения операции
+            // В StatefulWidget ref безопасен для использования даже после pop()
+            if (mounted) {
+              final updatedGameState = ref.read(gameNotifierProvider);
+              if (!updatedGameState.hasError && updatedGameState.value?.isError != true) {
                 debugPrint('🔥 cancelGameDialog: ошибки нет, переходим на homeScreen');
-                ref.read(navigationProvider.notifier).goToHomeScreen();
+                navigationNotifier.goToHomeScreen();
+              } else {
+                debugPrint('🔥 cancelGameDialog: ошибка в gameNotifier, не переходим на homeScreen');
               }
             }
           },

@@ -15,6 +15,7 @@ class SeaBattlePainter extends CustomPainter {
   final Animation<double>? waveAnimation;
   final double rotationAmplitude;
   final bool? isCheaterMode;
+
   SeaBattlePainter({
     this.myShips = true,
     this.shipsImagesCache,

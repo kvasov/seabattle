@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/user_provider.dart';
+import 'package:seabattle/shared/providers/vibration_provider.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/utils/cursor_position_utils.dart';
@@ -173,18 +174,30 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
   bool isHit(int x, int y) {
     if (state.value?.opponentShips.any((ship) => ship.isWounded(x, y)) ?? false) {
+      ref.read(vibrationNotifierProvider.notifier).vibrateHit();
+      return true;
+    } else {
+      ref.read(vibrationNotifierProvider.notifier).vibrateMiss();
+      return false;
+    }
+  }
+
+  bool allOpponentShipsDead() {
+    if (state.value?.opponentShips.every((ship) => ship.isDead(state.value!.shots)) ?? false) {
+      ref.read(vibrationNotifierProvider.notifier).vibrateDeath();
       return true;
     } else {
       return false;
     }
   }
 
-  bool allOpponentShipsDead() {
-    return state.value?.opponentShips.every((ship) => ship.isDead(state.value!.shots)) ?? false;
-  }
-
   bool allShipsDead() {
-    return state.value?.ships.every((ship) => ship.isDead(state.value!.opponentShots)) ?? false;
+    if (state.value?.ships.every((ship) => ship.isDead(state.value!.opponentShots)) ?? false) {
+      ref.read(vibrationNotifierProvider.notifier).vibrateDeath();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> sendShot(int x, int y) async {
