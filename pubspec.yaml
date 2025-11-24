@@ -48,6 +48,7 @@ flutter:
     - assets/images/ships/
     - assets/images/error.jpg
     - assets/sounds/
+    - assets/rive/
 
   fonts:
     - family: Roboto
