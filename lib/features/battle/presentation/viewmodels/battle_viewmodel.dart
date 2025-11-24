@@ -11,6 +11,7 @@ import 'package:seabattle/utils/cursor_position_utils.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/shared/providers/accelerometer_provider.dart';
+import 'package:seabattle/shared/providers/sound_provider.dart';
 
 class BattleViewModelState {
   final List<Ship> ships;
@@ -175,9 +176,11 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   bool isHit(int x, int y) {
     if (state.value?.opponentShips.any((ship) => ship.isWounded(x, y)) ?? false) {
       ref.read(vibrationNotifierProvider.notifier).vibrateHit();
+      ref.read(soundNotifierProvider.notifier).playSound('hit');
       return true;
     } else {
       ref.read(vibrationNotifierProvider.notifier).vibrateMiss();
+      ref.read(soundNotifierProvider.notifier).playSound('miss');
       return false;
     }
   }
@@ -224,6 +227,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
         await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
         if (allOpponentShipsDead()) {
           // debugPrint('🎉 WIN!!!');
+          ref.read(soundNotifierProvider.notifier).playSound('win');
           ref.read(navigationProvider.notifier).pushWinModal();
           await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
         }

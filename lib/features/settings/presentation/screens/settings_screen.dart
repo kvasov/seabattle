@@ -8,6 +8,7 @@ import 'package:seabattle/features/settings/presentation/widgets/locale.dart';
 import 'package:seabattle/features/settings/presentation/widgets/theme.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
+import 'package:seabattle/features/settings/presentation/widgets/sound.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -38,6 +39,8 @@ class SettingsScreen extends ConsumerWidget {
           const AccelerometerBallWidget(),
           const SizedBox(height: 12),
           const VibrationWidget(),
+          const SizedBox(height: 12),
+          const SoundWidget(),
         ],
       ),
     );
