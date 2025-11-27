@@ -33,7 +33,7 @@ class _BgWaveState extends State<BgWave> with SingleTickerProviderStateMixin {
   }
 
   // Функция для генерации волновой линии
-  Path _createWavePath(double width, double height, double offset) {
+  Path _createWavePath(double width, double height, double offset, int index) {
     final path = Path();
     // Настройки волны
     const double amplitude = 10;
@@ -43,7 +43,7 @@ class _BgWaveState extends State<BgWave> with SingleTickerProviderStateMixin {
     const double omega = 1.5;
 
     for (double x = 0; x <= width; x += 5) {
-      final y = height * 0.2 + amplitude * math.sin(k * (x + 100)) * math.cos(omega * offset)
+      final y = height * 0.2 - index * 10 + amplitude * math.sin(k * (x + 100)) * math.cos(omega * offset)
         + amplitude * math.sin(k * (x + 200) /2) * math.cos(omega * offset /2)
         + amplitude * 1.5 * math.sin(k * x /12) * math.cos(omega * offset /17);
       if (x == 0) {
@@ -76,7 +76,7 @@ class _BgWaveState extends State<BgWave> with SingleTickerProviderStateMixin {
 
 class _WavePainter extends CustomPainter {
   final double waveOffset;
-  final Path Function(double width, double height, double offset) createWavePath;
+  final Path Function(double width, double height, double offset, int index) createWavePath;
 
   _WavePainter({
     required this.waveOffset,
@@ -92,11 +92,14 @@ class _WavePainter extends CustomPainter {
       {'offset': waveOffset * 0.7, 'color': Color.fromARGB(175, 23, 86, 131), 'height': size.height},
     ];
 
-    for (final wave in waves) {
+    for (final entry in waves.asMap().entries) {
+      final index = entry.key;
+      final wave = entry.value;
       final wavePath = createWavePath(
         size.width,
         wave['height'] as double,
         wave['offset'] as double,
+        index,
       );
 
       final alpha = 0.5 + 0.2 * math.sin((wave['offset'] as double) + 0.5);

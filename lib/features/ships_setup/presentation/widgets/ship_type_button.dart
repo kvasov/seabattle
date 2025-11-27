@@ -9,16 +9,24 @@ class ShipTypeButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final setupShipsProvider = ref.read(setupShipsViewModelProvider);
+    final setupShipsNotifier = ref.read(setupShipsViewModelProvider.notifier);
+    final setupShipsState = setupShipsProvider.value;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: ElevatedButton(
         onPressed:
-          () => ref.read(setupShipsViewModelProvider.notifier).setSelectedShipSize(shipSize),
+          () => setupShipsNotifier.setSelectedShipSize(shipSize),
         style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          textStyle: TextStyle(fontSize: 12),
           backgroundColor:
-              ref.watch(setupShipsViewModelProvider).value?.selectedShipSize == shipSize ? Colors.blue : null,
+              setupShipsState?.selectedShipSize == shipSize
+                ? Colors.blue
+                : null,
         ),
-        child: Text('$shipSize-палуб: ${ref.watch(setupShipsViewModelProvider).value?.shipsToPlace[shipSize]}'),
+        child: Text('$shipSize-п:\n ${setupShipsState?.shipsToPlace[shipSize]}'),
       ),
     );
   }

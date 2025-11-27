@@ -72,8 +72,8 @@ class TranslationsHomeEn {
 	/// en: 'Join game'
 	String get joinGame => 'Join game';
 
-	/// en: 'Home'
-	String get home => 'Home';
+	/// en: 'SEA BATTLE'
+	String get title => 'SEA BATTLE';
 
 	/// en: 'Settings'
 	String get settings => 'Settings';

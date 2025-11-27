@@ -184,20 +184,37 @@ class GameNotifier extends AsyncNotifier<GameState> {
       ref.read(userUniqueIdProvider),
       ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
     );
+
     if (result.isError) {
       debugPrint('🔥 startGame: ошибка - ${result.error}');
       state = AsyncValue.error(result.error?.description ?? 'Unknown error', StackTrace.current);
       return;
     }
-    // Перемещаем свои корабли в BattleViewModelNotifier
+
     final isMaster = state.value!.game!.master ?? false;
+    // Предлагающий игру ходит вторым
     final myMove = !isMaster;
+
+    // Убеждаемся, что battleViewModelProvider инициализирован перед установкой кораблей
+    // Это предотвратит перезапись состояния при первом обращении через ref.watch()
+    final battleState = ref.read(battleViewModelProvider);
+    if (!battleState.hasValue) {
+      debugPrint('🔄🤍 startGame: инициализация battleViewModelProvider...');
+      await ref.read(battleViewModelProvider.future);
+      debugPrint('🔄🤍 startGame: battleViewModelProvider инициализирован');
+    }
+
+    final shipsToSet = ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? [];
+
+    // Перемещаем свои корабли в BattleViewModelNotifier
     ref.read(battleViewModelProvider.notifier)
       ..setShips(
         mode: 'self',
-        ships: ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
+        ships: shipsToSet
       )
       ..setMyMove(myMove);
+
+    // Переходим на экран битвы
     ref.read(navigationProvider.notifier).pushBattleScreen();
 
     final newState = currentState!.copyWith(game: newGame);

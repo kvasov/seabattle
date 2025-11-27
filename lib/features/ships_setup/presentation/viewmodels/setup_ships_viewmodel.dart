@@ -2,8 +2,8 @@ import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
-import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor_position_utils.dart';
+import 'package:seabattle/utils/ship_placement_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -117,41 +117,15 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
   }
 
   bool canPlaceShip(int x, int y, int size, ShipOrientation orientation) {
-    final field = makeField(
-      ships: state.value!.ships,
-      gridSize: state.value!.gridSize,
-      isCursorVisible: state.value!.isCursorVisible ?? false,
+    // Используем чистую функцию, которая может работать и в изоляте
+    return canPlaceShipPure(
+      x,
+      y,
+      size,
+      orientation,
+      state.value!.ships,
+      state.value!.gridSize,
     );
-    // Для каждой палубы
-    for (int i = 0; i < size; i++) {
-      int nx = x + (orientation == ShipOrientation.horizontal ? i : 0);
-      int ny = y + (orientation == ShipOrientation.vertical ? i : 0);
-      // Если координаты выходят за границы поля, то корабль нельзя разместить
-      if (nx < 0 || nx >= state.value!.gridSize || ny < 0 || ny >= state.value!.gridSize) return false;
-      // Если клетка не пустая, то корабль нельзя разместить
-      if (field[ny][nx] != CellState.empty) return false;
-    }
-
-    // Проверяем ореол только вокруг каждой палубы
-    // Для каждой палубы
-    for (int i = 0; i < size; i++) {
-      int cx = x + (orientation == ShipOrientation.horizontal ? i : 0);
-      int cy = y + (orientation == ShipOrientation.vertical ? i : 0);
-      // Для каждой клетки в ореоле
-      for (int dx = -1; dx <= 1; dx++) {
-        for (int dy = -1; dy <= 1; dy++) {
-          int nx = cx + dx;
-          int ny = cy + dy;
-          // Если координаты в границах поля
-          if (nx >= 0 && nx < state.value!.gridSize && ny >= 0 && ny < state.value!.gridSize) {
-            // Если клетка занята другим кораблем, то корабль нельзя разместить
-            if (field[ny][nx] == CellState.ship) return false;
-          }
-        }
-      }
-    }
-
-    return true;
   }
 
   void handleTapDown(TapDownDetails details) {

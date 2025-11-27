@@ -61,8 +61,8 @@ class _TranslationsHomeRu implements TranslationsHomeEn {
 
 	// Translations
 	@override String get proposeGame => 'Предложить игру';
-	@override String get joinGame => 'Присоединиться к игре';
-	@override String get home => 'Главная';
+	@override String get joinGame => 'Принять игру';
+	@override String get title => 'МОРСКОЙ БОЙ';
 	@override String get settings => 'Настройки';
 }
 

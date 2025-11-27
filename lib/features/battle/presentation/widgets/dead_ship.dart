@@ -63,7 +63,9 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
       }
 
       // Контекст готов, запускаем взрыв
-      _explode();
+      Future.delayed(const Duration(milliseconds: 200), () {
+        _explode();
+      });
     });
   }
 
@@ -157,14 +159,18 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
                           },
                         ),
                       )
-                    : RepaintBoundary(
-                        key: _repaintKey,
-                        child: SizedBox(
-                          width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
-                          height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
-                          child: Image.asset('assets/images/ships/x${widget.ship.size}.png'),
+                    : Stack(
+                      children: [
+                        RepaintBoundary(
+                          key: _repaintKey,
+                          child: SizedBox(
+                            width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
+                            height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
+                            child: Image.asset('assets/images/ships/x${widget.ship.size}.png'),
+                          ),
                         ),
-                      ),
+                      ],
+                    ),
 
               ),
             ),

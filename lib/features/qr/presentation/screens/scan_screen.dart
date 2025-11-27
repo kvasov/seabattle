@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/qr/presentation/widgets/periscope_overlay.dart';
-import 'package:seabattle/features/qr/presentation/widgets/bg_wave.dart';
+import 'package:seabattle/utils/bg_wave.dart';
 import 'package:seabattle/features/qr/presentation/widgets/periscope_ruler.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/entities/game.dart';

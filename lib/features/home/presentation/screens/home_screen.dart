@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seabattle/shared/providers/navigation_provider.dart';
-import 'package:seabattle/app/i18n/strings.g.dart';
-import 'package:seabattle/shared/providers/vibration_provider.dart';
+import 'package:seabattle/features/home/presentation/widgets/create_game.dart';
+import 'package:seabattle/features/home/presentation/widgets/accept_game.dart';
+import 'package:seabattle/features/home/presentation/widgets/settings.dart';
+import 'package:seabattle/features/home/presentation/widgets/title.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -14,86 +15,39 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final t = context.t;
-
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: Center(
-            child: Column(
-              children: [
-                Text(
-                  t.etc.bottomNavigationBar.home,
-                  style: TextStyle(
-                    color: Colors.lightBlueAccent,
-                    fontFamily: 'Roboto',
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Image.asset('assets/images/bg.png', fit: BoxFit.cover),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    TitleWidget(),
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        CreateGame(),
+                        AcceptGame(),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Settings(),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: () {
-                    ref.read(navigationProvider.notifier).pushCreateGameScreen();
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.qr_code),
-                      Text(
-                        t.home.proposeGame,
-                        style: TextStyle(
-                          color: Colors.lightBlueAccent,
-                          fontFamily: 'Roboto',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(navigationProvider.notifier).pushScanQRScreen();
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.camera_alt),
-                      Text(
-                        t.home.joinGame,
-                        style: TextStyle(
-                          color: Colors.lightBlueAccent,
-                          fontFamily: 'Roboto',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(navigationProvider.notifier).pushSettingsScreen();
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.settings),
-                      Text(
-                        t.home.settings,
-                        style: TextStyle(
-                          color: Colors.lightBlueAccent,
-                          fontFamily: 'Roboto',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

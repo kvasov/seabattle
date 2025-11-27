@@ -17,7 +17,7 @@ class QRRemoteDataSourceImpl implements QRRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> createGame() async {
-    debugPrint('💛 QRRemoteDataSourceImpl createGame - вызов dio');
+    // debugPrint('💛 QRRemoteDataSourceImpl createGame - вызов dio');
     try {
       final Dio dio = _dio;
       final response = await dio.post(
@@ -26,13 +26,13 @@ class QRRemoteDataSourceImpl implements QRRemoteDataSource {
           'name': 'test',
         },
       );
-      debugPrint('💚 QRRemoteDataSourceImpl createGame - получен response: $response');
+      // debugPrint('💚 QRRemoteDataSourceImpl createGame - получен response: $response');
       return response.data;
     } on DioException catch (e) {
-      debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
+      // debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
       throw Exception(e.response?.data['error'] ?? 'Network error');
     } catch (e) {
-      debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
+      // debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
       throw Exception('Failed to create game: $e');
     }
   }
@@ -76,13 +76,13 @@ class QRRemoteDataSourceImpl implements QRRemoteDataSource {
           break;
       }
 
-      debugPrint('💚 QRRemoteDataSourceImpl updateGame - получен response: $response');
+      // debugPrint('💚 QRRemoteDataSourceImpl updateGame - получен response: $response');
       return response.data;
     } on DioException catch (e) {
-      debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
+      // debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
       throw Exception(e.response?.data['error'] ?? 'Network error');
     } catch (e) {
-      debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
+      // debugPrint('💚 QRRemoteDataSourceImpl createGame - ошибка: $e');
       throw Exception('Failed to create game: $e');
     }
   }
