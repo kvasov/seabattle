@@ -28,6 +28,7 @@ class BattleViewModelState {
   final Shot? lastShot;
   final bool? showDeathOfShip;
   final Ship? lastDeadShip;
+  final bool showFirework;
 
   BattleViewModelState({
     required this.ships,
@@ -43,6 +44,7 @@ class BattleViewModelState {
     this.lastShot,
     this.showDeathOfShip = false,
     this.lastDeadShip,
+    this.showFirework = false,
   });
 
   BattleViewModelState copyWith({
@@ -59,6 +61,7 @@ class BattleViewModelState {
     Shot? lastShot,
     bool? showDeathOfShip,
     Ship? lastDeadShip,
+    bool? showFirework,
   }) {
     return BattleViewModelState(
       ships: ships ?? this.ships,
@@ -74,6 +77,7 @@ class BattleViewModelState {
       lastShot: lastShot ?? this.lastShot,
       showDeathOfShip: showDeathOfShip ?? this.showDeathOfShip,
       lastDeadShip: lastDeadShip ?? this.lastDeadShip,
+      showFirework: showFirework ?? this.showFirework,
     );
   }
 
@@ -97,8 +101,8 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     return _initialState();
   }
 
+  // Обработка сообщения от ESP32
   Future<void> handleESP32Message(String value) async {
-    // debugPrint('⌖ handleESP32Message: $value');
     if (value == 'fire') {
       if (!state.value!.myMove) {
         return;
@@ -109,6 +113,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
   }
 
+  // Установка курсора при получении сообщения от ESP32
   void setCursorPosition(String value) {
     final newCursorPosition = calculateNewCursorPosition(
       state.value!.cursorPosition,
@@ -121,15 +126,17 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     state = AsyncValue.data(newState);
   }
 
+  // Установка кораблей (собственные или противника)
   void setShips({required String mode, required List<Ship> ships}) {
     final currentState = _currentState();
     state = AsyncValue.data(
       mode == 'self'
-          ? currentState.copyWith(ships: ships)
-          : currentState.copyWith(opponentShips: ships),
+        ? currentState.copyWith(ships: ships)
+        : currentState.copyWith(opponentShips: ships),
     );
   }
 
+  // Выстрел по координатам тапа
   Future<void> handleTapDown(TapDownDetails details) async {
     final accelerometerData = ref.read(accelerometerNotifierProvider).value;
     final isConnected = ref.read(bleNotifierProvider).value?.isConnected ?? false;
@@ -137,7 +144,6 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       return;
     }
     final localPosition = details.localPosition;
-    // debugPrint('⌖ localPosition: $localPosition');
     final cellSize = ref.watch(cellSizeProvider);
     final x = (localPosition.dx ~/ cellSize).clamp(0, state.value!.gridSize - 1);
     final y = (localPosition.dy ~/ cellSize).clamp(0, state.value!.gridSize - 1);
@@ -146,10 +152,9 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     // debugPrint('⌖ globalPosition: $globalPosition');
 
     await makeShot(x, y);
-
-    // debugPrint('💚 state: ${state.value?.toString()}');
   }
 
+  // Выстрел по координатам шарика
   Future<void> handleBallTapDown(int ballX, int ballY) async {
     debugPrint('💚❤️ handleBallTapDown: $ballX, $ballY');
     if (!state.value!.myMove) {
@@ -162,8 +167,8 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     await makeShot(x, y);
   }
 
+  // Сам выстрел
   Future<void> makeShot(int x, int y) async {
-    debugPrint('💚❤️ makeShot: $x, $y');
     final shot = Shot(x, y);
     if (state.value?.shots.any((shot) => shot.x == x && shot.y == y) ?? false) {
       return;
@@ -179,7 +184,8 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
           state = AsyncValue.data(
             state.value!.copyWith(showDeathOfShip: true, lastDeadShip: ship),
           );
-          Future.delayed(const Duration(milliseconds: shipExplosionDuration), () {
+          // уничтожаем виджет после завершения анимации появления и взрыва
+          Future.delayed(const Duration(milliseconds: shipFadeInDuration + shipExplosionDuration), () {
             state = AsyncValue.data(
               state.value!.copyWith(showDeathOfShip: false, lastDeadShip: null),
             );
@@ -194,6 +200,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     sendShot(x, y);
   }
 
+  // Проверка на попадание
   bool isHit(int x, int y) {
     if (state.value?.opponentShips.any((ship) => ship.isWounded(x, y)) ?? false) {
       ref.read(vibrationNotifierProvider.notifier).vibrateHit();
@@ -206,6 +213,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
   }
 
+  // Проверка на уничтожение всех кораблей противника
   bool allOpponentShipsDead() {
     if (state.value?.opponentShips.every((ship) => ship.isDead(state.value!.shots)) ?? false) {
       ref.read(vibrationNotifierProvider.notifier).vibrateDeath();
@@ -215,6 +223,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
   }
 
+  // Проверка на уничтожение всех своих кораблей
   bool allShipsDead() {
     if (state.value?.ships.every((ship) => ship.isDead(state.value!.opponentShots)) ?? false) {
       ref.read(vibrationNotifierProvider.notifier).vibrateDeath();
@@ -224,12 +233,12 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
   }
 
+  // Отправка выстрела
   Future<void> sendShot(int x, int y) async {
     final lastShot = Shot(x, y);
     state = AsyncValue.data(
       state.value!.copyWith(lastShot: lastShot),
     );
-    debugPrint('💚❤️ sendShot: $x, $y');
     final id = ref.read(gameNotifierProvider).value?.game?.id ?? 0;
     final userUniqueId = ref.read(userUniqueIdProvider);
     // debugPrint('💚 sendShot - вызов');
@@ -248,9 +257,11 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
         await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalShots');
         if (allOpponentShipsDead()) {
           // debugPrint('🎉 WIN!!!');
-          ref.read(soundNotifierProvider.notifier).playSound('win');
-          ref.read(navigationProvider.notifier).pushWinModal();
-          await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
+          Future.delayed(const Duration(milliseconds: shipExplosionDuration + shipFadeInDuration), () {
+            ref.read(soundNotifierProvider.notifier).playSound('win');
+            ref.read(navigationProvider.notifier).pushWinModal();
+            ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalWins');
+          });
         }
       }
 
@@ -262,12 +273,10 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     }
   }
 
+  // Отправка последнего выстрела с экрана ошибки (в случае, если возникла ошибка при отправке выстрела)
   void sendLastShot() {
-    debugPrint('💚❤️♠️ sendLastShot');
     final lastShot = state.value!.lastShot;
-    debugPrint('💚❤️♠️ lastShot: $lastShot');
     if (lastShot != null) {
-      debugPrint('💚❤️♠️ sendLastShot - вызов sendShot');
       sendShot(lastShot.x, lastShot.y);
     }
   }
@@ -278,6 +287,16 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     );
   }
 
+  void showFirework() {
+    state = AsyncValue.data(
+      state.value!.copyWith(showFirework: true),
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      state = AsyncValue.data(
+        state.value!.copyWith(showFirework: false),
+      );
+    });
+  }
 
   void resetBattle() {
     state = AsyncValue.data(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/features/battle/providers/battle_provider.dart';
 
 class CheaterState {
   final bool isCheater;
@@ -65,6 +66,8 @@ class CheaterNotifier extends Notifier<CheaterState> {
       if (state.countTaps >= 3) {
         debugPrint('🟢 Читер включен');
         state = state.copyWith(isCheater: true);
+        final battleViewModelNotifier = ref.read(battleViewModelProvider.notifier);
+        battleViewModelNotifier.showFirework();
       }
     }
   }

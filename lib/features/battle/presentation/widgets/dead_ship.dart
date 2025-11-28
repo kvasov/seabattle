@@ -20,9 +20,11 @@ class DeadShipWidget extends ConsumerStatefulWidget {
   ConsumerState<DeadShipWidget> createState() => _DeadShipWidgetState();
 }
 
-class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTickerProviderStateMixin {
+class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProviderStateMixin {
   final GlobalKey _repaintKey = GlobalKey();
-  late AnimationController _controller;
+  late AnimationController _fadeInController;
+  late AnimationController _explosionController;
+  late Animation<double> _fadeAnimation;
   List<PixelParticle> _particles = [];
   bool _isExploding = false;
   Size? _widgetSize;
@@ -31,7 +33,17 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
+    // Контроллер для плавного появления картинки
+    _fadeInController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: shipFadeInDuration),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeInController, curve: Curves.easeIn),
+    );
+
+    // Контроллер для взрыва
+    _explosionController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: shipExplosionDuration),
     )..addListener(() {
@@ -47,31 +59,37 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
       }
     });
 
-    // Вызываем _explode после того, как виджет будет построен и контекст готов
-    _waitForContextAndExplode();
-  }
+    // Запускаем появление картинки
+    _fadeInController.forward();
 
-  void _waitForContextAndExplode() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-
-      final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) {
-        // Контекст ещё не готов, повторяем попытку
-        _waitForContextAndExplode();
-        return;
-      }
-
-      // Контекст готов, запускаем взрыв
-      Future.delayed(const Duration(milliseconds: 200), () {
+    // После завершения появления запускаем взрыв
+    _fadeInController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
         _explode();
-      });
+      }
     });
   }
 
+  // void _waitForContextAndExplode() {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (!mounted) return;
+
+  //     final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+  //     if (boundary == null) {
+  //       // Контекст ещё не готов, повторяем попытку
+  //       _waitForContextAndExplode();
+  //       return;
+  //     }
+
+  //     // Контекст готов, запускаем взрыв сразу (появление уже завершено)
+  //     _explode();
+  //   });
+  // }
+
   @override
   void dispose() {
-    _controller.dispose();
+    _fadeInController.dispose();
+    _explosionController.dispose();
     _particles.clear();
     super.dispose();
   }
@@ -96,6 +114,8 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
 
     final width = image.width;
     final height = image.height;
+    // Пикселей не так много, берем каждый.
+    // Если виджет большой, то берем каждый 2-й (3, 4, 5...)  пиксель.
     const pixelSize = 1;
     final newParticles = <PixelParticle>[];
 
@@ -126,7 +146,7 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
       _isExploding = true;
     });
 
-    _controller.forward(from: 0);
+    _explosionController.forward(from: 0);
   }
 
 
@@ -151,10 +171,10 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
                         width: _widgetSize!.width,
                         height: _widgetSize!.height,
                         child: AnimatedBuilder(
-                          animation: _controller,
+                          animation: _explosionController,
                           builder: (context, child) {
                             return CustomPaint(
-                              painter: PixelPainter(_particles, animationProgress: _controller.value),
+                              painter: PixelPainter(_particles, animationProgress: _explosionController.value),
                             );
                           },
                         ),
@@ -163,10 +183,18 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with SingleTick
                       children: [
                         RepaintBoundary(
                           key: _repaintKey,
-                          child: SizedBox(
-                            width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
-                            height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
-                            child: Image.asset('assets/images/ships/x${widget.ship.size}.png'),
+                          child: AnimatedBuilder(
+                            animation: _fadeAnimation,
+                            builder: (context, child) {
+                              return Opacity(
+                                opacity: _fadeAnimation.value,
+                                child: SizedBox(
+                                  width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
+                                  height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
+                                  child: Image.asset('assets/images/ships/x${widget.ship.size}.png'),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

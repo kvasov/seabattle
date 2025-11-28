@@ -8,6 +8,7 @@ import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/features/battle/presentation/viewmodels/battle_viewmodel.dart';
 import 'package:seabattle/shared/widgets/drawer.dart';
 import 'package:seabattle/shared/widgets/menu_btn.dart';
+import 'package:seabattle/shared/widgets/firework.dart';
 import 'package:seabattle/shared/widgets/my_error_widget.dart';
 import 'package:seabattle/features/battle/presentation/widgets/arrow_rive.dart';
 
@@ -111,9 +112,16 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                 ),
               ),
             ),
+            Center(
+              child: TextButton(
+                onPressed: () => ref.read(battleViewModelProvider.notifier).showFirework(), child: const Text('Show Firework')),
+            ),
           ],
         ),
         MenuBtn(scaffoldKey: _scaffoldKey),
+        if (battleViewModelState?.showFirework == true) ...[
+          const FireworkWidget(text: 'Поздравляем,\nтеперь вы читер'),
+        ],
       ],
     );
   }

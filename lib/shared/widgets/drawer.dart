@@ -11,6 +11,12 @@ class DrawerWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
 
+    ref.listen<bool>(cheaterProvider.select((state) => state.isCheater), (previous, next) {
+      if (next == true && context.mounted) {
+        Navigator.pop(context);
+      }
+    });
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
