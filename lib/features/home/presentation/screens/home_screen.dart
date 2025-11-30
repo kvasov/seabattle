@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:seabattle/features/home/presentation/widgets/create_game.dart';
 import 'package:seabattle/features/home/presentation/widgets/accept_game.dart';
 import 'package:seabattle/features/home/presentation/widgets/settings.dart';

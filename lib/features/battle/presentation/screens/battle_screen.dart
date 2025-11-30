@@ -11,6 +11,7 @@ import 'package:seabattle/shared/widgets/menu_btn.dart';
 import 'package:seabattle/shared/widgets/firework.dart';
 import 'package:seabattle/shared/widgets/my_error_widget.dart';
 import 'package:seabattle/features/battle/presentation/widgets/arrow_rive.dart';
+import 'package:seabattle/features/battle/presentation/widgets/arrow_lottie.dart';
 
 class BattleScreen extends ConsumerStatefulWidget {
   const BattleScreen({super.key});
@@ -88,10 +89,11 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               Center(
                 child: BattleGrid(myShips: false),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ArrowRive(),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+              //   child: ArrowRive(),
+              // ),
+              ArrowLottie(isMyMove: battleViewModelState?.myMove == true),
             ],
             Center(
               child: BattleGrid(myShips: true),

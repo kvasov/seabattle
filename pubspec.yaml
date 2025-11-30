@@ -29,6 +29,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   vibration: ^3.1.4
   just_audio: ^0.10.5
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +50,7 @@ flutter:
     - assets/images/error.jpg
     - assets/sounds/
     - assets/rive/
+    - assets/lottie/
 
   fonts:
     - family: Roboto
