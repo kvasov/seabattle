@@ -87,7 +87,8 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
             if (decoded['ships'] != null) {
               if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
                 final shipsRaw = decoded['ships'] as List<dynamic>;
-                debugPrint('💚 Получены корабли соперника');
+                // debugPrint('💚 Получены корабли соперника');
+                // debugPrint('💚 shipsRaw: $shipsRaw');
                 final opponentShips = shipsRaw
                     .map((ship) => Ship.fromJson(Map<String, dynamic>.from(ship as Map<String, dynamic>)))
                     .toList();
@@ -95,10 +96,12 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                 final gameNotifier = ref.read(gameNotifierProvider.notifier);
                 final gameState = gameNotifier.state.value;
                 if (gameState != null) {
+                  // debugPrint('💚 Устанавливаем корабли соперника: ${opponentShips}');
                   ref.read(battleViewModelProvider.notifier).setShips(
                     mode: 'opponent',
                     ships: opponentShips
                   );
+                  // debugPrint('💚 Установлены корабли соперника: ${ref.read(battleViewModelProvider).value?.opponentShips}');
                   gameNotifier.setOpponentReady();
 
                   // debugPrint('💚 opponentShips: $opponentShips');
@@ -113,15 +116,14 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
               if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
                 final shotX = decoded['x'] as int;
                 final shotY = decoded['y'] as int;
-                debugPrint('💚 Получен выстрел соперника на клетку ($shotX, $shotY)');
 
                 final battleViewModelNotifier = ref.read(battleViewModelProvider.notifier);
                 battleViewModelNotifier.addOpponentShot(shotX, shotY);
+
                 if (decoded['isHit'] == true) {
                   ref.read(bleNotifierProvider.notifier).sendInt(1);
                   battleViewModelNotifier.setMyMove(false);
                   if (battleViewModelNotifier.allShipsDead()) {
-                    debugPrint('☠️ LOSE!');
                     await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalLosses');
                     ref.read(navigationProvider.notifier).pushLoseModal();
                   }
@@ -129,7 +131,6 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                   battleViewModelNotifier.setMyMove(true);
                 }
               }
-
             }
           } catch (e) {
             debugPrint('⚠️ Ошибка при обработке данных WebSocket: $e');
@@ -137,7 +138,6 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
         },
         onError: (error) {
           debugPrint('❌ WebSocket error: $error');
-          // Обновляем состояние при ошибке
           state = AsyncValue.data(WebSocketState(
             channel: null,
             isConnected: false,
@@ -147,13 +147,13 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
         },
         onDone: () {
           debugPrint('🔌 WebSocket closed: ${channel.closeReason}');
-          // Обновляем состояние при закрытии
           state = AsyncValue.data(WebSocketState(
             channel: null,
             isConnected: false,
             isError: false,
             errorMessage: '',
           ));
+          ref.read(navigationProvider.notifier).pushWebSocketClosedDialogScreen();
         },
         cancelOnError: false,
       );
@@ -179,7 +179,7 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
   Future<void> disconnect() async {
     debugPrint('❌ WebSocket disconnect');
 
-    // Отменяем подписку на stream
+    // Отменяем подписку
     await _subscription?.cancel();
     _subscription = null;
 
@@ -191,7 +191,6 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
     }
     _currentChannel = null;
 
-    // Обновляем состояние
     state = AsyncValue.data(WebSocketState(
       channel: null,
       isConnected: false,

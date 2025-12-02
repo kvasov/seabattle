@@ -200,7 +200,7 @@ class BleNotifier extends AsyncNotifier<BleState> {
 
   Future<void> sendInt(int value) async {
     if (!isConnected) {
-      debugPrint('🔗 Device is not connected');
+      // debugPrint('🔗 Device is not connected');
       return;
     }
     try {

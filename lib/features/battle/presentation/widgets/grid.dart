@@ -5,6 +5,7 @@ import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/features/battle/presentation/widgets/dead_ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
+import 'package:seabattle/shared/providers/explosion_images_provider.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/shared/providers/cheater_provider.dart';
@@ -53,6 +54,7 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final shipsImages = ref.watch(shipsImagesProvider);
+    final explosionImages = ref.watch(explosionImagesProvider);
     final ships = widget.myShips
       ? ref.watch(battleViewModelProvider).value?.ships ?? []
       : ref.watch(battleViewModelProvider).value?.opponentShips ?? [];
@@ -85,25 +87,28 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
     final isCheater = ref.watch(cheaterProvider).isCheater;
     final accelerometerBallData = ref.watch(accelerometerNotifierProvider).value;
 
+
     final gridWidget = shipsImages.when(
-      data: (cache) => Stack(
-        children: [
-          CustomPaint(
-            size: Size(cellSize * gridSize, cellSize * gridSize),
-            painter: SeaBattlePainter(
-              myShips: widget.myShips,
-              ships: ships,
-              battleMode: true,
-              field: field ?? List.generate(
-                gridSize,
-                (_) => List.generate(gridSize, (_) => CellState.empty),
+      data: (shipsCache) => explosionImages.when(
+        data: (explosionCache) => Stack(
+          children: [
+            CustomPaint(
+              size: Size(cellSize * gridSize, cellSize * gridSize),
+              painter: SeaBattlePainter(
+                myShips: widget.myShips,
+                ships: ships,
+                battleMode: true,
+                field: field ?? List.generate(
+                  gridSize,
+                  (_) => List.generate(gridSize, (_) => CellState.empty),
+                ),
+                cellSize: cellSize,
+                shipsImagesCache: shipsCache,
+                explosionImagesCache: explosionCache,
+                waveAnimation: _waveAnimation,
+                isCheaterMode: isCheater,
               ),
-              cellSize: cellSize,
-              shipsImagesCache: cache,
-              waveAnimation: _waveAnimation,
-              isCheaterMode: isCheater,
             ),
-          ),
           if (cursorPosition != null && isCursorVisible && battleViewModelState?.myMove == true)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
@@ -116,12 +121,15 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
             ),
           if (!widget.myShips && (accelerometerBallData?.isReceivingData == true))
             BallWidget(containerSize: cellSize * gridSize),
-          if (battleViewModelState?.showDeathOfShip == true && !widget.myShips)
-            DeadShipWidget(ship: battleViewModelState!.lastDeadShip!, gridSize: gridSize),
+            if (battleViewModelState?.showDeathOfShip == true && !widget.myShips)
+              DeadShipWidget(ship: battleViewModelState!.lastDeadShip!, gridSize: gridSize),
 
-        ],
+          ],
+        ),
+        error: (error, stack) => Center(child: Text('Ошибка загрузки взрывов: $error')),
+        loading: () => Center(child: CircularProgressIndicator()),
       ),
-      error: (error, stack) => Center(child: Text(error.toString())),
+      error: (error, stack) => Center(child: Text('Ошибка загрузки кораблей: $error')),
       loading: () => Center(child: CircularProgressIndicator()),
     );
 

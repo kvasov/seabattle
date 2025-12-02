@@ -118,6 +118,13 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               child: TextButton(
                 onPressed: () => ref.read(battleViewModelProvider.notifier).showFirework(), child: const Text('Show Firework')),
             ),
+            // Center(
+            //   child: TextButton(
+            //     onPressed: () {
+            //       debugPrint('💚 opponentShips: ${battleViewModelState?.opponentShips}');
+            //     },
+            //     child: const Text('Show opponent ships')),
+            // ),
           ],
         ),
         MenuBtn(scaffoldKey: _scaffoldKey),

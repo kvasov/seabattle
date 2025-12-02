@@ -103,3 +103,24 @@ class AcceptedGameDialog extends ConsumerWidget {
     );
   }
 }
+
+
+class WebSocketClosedDialog extends ConsumerWidget {
+  const WebSocketClosedDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text('Соединение с сервером прервано (из-за неактивности игрока или какой-то ошибки)'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            ref.read(gameNotifierProvider.notifier).resetGame();
+            ref.read(navigationProvider.notifier).goToHomeScreen();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+}

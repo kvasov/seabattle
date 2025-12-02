@@ -59,7 +59,6 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
 
     final cursorPosition = setupShipsViewModelState?.cursorPosition;
     bool isCursorVisible = setupShipsViewModelState?.isCursorVisible ?? false;
-    debugPrint('💚! isCursorVisible: ${setupShipsViewModelState?.isCursorVisible}');
 
     final gridWidget = shipsImages.when(
       data: (cache) => Stack(

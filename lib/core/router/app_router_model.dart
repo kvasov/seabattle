@@ -45,6 +45,10 @@ class AppRoute extends Equatable {
     return const AppRoute(name: '/statisticsScreen');
   }
 
+  factory AppRoute.webSocketClosedDialog() {
+    return const AppRoute(name: '/webSocketClosedDialog');
+  }
+
   @override
   List<Object?> get props => [name, arguments];
 }

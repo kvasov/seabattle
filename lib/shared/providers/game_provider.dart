@@ -10,6 +10,7 @@ import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/shared/providers/web_socket_provider.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/providers/repositories/prepare_repository_provider.dart';
+import 'package:seabattle/shared/entities/ship.dart';
 
 class GameState {
   final GameModel? game;
@@ -175,12 +176,12 @@ class GameNotifier extends AsyncNotifier<GameState> {
 
   Future<void> startGame() async {
     final currentState = state.value;
-    final newGame = state.value?.game?.copyWith(ready: true);
+    GameModel? newGame = currentState?.game?.copyWith(ready: true);
 
     state = const AsyncValue.loading();
     // Нужно отправить данные о своих кораблях сопернику
     final result = await ref.read(prepareRepositoryProvider).sendShipsToOpponent(
-      state.value?.game?.id ?? 0,
+      newGame?.id ?? 0,
       ref.read(userUniqueIdProvider),
       ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? []
     );
@@ -191,13 +192,24 @@ class GameNotifier extends AsyncNotifier<GameState> {
       return;
     }
 
-    final isMaster = state.value!.game!.master ?? false;
+    final isMaster = newGame!.master ?? false;
     // Предлагающий игру ходит вторым
     final myMove = !isMaster;
 
     // Убеждаемся, что battleViewModelProvider инициализирован перед установкой кораблей
     // Это предотвратит перезапись состояния при первом обращении через ref.watch()
     final battleState = ref.read(battleViewModelProvider);
+
+    // Сохраняем существующие opponentShips перед инициализацией, если они есть
+    List<Ship>? existingOpponentShips;
+
+    debugPrint('💚🧡🧡 startGame: battleState: $battleState');
+
+    if (battleState.hasValue && battleState.value!.opponentShips.isNotEmpty) {
+      existingOpponentShips = battleState.value!.opponentShips;
+      debugPrint('💚 startGame: сохранены существующие opponentShips (${existingOpponentShips.length} кораблей)');
+    }
+
     if (!battleState.hasValue) {
       debugPrint('🔄🤍 startGame: инициализация battleViewModelProvider...');
       await ref.read(battleViewModelProvider.future);
@@ -207,12 +219,22 @@ class GameNotifier extends AsyncNotifier<GameState> {
     final shipsToSet = ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? [];
 
     // Перемещаем свои корабли в BattleViewModelNotifier
-    ref.read(battleViewModelProvider.notifier)
-      ..setShips(
-        mode: 'self',
-        ships: shipsToSet
-      )
-      ..setMyMove(myMove);
+    final battleNotifier = ref.read(battleViewModelProvider.notifier);
+    battleNotifier.setShips(
+      mode: 'self',
+      ships: shipsToSet
+    );
+
+    // Восстанавливаем opponentShips, если они были сохранены
+    if (existingOpponentShips != null && existingOpponentShips.isNotEmpty) {
+      debugPrint('💚 startGame: восстановление opponentShips (${existingOpponentShips.length} кораблей)');
+      battleNotifier.setShips(
+        mode: 'opponent',
+        ships: existingOpponentShips
+      );
+    }
+
+    battleNotifier.setMyMove(myMove);
 
     // Переходим на экран битвы
     ref.read(navigationProvider.notifier).pushBattleScreen();
@@ -247,6 +269,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
       }
       ref.read(cheaterProvider.notifier).resetCheaterMode();
       ref.read(accelerometerNotifierProvider.notifier).disconnect();
+      ref.read(webSocketNotifierProvider.notifier).disconnect();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

@@ -10,6 +10,7 @@ import 'package:seabattle/utils/bg_wave.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
+import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/widgets/drawer.dart';
 import 'package:seabattle/shared/widgets/menu_btn.dart';
 import 'package:seabattle/shared/widgets/my_error_widget.dart';
@@ -36,6 +37,8 @@ class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
   Widget build(BuildContext context) {
     final gameProvider = ref.watch(gameNotifierProvider);
     final gameState = gameProvider.value;
+
+    final battleViewModelState = ref.watch(battleViewModelProvider);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -66,6 +69,13 @@ class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
                         setButtonActionStart: setButtonActionStart
                       ),
                       IsolateWidget(),
+                      // Center(
+                      //   child: TextButton(
+                      //     onPressed: () {
+                      //       debugPrint('💚 opponentShips: ${battleViewModelState.value?.opponentShips}');
+                      //     },
+                      //     child: const Text('Show opponent ships')),
+                      // ),
                     ],
                   ),
                 ),

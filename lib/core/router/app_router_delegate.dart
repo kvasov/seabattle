@@ -117,6 +117,10 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
             dialogChild = const WinModal();
             barrierDismissible = false;
             break;
+          case 'webSocketClosedDialog':
+            dialogChild = const WebSocketClosedDialog();
+            barrierDismissible = false;
+            break;
           default:
             dialogChild = const AlertDialog(title: Text('Dialog'));
         }

@@ -173,14 +173,26 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     if (state.value?.shots.any((shot) => shot.x == x && shot.y == y) ?? false) {
       return;
     }
-    state = AsyncValue.data(
-      state.value!.copyWith(shots: [...state.value!.shots, shot]),
-    );
+    final updatedShots = [...state.value!.shots, shot];
+
 
     if (isHit(x, y)) {
       await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalHits');
-      for (var ship in state.value?.opponentShips ?? []) {
-        if (ship.isDeadByShot(shot, state.value!.shots)) {
+
+      // Обновляем корабли противника, помечая мертвые как dead = true
+      final updatedOpponentShips = state.value!.opponentShips.map((ship) {
+        if (ship.isDead(updatedShots)) {
+          ship.dead = true;
+        }
+        return ship;
+      }).toList();
+
+      int delay = 0;
+
+      // Проверяем, был ли уничтожен корабль этим выстрелом
+      for (var ship in updatedOpponentShips) {
+        if (ship.isDeadByShot(shot, updatedShots)) {
+          delay = 200;
           state = AsyncValue.data(
             state.value!.copyWith(showDeathOfShip: true, lastDeadShip: ship),
           );
@@ -190,10 +202,20 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
               state.value!.copyWith(showDeathOfShip: false, lastDeadShip: null),
             );
           });
+        } else {
+          delay = 0;
         }
       }
-      setMyMove(true);
+
+      Future.delayed(Duration(milliseconds: delay), () {
+        state = AsyncValue.data(
+          state.value!.copyWith(opponentShips: updatedOpponentShips, shots: updatedShots),
+        );
+      });
     } else {
+      state = AsyncValue.data(
+        state.value!.copyWith(shots: updatedShots),
+      );
       setMyMove(false);
     }
 
@@ -282,8 +304,22 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   }
 
   void addOpponentShot(int x, int y) {
+    final shot = Shot(x, y);
+    final updatedOpponentShots = [...state.value!.opponentShots, shot];
+
+    // Обновляем свои корабли, помечая мертвые как dead = true
+    final updatedShips = state.value!.ships.map((ship) {
+      if (ship.isDead(updatedOpponentShots)) {
+        ship.dead = true;
+      }
+      return ship;
+    }).toList();
+
     state = AsyncValue.data(
-      state.value!.copyWith(opponentShots: [...state.value!.opponentShots, Shot(x, y)]),
+      state.value!.copyWith(
+        opponentShots: updatedOpponentShots,
+        ships: updatedShips,
+      ),
     );
   }
 
@@ -291,7 +327,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     state = AsyncValue.data(
       state.value!.copyWith(showFirework: true),
     );
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 2200), () {
       state = AsyncValue.data(
         state.value!.copyWith(showFirework: false),
       );

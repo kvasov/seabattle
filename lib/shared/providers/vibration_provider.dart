@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:seabattle/features/settings/providers/settings_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vibration/vibration.dart';
@@ -37,25 +36,21 @@ class VibrationNotifier extends Notifier<VibrationState> {
   }
 
   vibrateHit() {
-    debugPrint('🔗 vibrateHit');
     final List<int> pattern = [0, 100, 100, 100];
     vibrate(pattern);
   }
 
   vibrateMiss() {
-    debugPrint('🔗 vibrateMiss');
     final List<int> pattern = [0, 100, 50, 100, 50, 100];
     vibrate(pattern);
   }
 
   vibrateDeath() {
-    debugPrint('🔗 vibrateDeath');
     final List<int> pattern = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100];
     vibrate(pattern);
   }
 
 }
-
 
 final vibrationNotifierProvider = NotifierProvider<VibrationNotifier, VibrationState>(() {
   return VibrationNotifier();

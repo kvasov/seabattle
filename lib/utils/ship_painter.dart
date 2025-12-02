@@ -1,13 +1,13 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
-import 'package:seabattle/shared/providers/cheater_provider.dart';
+import 'package:seabattle/shared/providers/explosion_images_provider.dart';
 
 class SeaBattlePainter extends CustomPainter {
   final bool? myShips;
   final ShipsImagesCache? shipsImagesCache;
+  final ExplosionImagesCache? explosionImagesCache;
   final bool? battleMode;
   final List<List<CellState>> field;
   final double cellSize;
@@ -19,6 +19,7 @@ class SeaBattlePainter extends CustomPainter {
   SeaBattlePainter({
     this.myShips = true,
     this.shipsImagesCache,
+    this.explosionImagesCache,
     this.battleMode = false,
     required this.field,
     required this.cellSize,
@@ -41,25 +42,20 @@ class SeaBattlePainter extends CustomPainter {
           ..color = const Color.fromARGB(255, 38, 141, 220).withValues(alpha: 0.3)
           ..style = PaintingStyle.fill;
     // Заливка промахов
-    final missPaint =
+    final missedPaint =
         Paint()
           ..color = Colors.white
-          ..style = PaintingStyle.fill;
-    // Заливка попаданий
-    final woundPaint =
-        Paint()
-          ..color = Colors.red.shade200
-          ..style = PaintingStyle.fill;
-    // Заливка убитых кораблей
-    final deadPaint =
-        Paint()
-          ..color = Colors.red.shade700
           ..style = PaintingStyle.fill;
 
     // Рисуем клетки
     for (int y = 0; y < field.length; y++) {
       for (int x = 0; x < field[y].length; x++) {
-        if (field[y][x] == CellState.empty) {
+        if (
+          field[y][x] == CellState.empty ||
+          field[y][x] == CellState.miss ||
+          field[y][x] == CellState.wound ||
+          field[y][x] == CellState.dead
+        ) {
           canvas.drawRect(
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
             emptyPaint,
@@ -79,52 +75,12 @@ class SeaBattlePainter extends CustomPainter {
         } else if (field[y][x] == CellState.miss) {
           canvas.drawRect(
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            missPaint,
-          );
-        } else if (field[y][x] == CellState.wound) {
-          canvas.drawRect(
-            Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            woundPaint,
-          );
-        } else if (field[y][x] == CellState.dead) {
-          canvas.drawRect(
-            Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            deadPaint,
+            missedPaint,
           );
         }
       }
     }
 
-    // Затем рисуем корабли
-    // Первоначальный вариант с коряблями-клеточками
-
-    // final shipPaint =
-    //     Paint()
-    //       ..color = myShips == true ? Colors.grey[500]! : Colors.grey[300]!
-    //       ..style = PaintingStyle.fill;
-    // final shipBorder =
-    //     Paint()
-    //       ..color = myShips == true ? Colors.black : Colors.grey[500]!
-    //       ..style = PaintingStyle.stroke
-    //       ..strokeWidth = 1;
-    // for (int y = 0; y < field.length; y++) {
-    //   for (int x = 0; x < field[y].length; x++) {
-    //     if (field[y][x] == CellState.ship) {
-    //       final rect = Rect.fromLTWH(
-    //         x * cellSize + 1,
-    //         y * cellSize + 1,
-    //         cellSize - 2,
-    //         cellSize - 2,
-    //       );
-    //       canvas.drawRect(rect, shipPaint);
-    //       canvas.drawRect(rect, shipBorder);
-    //     }
-    //   }
-    // }
-
-
-    // Вариант для кораблей-картинок. Все клетки должны быть закрашены как "пустые"
-    // потому что картинки с кораблями имеют прозрачный фон
     for (int y = 0; y < field.length; y++) {
       for (int x = 0; x < field[y].length; x++) {
         if (field[y][x] == CellState.ship) {
@@ -135,7 +91,6 @@ class SeaBattlePainter extends CustomPainter {
             cellSize - 2,
           );
           canvas.drawRect(rect, emptyPaint);
-
         }
       }
     }
@@ -162,6 +117,7 @@ class SeaBattlePainter extends CustomPainter {
     // Рисуем корабли картинками
     if (shipsImagesCache != null && ships != null && ships!.isNotEmpty) {
       for (final ship in ships!) {
+        if (ship.dead) continue;
         // Получаем картинку корабля
         final shipImage = shipsImagesCache!.imageForSize(ship.size);
         if (shipImage == null) continue;
@@ -212,20 +168,32 @@ class SeaBattlePainter extends CustomPainter {
     // Рисуем попадания и промахи
     for (int y = 0; y < field.length; y++) {
       for (int x = 0; x < field[y].length; x++) {
-        if (field[y][x] == CellState.miss) {
-          canvas.drawRect(
+        if (field[y][x] == CellState.wound) {
+          final woundedImage = explosionImagesCache!.imageForType('wounded');
+          if (woundedImage == null) continue;
+          canvas.drawImageRect(
+            woundedImage,
+            Rect.fromLTWH(0, 0, woundedImage.width.toDouble(), woundedImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            missPaint,
+            Paint()..blendMode = BlendMode.srcOver,
           );
-        } else if (field[y][x] == CellState.wound) {
-          canvas.drawRect(
+        } else if (field[y][x] == CellState.miss) {
+          final missImage = explosionImagesCache!.imageForType('miss');
+          if (missImage == null) continue;
+          canvas.drawImageRect(
+            missImage,
+            Rect.fromLTWH(0, 0, missImage.width.toDouble(), missImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            woundPaint,
+            Paint()..blendMode = BlendMode.srcOver,
           );
         } else if (field[y][x] == CellState.dead) {
-          canvas.drawRect(
+          final deadImage = explosionImagesCache!.imageForType('dead');
+          if (deadImage == null) continue;
+          canvas.drawImageRect(
+            deadImage,
+            Rect.fromLTWH(0, 0, deadImage.width.toDouble(), deadImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            deadPaint,
+            Paint()..blendMode = BlendMode.srcOver,
           );
         }
       }

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class FireworkParticle {
   Offset position;
@@ -16,12 +17,11 @@ class FireworkParticle {
     this.size = 3.0,
   });
 
-  void update() {
+  void update(double animationProgress) {
     // Применяем гравитацию
     velocity = Offset(velocity.dx * 0.98, velocity.dy * 0.98 + 0.05);
     position += velocity;
-    // Уменьшаем жизнь частицы
-    life -= 0.02;
+    life = 1.0 - animationProgress;
   }
 
   bool get isDead => life <= 0;
@@ -44,12 +44,15 @@ class FireworkPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Не рисуем частицы, если анимация не запущена
     if (!isAnimating) return;
+
+    final alphaValue = animationProgress >= 0.7
+      ? 0.7 * (1.0 - (animationProgress - 0.7) / 0.3)
+      : 0.7;
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()..color = Colors.black.withValues(alpha: (0.7 - animationProgress * 0.7)),
+      Paint()..color = Colors.black.withValues(alpha: alphaValue),
     );
 
     final paint = Paint()..style = PaintingStyle.fill;
@@ -165,18 +168,28 @@ class _FireworkWidgetState extends State<FireworkWidget>
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && _lastSize != null) {
               _createFireworksWithSize(_lastSize!);
-              _controller.forward();
+              Future.delayed(const Duration(milliseconds: 200), () {
+                if (mounted) {
+                  _controller.forward();
+                }
+              });
             }
           });
         }
-      })
-      ..forward();
+      });
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
   }
 
   void _updateParticles() {
     setState(() {
+      final animationProgress = _controller.value;
       for (var particle in _particles) {
-        particle.update();
+        particle.update(animationProgress);
       }
     });
   }

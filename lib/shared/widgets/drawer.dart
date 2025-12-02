@@ -23,18 +23,19 @@ class DrawerWidget extends ConsumerWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: RadialGradient(
                 colors: [
-                  Colors.lightBlueAccent,
-                  Colors.white,
+                  Color.fromARGB(255, 11, 89, 141),
+                  Color.fromARGB(255, 221, 209, 185),
                 ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                stops: [0.0, 1],
+                center: Alignment.topLeft,
+                radius: 2.0,
               ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GestureDetector(onTap: () {
                   ref.read(cheaterProvider.notifier).trySetCheaterMode();

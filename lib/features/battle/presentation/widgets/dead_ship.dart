@@ -22,6 +22,8 @@ class DeadShipWidget extends ConsumerStatefulWidget {
 
 class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProviderStateMixin {
   final GlobalKey _repaintKey = GlobalKey();
+  late AnimationController _fadeOutController;
+  late Animation<double> _fadeOutAnimation;
   late AnimationController _fadeInController;
   late AnimationController _explosionController;
   late Animation<double> _fadeAnimation;
@@ -40,6 +42,15 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeInController, curve: Curves.easeIn),
+    );
+
+    // Контроллер для плавного исчезновения подложки
+    _fadeOutController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _fadeOutAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _fadeOutController, curve: Curves.easeIn),
     );
 
     // Контроллер для взрыва
@@ -181,17 +192,36 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
                       )
                     : Stack(
                       children: [
+                        AnimatedBuilder(
+                          animation: _fadeOutAnimation,
+                          builder: (context, child) {
+                            return Opacity(
+                              opacity: _fadeOutAnimation.value,
+                              child: Container(
+                                color: Colors.blue.shade50,
+                                width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
+                                height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
+                              ),
+                            );
+                          },
+                        ),
                         RepaintBoundary(
                           key: _repaintKey,
                           child: AnimatedBuilder(
                             animation: _fadeAnimation,
                             builder: (context, child) {
+                              final scale = 1.4 - (0.4 * _fadeAnimation.value);
+                              final fileName = widget.ship.orientation == ShipOrientation.horizontal ? 'x${widget.ship.size}.png' : 'x${widget.ship.size}_v.png';
                               return Opacity(
                                 opacity: _fadeAnimation.value,
-                                child: SizedBox(
-                                  width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
-                                  height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
-                                  child: Image.asset('assets/images/ships/x${widget.ship.size}.png'),
+                                child: Transform.scale(
+                                  scale: scale,
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
+                                    height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,
+                                    child: Image.asset('assets/images/ships/$fileName'),
+                                  ),
                                 ),
                               );
                             },
@@ -199,7 +229,6 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
                         ),
                       ],
                     ),
-
               ),
             ),
           ],

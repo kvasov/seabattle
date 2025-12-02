@@ -101,6 +101,10 @@ class NavigationNotifier extends Notifier<List<AppRoute>> {
   void pushStatisticsScreen() {
     pushRoute(AppRoute.statisticsScreen());
   }
+
+  void pushWebSocketClosedDialogScreen() {
+    pushRoute(AppRoute.dialog(arguments: {'type': 'webSocketClosedDialog'}));
+  }
 }
 
 final navigationProvider = NotifierProvider<NavigationNotifier, List<AppRoute>>(() {
