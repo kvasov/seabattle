@@ -34,9 +34,23 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 
 	// Translations
+	late final TranslationsBattleEn battle = TranslationsBattleEn._(_root);
 	late final TranslationsEtcEn etc = TranslationsEtcEn._(_root);
 	late final TranslationsHomeEn home = TranslationsHomeEn._(_root);
+	late final TranslationsQrEn qr = TranslationsQrEn._(_root);
 	late final TranslationsSetupshipsEn setupships = TranslationsSetupshipsEn._(_root);
+}
+
+// Path: battle
+class TranslationsBattleEn {
+	TranslationsBattleEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Cancel game'
+	String get cancelGame => 'Cancel game';
 }
 
 // Path: etc
@@ -77,6 +91,36 @@ class TranslationsHomeEn {
 
 	/// en: 'Settings'
 	String get settings => 'Settings';
+}
+
+// Path: qr
+class TranslationsQrEn {
+	TranslationsQrEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Creating game'
+	String get creatingGame => 'Creating game';
+
+	/// en: 'Create game'
+	String get createGame => 'Create game';
+
+	/// en: 'Accept last game in DB'
+	String get acceptLastGame => 'Accept last game in DB';
+
+	/// en: 'Accept game'
+	String get acceptGame => 'Accept game';
+
+	/// en: 'Invalid QR code'
+	String get invalidQrCode => 'Invalid QR code';
+
+	/// en: 'Scan QR code'
+	String get scanQrCode => 'Scan QR code';
+
+	/// en: 'Cancel game'
+	String get cancelGame => 'Cancel game';
 }
 
 // Path: setupships

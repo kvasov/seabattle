@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/styles/media.dart';
 import 'package:seabattle/shared/entities/game.dart';
+import 'package:seabattle/shared/presentation/styles/dialogs.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 
@@ -18,14 +20,23 @@ class _CancelGameDialogState extends ConsumerState<CancelGameDialog> {
     final gameId = gameState.value?.game?.id;
 
     return AlertDialog(
-      title: const Text('Отменить игру?'),
-      content: Text('Вы уверены, что хотите отменить игру #$gameId?'),
+      title: Text(
+        'Отменить игру?',
+        style: dialogTitleStyle(context),
+      ),
+      content: Text(
+        'Вы уверены, что хотите отменить игру #$gameId?',
+        style: dialogContentStyle(context),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Нет'),
+          child: Text(
+            'Нет',
+            style: dialogButtonStyle(context),
+          ),
         ),
         TextButton(
           onPressed: () async {
@@ -57,7 +68,10 @@ class _CancelGameDialogState extends ConsumerState<CancelGameDialog> {
               }
             }
           },
-          child: const Text('Да'),
+          child: Text(
+            'Да',
+            style: dialogButtonStyle(context),
+          ),
         ),
       ],
     );
@@ -70,14 +84,20 @@ class CanceledGameDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: const Text('Игра отменена соперником'),
+      title: Text(
+        'Игра отменена соперником',
+        style: dialogTitleStyle(context),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
             ref.read(navigationProvider.notifier).goToHomeScreen();
           },
-          child: const Text('OK'),
+          child: Text(
+            'OK',
+            style: dialogButtonStyle(context),
+          ),
         ),
       ],
     );
@@ -90,14 +110,20 @@ class AcceptedGameDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: const Text('Игра уже принята кем-то другим'),
+      title: Text(
+        'Игра уже принята кем-то другим',
+        style: dialogTitleStyle(context),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
             ref.read(navigationProvider.notifier).goToHomeScreen();
           },
-          child: const Text('OK'),
+          child: Text(
+            'OK',
+            style: dialogButtonStyle(context),
+          ),
         ),
       ],
     );
@@ -111,14 +137,21 @@ class WebSocketClosedDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: const Text('Соединение с сервером прервано (из-за неактивности игрока или какой-то ошибки)'),
+      constraints: BoxConstraints(maxWidth: deviceType(context) == DeviceType.phone ? 300 : 400),
+      title: Text(
+        'Соединение с сервером прервано (из-за неактивности игрока или какой-то ошибки)',
+        style: dialogTitleStyle(context),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             ref.read(gameNotifierProvider.notifier).resetGame();
             ref.read(navigationProvider.notifier).goToHomeScreen();
           },
-          child: const Text('OK'),
+          child: Text(
+            'OK',
+            style: dialogButtonStyle(context),
+          ),
         ),
       ],
     );

@@ -1,0 +1,7 @@
+creatingGame: 'Creating game'
+createGame: 'Create game'
+acceptLastGame: 'Accept last game in DB'
+acceptGame: 'Accept game'
+invalidQrCode: 'Invalid QR code'
+scanQrCode: 'Scan QR code'
+cancelGame: 'Cancel game'

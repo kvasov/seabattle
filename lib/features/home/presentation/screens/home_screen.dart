@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lottie/lottie.dart';
+import 'package:seabattle/app/styles/media.dart';
 import 'package:seabattle/features/home/presentation/widgets/create_game.dart';
 import 'package:seabattle/features/home/presentation/widgets/accept_game.dart';
 import 'package:seabattle/features/home/presentation/widgets/settings.dart';
@@ -16,39 +16,51 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final bgImage = Theme.of(context).brightness == Brightness.dark
+        ? const AssetImage('assets/images/bg_dark.png')
+        : const AssetImage('assets/images/bg.png');
+
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Image.asset('assets/images/bg.png', fit: BoxFit.cover),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: bgImage,
+            fit: BoxFit.cover,
           ),
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
-              child: Center(
-                child: Column(
-                  children: [
-                    TitleWidget(),
-                    SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CreateGame(),
-                        AcceptGame(),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Settings(),
-                  ],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Transform.translate(
+                offset: Offset(0, -MediaQuery.of(context).size.height * 0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TitleWidget(),
+                      SizedBox(height: 50),
+                      Row(
+                        mainAxisAlignment: deviceType(context) == DeviceType.tablet
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.spaceAround,
+                        children: [
+                          CreateGameButton(),
+                          SizedBox(width: deviceType(context) == DeviceType.tablet ? 20 : 16),
+                          AcceptGameButton(),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Settings(),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

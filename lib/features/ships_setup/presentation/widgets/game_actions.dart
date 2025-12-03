@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
+import 'package:seabattle/features/ships_setup/presentation/styles/buttons.dart';
 
 class GameActions extends ConsumerWidget {
   const GameActions({super.key, required this.buttonActionStart, required this.setButtonActionStart});
@@ -33,6 +34,7 @@ class GameActions extends ConsumerWidget {
                     setButtonActionStart(true);
                     gameNotifier.startGame();
                   },
+            style: startGameButtonStyle(context),
             child: Text(t.setupships.buttons.startGame),
           ),
           const SizedBox(height: 8),
@@ -41,7 +43,11 @@ class GameActions extends ConsumerWidget {
               setButtonActionStart(false);
               gameNotifier.cancelGame();
             },
-            child: Text(t.setupships.buttons.cancelGame),
+            style: cancelGameButtonStyle(context),
+            child: Text(
+              t.setupships.buttons.cancelGame,
+              style: cancelGameButtonTextStyle(context)
+            ),
           ),
         ],
       ),

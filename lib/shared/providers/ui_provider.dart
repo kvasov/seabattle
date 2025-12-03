@@ -11,7 +11,8 @@ class CellSizeNotifier extends Notifier<double> {
     // Откладываем изменение состояния до завершения построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final width = MediaQuery.sizeOf(context).width;
-      state = (width - 120) / 10;
+      final cellSize = (width - 120) / 10;
+      state = cellSize > 50 ? 50 : cellSize;
     });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/app/styles/media.dart';
 
 class TitleWidget extends StatelessWidget {
   const TitleWidget({super.key});
@@ -22,7 +23,7 @@ class TitleWidget extends StatelessWidget {
         ],
         fontFamily: 'Roboto',
         fontVariations: [FontVariation('wght', 900)],
-        fontSize: 65,
+        fontSize: deviceType(context) == DeviceType.tablet ? 65 : 40,
         height: 1.2
       ),
     );

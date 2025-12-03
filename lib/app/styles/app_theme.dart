@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:seabattle/app/styles/app_theme_extension.dart';
+import 'package:seabattle/app/styles/theme_extension/switch.dart';
+import 'package:seabattle/app/styles/theme_extension/simple_button.dart';
+import 'package:seabattle/core/constants/colors.dart';
 
 class AppTheme {
   const AppTheme();
@@ -13,12 +15,17 @@ class AppTheme {
       trackOn: Colors.green,
       trackOff: Colors.red,
     );
+    final buttonExt = ButtonColors(
+      backgroundColor: Colors.white,
+      textColor: lightBlue,
+    );
     return ThemeData(
-      useMaterial3: true, // включает стили и компоненты Material 3
-      colorScheme: scheme, // базовая цветовая схема (все компоненты берут цвета отсюда)
-      brightness: Brightness.light, // режим яркости (светлая тема)
+      useMaterial3: true,
+      colorScheme: scheme,
+      brightness: Brightness.light,
       extensions: <ThemeExtension<dynamic>>[
-        switchExt, // регистрируем расширение
+        switchExt,
+        buttonExt,
       ],
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface, // цвет фона AppBar
@@ -58,12 +65,16 @@ class AppTheme {
 
   static ThemeData buildDarkTheme(Color seedColor) {
     final scheme = ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: seedColor);
-    // Аналогичное расширение для тёмной темы (для полноты и корректной анимации lerp)
+
     final switchExt = AppSwitchColors(
       thumbOn: scheme.primary,
       thumbOff: scheme.surfaceContainer,
       trackOn: scheme.primaryContainer,
       trackOff: scheme.surfaceContainerHigh,
+    );
+    final buttonExt = ButtonColors(
+      backgroundColor: darkBlue,
+      textColor: Colors.white,
     );
     return ThemeData(
       useMaterial3: true,
@@ -71,6 +82,7 @@ class AppTheme {
       brightness: Brightness.dark,
       extensions: <ThemeExtension<dynamic>>[
         switchExt,
+        buttonExt,
       ],
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,

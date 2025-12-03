@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:seabattle/app/styles/media.dart';
 
 class ArrowLottie extends StatelessWidget {
   const ArrowLottie({super.key, required this.isMyMove});
@@ -33,9 +34,10 @@ class _ArrowLottieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = deviceType(context) == DeviceType.phone ? 40.0 : 60.0;
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: size,
+      height: size,
       child: Lottie.asset(
         path,
         fit: BoxFit.contain,

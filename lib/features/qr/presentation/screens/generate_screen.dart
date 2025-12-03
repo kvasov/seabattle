@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/styles/media.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/features/qr/presentation/styles/buttons.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
-import 'package:seabattle/shared/widgets/my_error_widget.dart';
+import 'package:seabattle/shared/presentation/widgets/my_error_widget.dart';
 import 'package:qr_bar_code/qr/qr.dart';
 
 class GenerateQRScreen extends ConsumerStatefulWidget {
@@ -20,6 +23,8 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
   @override
   Widget build(BuildContext context) {
     final gameNotifier = ref.watch(gameNotifierProvider);
+    final t = context.t;
+
     return Scaffold(
       appBar: AppBar(
 
@@ -39,7 +44,7 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
           } ,
           icon: const Icon(Icons.arrow_back),
         ),
-        title: const Text('Создание игры'),
+        title: Text(t.qr.creatingGame),
       ),
       body:
         gameNotifier.when(
@@ -51,21 +56,22 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
               children: [
               if (gameNotifier.value?.game?.id == null)
                 ElevatedButton(
+                  style: createGameBtnStyle(context),
                   onPressed: () => ref.read(gameNotifierProvider.notifier).createGame(),
-                  child: const Text('Создать игру')
+                  child: Text(t.qr.createGame, style: createGameBtnTextStyle(context))
                 ),
-              Text(gameNotifier.value?.game?.id.toString() ?? ''),
               if (gameNotifier.value?.game?.id != null) ...[
                 QRCode(
                   data: gameNotifier.value?.game?.id.toString() ?? '',
-                  size: 300,
+                  size: deviceType(context) == DeviceType.phone ? 300 : 400,
                   padding: const EdgeInsets.all(10.0),
                   backgroundColor: Colors.transparent,
                 ),
                 SizedBox(height: 32),
-                ElevatedButton(
+                TextButton(
+                  style: cancelGameBtnTextStyle(context),
                   onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
-                  child: const Text('Отменить игру'),
+                  child: Text(t.qr.cancelGame),
                 ),
               ],
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/styles/media.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 
 class ShipSetupActions extends ConsumerWidget {
@@ -11,35 +12,34 @@ class ShipSetupActions extends ConsumerWidget {
     final setupShipsNotifier = ref.watch(setupShipsViewModelProvider.notifier);
     final setupShipsState = setupShipsProvider.value;
 
+    final iconSize = deviceType(context) == DeviceType.phone ? 24.0 : 36.0;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: const Icon(Icons.rotate_90_degrees_ccw),
-          tooltip: 'Повернуть',
-          onPressed:
-              () => setupShipsNotifier.rotateSelectedOrientation(),
+        TextButton(
+          onPressed: () => setupShipsNotifier.rotateSelectedOrientation(),
+          child: Icon(Icons.rotate_left_rounded, size: iconSize),
         ),
-        IconButton(
-          icon: const Icon(Icons.undo),
-          tooltip: 'Удалить последний',
+        TextButton(
           onPressed: () => setupShipsNotifier.removeLastShip(),
+          child: Icon(Icons.undo, size: iconSize),
         ),
-        IconButton(
-          disabledColor: Colors.grey.shade300,
-          icon: const Icon(Icons.auto_awesome),
-          tooltip: 'А',
-          onPressed: setupShipsState != null &&
-                    setupShipsNotifier.countNeedPlaceShips() > 0
+        TextButton(
+          onPressed: setupShipsState != null && setupShipsNotifier.countNeedPlaceShips() > 0
               ? () => setupShipsNotifier.autoPlaceShips()
               : null,
+          style: TextButton.styleFrom(
+            foregroundColor: setupShipsState != null && setupShipsNotifier.countNeedPlaceShips() > 0
+                ? null
+                : Colors.grey.shade300,
+          ),
+          child: Icon(Icons.auto_awesome, size: iconSize),
         ),
-        IconButton(
-          icon: const Icon(Icons.clear),
-          tooltip: 'Очистить',
+        TextButton(
           onPressed: () => setupShipsNotifier.clearShips(),
+          child: Icon(Icons.clear, size: iconSize),
         ),
-        Text(setupShipsNotifier.countNeedPlaceShips().toString()),
       ]
     );
   }

@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/utils/ship_placement_utils.dart';
+import 'package:seabattle/features/ships_setup/presentation/styles/buttons.dart';
+import 'package:seabattle/features/ships_setup/presentation/styles/texts.dart';
 
 class IsolateWidget extends StatefulWidget {
   const IsolateWidget({super.key});
@@ -32,9 +34,7 @@ class _IsolateWidgetState extends State<IsolateWidget> {
         Text(
           '500 000 автоматических размещений кораблей выполняется за:',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16
-          ),
+          style: isolateDescriptionTextStyle(context),
         ),
         if (calculating)
           Padding(
@@ -52,12 +52,7 @@ class _IsolateWidgetState extends State<IsolateWidget> {
             ),
           ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
+          style: isolateButtonStyle(context),
           onPressed: calculating ? null : () async {
             setState(() {
               calculating = true;

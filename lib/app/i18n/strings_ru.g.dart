@@ -31,9 +31,21 @@ class TranslationsRu implements Translations {
 	TranslationsRu $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsRu(meta: meta ?? this.$meta);
 
 	// Translations
+	@override late final _TranslationsBattleRu battle = _TranslationsBattleRu._(_root);
 	@override late final _TranslationsEtcRu etc = _TranslationsEtcRu._(_root);
 	@override late final _TranslationsHomeRu home = _TranslationsHomeRu._(_root);
+	@override late final _TranslationsQrRu qr = _TranslationsQrRu._(_root);
 	@override late final _TranslationsSetupshipsRu setupships = _TranslationsSetupshipsRu._(_root);
+}
+
+// Path: battle
+class _TranslationsBattleRu implements TranslationsBattleEn {
+	_TranslationsBattleRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get cancelGame => 'Отменить игру';
 }
 
 // Path: etc
@@ -64,6 +76,22 @@ class _TranslationsHomeRu implements TranslationsHomeEn {
 	@override String get joinGame => 'Принять игру';
 	@override String get title => 'МОРСКОЙ БОЙ';
 	@override String get settings => 'Настройки';
+}
+
+// Path: qr
+class _TranslationsQrRu implements TranslationsQrEn {
+	_TranslationsQrRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get creatingGame => 'Создание игры';
+	@override String get createGame => 'Создать игру';
+	@override String get acceptLastGame => 'Принять последнюю игру в БД';
+	@override String get acceptGame => 'Принять игру';
+	@override String get invalidQrCode => 'Неверный QR-код';
+	@override String get scanQrCode => 'Сканирование QR-кода';
+	@override String get cancelGame => 'Отменить игру';
 }
 
 // Path: setupships

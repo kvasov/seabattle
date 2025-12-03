@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/features/battle/presentation/styles/buttons.dart';
 import 'package:seabattle/shared/entities/game.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/features/battle/presentation/widgets/grid.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/features/battle/presentation/viewmodels/battle_viewmodel.dart';
-import 'package:seabattle/shared/widgets/drawer.dart';
-import 'package:seabattle/shared/widgets/menu_btn.dart';
-import 'package:seabattle/shared/widgets/firework.dart';
-import 'package:seabattle/shared/widgets/my_error_widget.dart';
+import 'package:seabattle/shared/presentation/widgets/drawer.dart';
+import 'package:seabattle/shared/presentation/widgets/menu_btn.dart';
+import 'package:seabattle/shared/presentation/widgets/firework.dart';
+import 'package:seabattle/shared/presentation/widgets/my_error_widget.dart';
 import 'package:seabattle/features/battle/presentation/widgets/arrow_rive.dart';
 import 'package:seabattle/features/battle/presentation/widgets/arrow_lottie.dart';
 
@@ -29,6 +31,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     final gameState = gameNotifier.value;
     final battleViewModelNotifier = ref.watch(battleViewModelProvider);
     final battleViewModelState = battleViewModelNotifier.value;
+    final t = context.t;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -74,58 +77,51 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     // Оба провайдера в состоянии data - отображаем контент
     return Stack(
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (gameState?.isLoading == true)
-              const CircularProgressIndicator(),
-            if (gameState?.game?.opponentReady == false)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: const Text('Waiting for opponent to be ready'),
-              )
-            else ...[
+        SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (gameState?.isLoading == true)
+                const CircularProgressIndicator(),
+              if (gameState?.game?.opponentReady == false)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: const Text('Waiting for opponent to be ready'),
+                )
+              else ...[
+                Center(
+                  child: BattleGrid(myShips: false),
+                ),
+                // Rive стал платным, поэтому берем анимацию из otus.food
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                //   child: ArrowRive(),
+                // ),
+                ArrowLottie(isMyMove: battleViewModelState?.myMove == true),
+              ],
               Center(
-                child: BattleGrid(myShips: false),
+                child: BattleGrid(myShips: true),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-              //   child: ArrowRive(),
-              // ),
-              ArrowLottie(isMyMove: battleViewModelState?.myMove == true),
-            ],
-            Center(
-              child: BattleGrid(myShips: true),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: ElevatedButton(
-                  onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 128, 128, 128),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
+                    style: cancelGameBtnStyle(context),
+                    child: Text(
+                      t.battle.cancelGame,
+                      style: cancelGameBtnTextStyle(context)
                     ),
                   ),
-                  child: const Text('Cancel Game'),
                 ),
               ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () => ref.read(battleViewModelProvider.notifier).showFirework(), child: const Text('Show Firework')),
-            ),
-            // Center(
-            //   child: TextButton(
-            //     onPressed: () {
-            //       debugPrint('💚 opponentShips: ${battleViewModelState?.opponentShips}');
-            //     },
-            //     child: const Text('Show opponent ships')),
-            // ),
-          ],
+              // Center(
+              //   child: TextButton(
+              //     onPressed: () => ref.read(battleViewModelProvider.notifier).showFirework(), child: const Text('Show Firework')),
+              // ),
+            ],
+          ),
         ),
         MenuBtn(scaffoldKey: _scaffoldKey),
         if (battleViewModelState?.showFirework == true) ...[

@@ -1,0 +1,7 @@
+creatingGame: 'Создание игры'
+createGame: 'Создать игру'
+acceptLastGame: 'Принять последнюю игру в БД'
+acceptGame: 'Принять игру'
+invalidQrCode: 'Неверный QR-код'
+scanQrCode: 'Сканирование QR-кода'
+cancelGame: 'Отменить игру'

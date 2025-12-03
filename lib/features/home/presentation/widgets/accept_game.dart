@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seabattle/features/home/presentation/styles/game_btn.dart';
+import 'package:seabattle/features/home/presentation/styles/buttons.dart';
+import 'package:seabattle/app/styles/theme_extension/simple_button.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
 
-class AcceptGame extends ConsumerWidget {
-  const AcceptGame({super.key});
+class AcceptGameButton extends ConsumerWidget {
+  const AcceptGameButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = screenWidth * 0.5 - 40;
 
     return SizedBox(
-      width: buttonWidth,
-      height: 140,
+      width: btnWidth(context),
+      height: gameBtnHeight(context),
       child: ElevatedButton(
-        style: gameBtnStyle,
+        style: gameBtnStyle(context),
         onPressed: () {
           ref.read(navigationProvider.notifier).pushScanQRScreen();
         },
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.camera_alt,
-              color: Colors.blue.shade400,
+              color: Theme.of(context).extension<ButtonColors>()?.textColor ?? Colors.black,
               size: 80,
             ),
             Text(
               t.home.joinGame,
-              style: gameBtnTextStyle,
               textAlign: TextAlign.center,
+              style: gameBtnTextStyle(context),
             ),
           ],
         ),
