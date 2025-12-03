@@ -10,7 +10,7 @@ class ShipTypeButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final setupShipsProvider = ref.read(setupShipsViewModelProvider);
+    final setupShipsProvider = ref.watch(setupShipsViewModelProvider);
     final setupShipsNotifier = ref.read(setupShipsViewModelProvider.notifier);
     final setupShipsState = setupShipsProvider.value;
 
@@ -21,7 +21,7 @@ class ShipTypeButton extends ConsumerWidget {
           () => setupShipsNotifier.setSelectedShipSize(shipSize),
         style: shipTypeButtonStyle(context, selected: setupShipsState?.selectedShipSize == shipSize),
         child: Text(
-          'x$shipSize: ${setupShipsState?.shipsToPlace[shipSize]}',
+          'x$shipSize: ${setupShipsState?.shipsToPlace[shipSize] ?? 0}',
           style: shipTypeButtonTextStyle(context),
         ),
       ),

@@ -7,7 +7,11 @@ import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_shi
 import 'package:seabattle/features/ships_setup/presentation/styles/buttons.dart';
 
 class GameActions extends ConsumerWidget {
-  const GameActions({super.key, required this.buttonActionStart, required this.setButtonActionStart});
+  const GameActions({
+    super.key,
+    required this.buttonActionStart,
+    required this.setButtonActionStart,
+  });
 
   final bool buttonActionStart;
   final Function(bool) setButtonActionStart;

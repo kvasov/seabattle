@@ -56,17 +56,8 @@ class _CancelGameDialogState extends ConsumerState<CancelGameDialog> {
             // Ждем завершения операции отмены игры
             await gameNotifier.updateGame(id, GameAction.cancel);
 
-            // Проверяем состояние провайдера после завершения операции
-            // В StatefulWidget ref безопасен для использования даже после pop()
-            if (mounted) {
-              final updatedGameState = ref.read(gameNotifierProvider);
-              if (!updatedGameState.hasError && updatedGameState.value?.isError != true) {
-                debugPrint('🔥 cancelGameDialog: ошибки нет, переходим на homeScreen');
-                navigationNotifier.goToHomeScreen();
-              } else {
-                debugPrint('🔥 cancelGameDialog: ошибка в gameNotifier, не переходим на homeScreen');
-              }
-            }
+            // final updatedGameState = ref.read(gameNotifierProvider);
+            navigationNotifier.goToHomeScreen();
           },
           child: Text(
             'Да',

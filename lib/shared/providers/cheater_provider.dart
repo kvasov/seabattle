@@ -39,7 +39,7 @@ class CheaterNotifier extends Notifier<CheaterState> {
   @override
   CheaterState build() {
     return CheaterState(
-      isCheater: false,
+      isCheater: true,
       isSetCheaterMode: false,
       isStartCheaterMode: false,
       countTaps: 0,
@@ -49,22 +49,22 @@ class CheaterNotifier extends Notifier<CheaterState> {
 
   void trySetCheaterMode() {
     if (state.isCheater == true) {
-      debugPrint('🔴 Читер уже включен');
+      // debugPrint('🔴 Читер уже включен');
       return;
     }
 
-    debugPrint('🟢 Попытка включить читера: ${state.countTaps + 1}');
+    // debugPrint('🟢 Попытка включить читера: ${state.countTaps + 1}');
     state = state.copyWith(countTaps: state.countTaps + 1);
 
     if (state.isStartCheaterMode == false) {
-      debugPrint('🟢 Таймер запущен');
+      // debugPrint('🟢 Таймер запущен');
       state = state.copyWith(isStartCheaterMode: true);
       Future.delayed(const Duration(seconds: 3), () {
         state = state.copyWith(isStartCheaterMode: false);
       });
     } else {
       if (state.countTaps >= 3) {
-        debugPrint('🟢 Читер включен');
+        // debugPrint('🟢 Читер включен');
         state = state.copyWith(isCheater: true);
         final battleViewModelNotifier = ref.read(battleViewModelProvider.notifier);
         battleViewModelNotifier.showFirework();
@@ -73,7 +73,7 @@ class CheaterNotifier extends Notifier<CheaterState> {
   }
 
   void resetCheaterMode() {
-    state = state.copyWith(isCheater: false);
+    // state = state.copyWith(isCheater: false);
   }
 }
 
