@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
 
 class BLEWidget extends ConsumerWidget {
   const BLEWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.t;
+
     final bleState = ref.watch(bleNotifierProvider);
     final bleNotifier = ref.read(bleNotifierProvider.notifier);
 
@@ -18,7 +21,7 @@ class BLEWidget extends ConsumerWidget {
           if (!bleState.isLoading && bleState.value != null && bleState.value!.isConnected)
             ListTile(
               leading: Icon(Icons.bluetooth_connected, color: Colors.green),
-              title: Text('Подключено'),
+              title: Text(t.settings.bleConnected),
               subtitle: Text('${bleState.value?.connectedDevice?.name} (${bleState.value?.connectedDevice?.address})'),
               trailing: IconButton(
                 icon: Icon(Icons.close),
@@ -31,8 +34,8 @@ class BLEWidget extends ConsumerWidget {
           if (bleState.value != null && !bleState.value!.isConnected && !bleState.isLoading)
             ListTile(
               leading: Icon(Icons.bluetooth_disabled, color: Colors.grey),
-              title: Text('BLE не подключен'),
-              subtitle: Text('Нажмите для сканирования'),
+              title: Text(t.settings.bleNotConnected),
+              subtitle: Text(t.settings.bleClickToScan),
               onTap: () {
                 bleNotifier.startScanning();
               },

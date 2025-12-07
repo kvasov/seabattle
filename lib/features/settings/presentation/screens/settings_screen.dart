@@ -32,7 +32,7 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: TextButton(onPressed: () {
               ref.read(navigationProvider.notifier).pushStatisticsScreen();
-            }, child: Text('Перейти к статистике')),
+            }, child: Text(t.settings.settingsButtonStatistics)),
           ),
           const BLEWidget(),
           const SizedBox(height: 12),

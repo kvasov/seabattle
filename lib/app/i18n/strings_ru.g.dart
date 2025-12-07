@@ -34,8 +34,11 @@ class TranslationsRu implements Translations {
 	@override late final _TranslationsBattleRu battle = _TranslationsBattleRu._(_root);
 	@override late final _TranslationsEtcRu etc = _TranslationsEtcRu._(_root);
 	@override late final _TranslationsHomeRu home = _TranslationsHomeRu._(_root);
+	@override late final _TranslationsModalsRu modals = _TranslationsModalsRu._(_root);
 	@override late final _TranslationsQrRu qr = _TranslationsQrRu._(_root);
+	@override late final _TranslationsSettingsRu settings = _TranslationsSettingsRu._(_root);
 	@override late final _TranslationsSetupshipsRu setupships = _TranslationsSetupshipsRu._(_root);
+	@override late final _TranslationsStatisticsRu statistics = _TranslationsStatisticsRu._(_root);
 }
 
 // Path: battle
@@ -63,6 +66,8 @@ class _TranslationsEtcRu implements TranslationsEtcEn {
 		many: '${n} часов',
 	);
 	@override late final _TranslationsEtcLanguageRu language = _TranslationsEtcLanguageRu._(_root);
+	@override late final _TranslationsEtcCheaterRu cheater = _TranslationsEtcCheaterRu._(_root);
+	@override late final _TranslationsEtcDrawerRu drawer = _TranslationsEtcDrawerRu._(_root);
 }
 
 // Path: home
@@ -76,6 +81,25 @@ class _TranslationsHomeRu implements TranslationsHomeEn {
 	@override String get joinGame => 'Принять игру';
 	@override String get title => 'МОРСКОЙ БОЙ';
 	@override String get settings => 'Настройки';
+}
+
+// Path: modals
+class _TranslationsModalsRu implements TranslationsModalsEn {
+	_TranslationsModalsRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get modalButtonOk => 'OK';
+	@override String get loseModalTitle => 'Вы проиграли :(';
+	@override String get winModalTitle => 'Вы выиграли!';
+	@override String get cancelGameModalTitle => 'Отменить игру?';
+	@override String cancelGameModalContent({required Object gameId}) => 'Вы уверены, что хотите отменить игру #${gameId}?';
+	@override String get cancelGameModalButtonNo => 'Нет';
+	@override String get cancelGameModalButtonYes => 'Да';
+	@override String get canceledGameModalTitle => 'Игра отменена соперником';
+	@override String get acceptedGameModalTitle => 'Игра уже принята кем-то другим';
+	@override String get webSocketClosedModalTitle => 'Соединение с сервером прервано (из-за неактивности игрока или какой-то ошибки)';
 }
 
 // Path: qr
@@ -94,6 +118,23 @@ class _TranslationsQrRu implements TranslationsQrEn {
 	@override String get cancelGame => 'Отменить игру';
 }
 
+// Path: settings
+class _TranslationsSettingsRu implements TranslationsSettingsEn {
+	_TranslationsSettingsRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get settingsButtonStatistics => 'Перейти к статистике';
+	@override String get accelerometerBall => 'Использовать акселерометр';
+	@override String get bleConnected => 'Подключено';
+	@override String get bleNotConnected => 'BLE не подключен';
+	@override String get bleClickToScan => 'Нажмите для сканирования';
+	@override String get colorSchemeSelection => 'Выбор цветовой схемы';
+	@override String get sound => 'Звук';
+	@override String get darkTheme => 'Тёмная тема';
+}
+
 // Path: setupships
 class _TranslationsSetupshipsRu implements TranslationsSetupshipsEn {
 	_TranslationsSetupshipsRu._(this._root);
@@ -103,6 +144,28 @@ class _TranslationsSetupshipsRu implements TranslationsSetupshipsEn {
 	// Translations
 	@override String get title => 'Морской бой: расставь свои корабли';
 	@override late final _TranslationsSetupshipsButtonsRu buttons = _TranslationsSetupshipsButtonsRu._(_root);
+}
+
+// Path: statistics
+class _TranslationsStatisticsRu implements TranslationsStatisticsEn {
+	_TranslationsStatisticsRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Статистика';
+	@override String get noGamesPlayedYet => 'Нет игр';
+	@override String get hits => 'Попаданий';
+	@override String get misses => 'Промахов';
+	@override String get accuracy => 'Точность';
+	@override String get losses => 'Поражений';
+	@override String get wins => 'Побед';
+	@override String get cancelled => 'Отменено';
+	@override String get totalGames => 'Игр';
+	@override String get totalWins => 'Всего побед';
+	@override String get totalLosses => 'Всего поражений';
+	@override String get totalCancelled => 'Всего отменено';
+	@override String get resetStatistics => 'Сбросить статистику';
 }
 
 // Path: etc.bottomNavigationBar
@@ -125,6 +188,26 @@ class _TranslationsEtcLanguageRu implements TranslationsEtcLanguageEn {
 	// Translations
 	@override String get en => 'Английский';
 	@override String get ru => 'Русский';
+}
+
+// Path: etc.cheater
+class _TranslationsEtcCheaterRu implements TranslationsEtcCheaterEn {
+	_TranslationsEtcCheaterRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Поздравляем,\nтеперь вы читер';
+}
+
+// Path: etc.drawer
+class _TranslationsEtcDrawerRu implements TranslationsEtcDrawerEn {
+	_TranslationsEtcDrawerRu._(this._root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Морской бой';
 }
 
 // Path: setupships.buttons

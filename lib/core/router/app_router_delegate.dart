@@ -95,7 +95,6 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
       case '/dialog':
         final arguments = route.arguments ?? <String, dynamic>{};
         final dialogType = arguments['type'] as String?;
-        debugPrint('⚡️⚡️⚡️ dialogType: $dialogType');
         Widget dialogChild;
         var barrierDismissible = true;
 

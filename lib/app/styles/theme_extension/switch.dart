@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Расширение темы с кастомными цветами для Switch
 class AppSwitchColors extends ThemeExtension<AppSwitchColors> {
   const AppSwitchColors({
     required this.thumbOn,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/legend.dart';
 
@@ -8,6 +9,8 @@ class HitsShotsWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.t;
+
     final statistics = ref.watch(statisticsViewModelProvider);
     final totalHits = statistics.value?.statistics?.totalHits ?? 0;
     final totalShots = statistics.value?.statistics?.totalShots ?? 0;
@@ -46,17 +49,17 @@ class HitsShotsWidget extends ConsumerWidget {
         Column(
           children: [
             Legend(
-              title: 'Hits $totalHits',
+              title: '${t.statistics.hits} $totalHits',
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
             SizedBox(width: 20),
             Legend(
-              title: 'Misses ${totalShots - totalHits}',
+              title: '${t.statistics.misses} ${totalShots - totalHits}',
               color: Theme.of(context).colorScheme.onSurface,
             ),
             SizedBox(width: 20),
             Legend(
-              title: 'Accuracy ${totalShots > 0 ? ((totalHits / totalShots) * 100).toStringAsFixed(2) : '0.00'}%',
+              title: '${t.statistics.accuracy} ${totalShots > 0 ? ((totalHits / totalShots) * 100).toStringAsFixed(2) : '0.00'}%',
               color: Theme.of(context).colorScheme.surfaceDim),
           ],
         ),

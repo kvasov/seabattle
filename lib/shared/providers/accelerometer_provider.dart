@@ -91,7 +91,7 @@ class AccelerometerNotifier extends AsyncNotifier<AccelerometerBallState> {
 
     state = AsyncValue.loading();
     try {
-      final result = await _accelerometer.startAccelerometer();
+      await _accelerometer.startAccelerometer();
       state = AsyncValue.data(currentState!.copyWith(
         isReceivingData: true,
       ));

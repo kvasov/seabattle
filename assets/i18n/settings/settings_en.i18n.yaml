@@ -1,0 +1,8 @@
+settingsButtonStatistics: 'Go to statistics'
+accelerometerBall: 'Use accelerometer'
+bleConnected: 'Connected'
+bleNotConnected: 'BLE not connected'
+bleClickToScan: 'Click to scan'
+colorSchemeSelection: 'Color scheme selection'
+sound: 'Sound'
+darkTheme: 'Dark theme'

@@ -73,10 +73,10 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
               final double centerY = textHeight / 2;
 
               // Трансформация
-              final matrix = Matrix4.identity()
-                ..translate(centerX, centerY)
-                ..scale(baseScale)
-                ..translate(-imageWidth / 2, -imageHeight / 2);
+              final scaleMatrix = Matrix4.identity()..scaleByDouble(baseScale, baseScale, 1.0, 1.0);
+              final matrix = Matrix4.translationValues(centerX, centerY, 0)
+                * scaleMatrix
+                * Matrix4.translationValues(-imageWidth / 2, -imageHeight / 2, 0);
 
               return ImageShader(
                 image!,

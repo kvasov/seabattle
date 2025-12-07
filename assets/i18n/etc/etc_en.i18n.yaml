@@ -8,3 +8,7 @@ hours:
 language:
   en: 'English'
   ru: 'Russian'
+cheater:
+  title: 'Congratulations,\nnow you are a cheater'
+drawer:
+  title: 'Sea Battle'

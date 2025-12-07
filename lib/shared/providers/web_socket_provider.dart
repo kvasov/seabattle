@@ -87,8 +87,8 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
             if (decoded['ships'] != null) {
               if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
                 final shipsRaw = decoded['ships'] as List<dynamic>;
-                debugPrint('💚 Получены корабли соперника');
-                debugPrint('💚 shipsRaw: $shipsRaw');
+                debugPrint('Получены корабли соперника');
+                debugPrint('shipsRaw: $shipsRaw');
                 final opponentShips = shipsRaw
                     .map((ship) => Ship.fromJson(Map<String, dynamic>.from(ship as Map<String, dynamic>)))
                     .toList();
@@ -96,21 +96,20 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                 final gameNotifier = ref.read(gameNotifierProvider.notifier);
                 final gameState = gameNotifier.state.value;
                 if (gameState != null) {
-                  debugPrint('💚 Устанавливаем корабли соперника: ${opponentShips}');
+                  debugPrint('Устанавливаем корабли соперника: $opponentShips');
                   ref.read(battleViewModelProvider.notifier).setShips(
                     mode: 'opponent',
                     ships: opponentShips
                   );
-                  debugPrint('💚 Установлены корабли соперника: ${ref.read(battleViewModelProvider).value?.opponentShips}');
+                  debugPrint('Установлены корабли соперника: ${ref.read(battleViewModelProvider).value?.opponentShips}');
                   gameNotifier.setOpponentReady();
-
-                  debugPrint('💚 opponentShips: $opponentShips');
+                  debugPrint('opponentShips: $opponentShips');
                 } else {
                   debugPrint('⚠️ opponentShips получены, но GameState ещё не инициализирован');
                 }
               }
-
             }
+
             // Если соперник отправил выстрел, то обновляем состояние
             if (decoded['type'] == 'shot' && decoded['x'] != null && decoded['y'] != null) {
               if (decoded['userUniqueId'] != ref.read(userUniqueIdProvider)) {
@@ -169,7 +168,7 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
         isError: false,
         errorMessage: '',
       ));
-      debugPrint('✅ WebSocket connected successfully');
+      debugPrint('🔌 WebSocket connected successfully');
     } catch (e, stackTrace) {
       debugPrint('❌ WebSocket connection error: $e');
       state = AsyncValue.error(e, stackTrace);

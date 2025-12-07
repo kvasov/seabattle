@@ -1,0 +1,8 @@
+settingsButtonStatistics: 'Перейти к статистике'
+accelerometerBall: 'Использовать акселерометр'
+bleConnected: 'Подключено'
+bleNotConnected: 'BLE не подключен'
+bleClickToScan: 'Нажмите для сканирования'
+colorSchemeSelection: 'Выбор цветовой схемы'
+sound: 'Звук'
+darkTheme: 'Тёмная тема'

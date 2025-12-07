@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/legend.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/pie_chart_widget.dart';
 
@@ -19,6 +20,7 @@ class GamesPieWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.t;
 
     final maxWidthPieChart = MediaQuery.of(context).size.width * 0.5;
 
@@ -54,14 +56,14 @@ class GamesPieWidget extends ConsumerWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Legend(title: 'Losses', color: colorLosses),
-            Legend(title: 'Wins', color: colorWins),
-            Legend(title: 'Cancelled', color: colorCancelled),
+            Legend(title: t.statistics.losses, color: colorLosses),
+            Legend(title: t.statistics.wins, color: colorWins),
+            Legend(title: t.statistics.cancelled, color: colorCancelled),
             SizedBox(height: 10),
-            Text('Total Games $totalGames'),
-            Text('Total Wins $totalWins'),
-            Text('Total Losses $totalLosses'),
-            Text('Total Cancelled $totalCancelled'),
+            Text('${t.statistics.totalGames} $totalGames'),
+            Text('${t.statistics.totalWins} $totalWins'),
+            Text('${t.statistics.totalLosses} $totalLosses'),
+            Text('${t.statistics.totalCancelled} $totalCancelled'),
           ],
         ),
       ],

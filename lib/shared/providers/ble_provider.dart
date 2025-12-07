@@ -68,7 +68,13 @@ class BleNotifier extends AsyncNotifier<BleState> {
       _callbackInitialized = true;
     }
 
-    return BleState(isScanning: false, devices: [], connectedDevice: null, isConnected: false, error: '');
+    return BleState(
+      isScanning: false,
+      devices: [],
+      connectedDevice: null,
+      isConnected: false,
+      error: ''
+    );
   }
 
   final BluetoothScannerApi _bleScanner = BluetoothScannerApi();
@@ -96,7 +102,6 @@ class BleNotifier extends AsyncNotifier<BleState> {
     _lastReceivedValue = value;
     _lastReceivedTime = now;
 
-    // debugPrint('🔗 Received string from ESP32: $value');
     final newState = currentState!.copyWith(receivedString: value);
     state = AsyncValue.data(newState);
     if (ref.read(navigationProvider).last.name == '/setupShipsScreen') {
@@ -109,7 +114,6 @@ class BleNotifier extends AsyncNotifier<BleState> {
   void _onConnectionStatusChanged(bool isConnected) {
     final currentState = state.value;
     debugPrint('🔗 Connection status changed: $isConnected');
-    // TODO показать snackbar с сообщением о статусе соединения
     this.isConnected = isConnected;
     ref.read(setupShipsViewModelProvider.notifier).updateIsConnected(isConnected);
     state = AsyncValue.data(currentState!.copyWith(
@@ -200,7 +204,7 @@ class BleNotifier extends AsyncNotifier<BleState> {
 
   Future<void> sendInt(int value) async {
     if (!isConnected) {
-      // debugPrint('🔗 Device is not connected');
+      debugPrint('🔗 Device is not connected');
       return;
     }
     try {

@@ -41,7 +41,7 @@ class DrawerWidget extends ConsumerWidget {
                   ref.read(cheaterProvider.notifier).trySetCheaterMode();
                 }, child: Image.asset('assets/images/splash_bg.jpg', width: 100, height: 100)),
                 Text(
-                  'Морской бой',
+                  t.etc.drawer.title,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

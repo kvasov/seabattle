@@ -12,8 +12,6 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
     }
 
     // Односегментные пути - главный экран + целевой экран
-
-    // TODO: оставить только те роуты, по которым можно перейти напрямую.
     if (uri.pathSegments.length == 1) {
       final path = uri.pathSegments[0];
 
@@ -29,22 +27,12 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
       if (path == 'scanQRScreen') {
         return [AppRoute.scanQRScreen()];
       }
-      if (path == 'setupShipsScreen') {
-        return [AppRoute.setupShipsScreen()];
-      }
-      if (path == 'loseModal') {
-        return [AppRoute.dialog(arguments: {'type': 'loseModal'})];
-      }
-      if (path == 'winModal') {
-        return [AppRoute.dialog(arguments: {'type': 'winModal'})];
-      }
       if (path == 'statisticsScreen') {
         return [AppRoute.statisticsScreen()];
       }
     }
 
-    // Неизвестный путь - возвращаемся на список рецептов.
-    // можно было бы сделать 404-экран для веб-версии.
+    // Неизвестный путь
     return [AppRoute.homeScreen()];
   }
 
@@ -52,7 +40,7 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
   @override
   RouteInformation restoreRouteInformation(List<AppRoute> configuration) {
     // Пустой стек или только главный экран - корневой путь
-    debugPrint('🫀 configuration: ${configuration}');
+    debugPrint('🏁 configuration: $configuration');
     if (configuration.isEmpty || configuration.last.name == AppRoute.homeScreen().name) {
       return RouteInformation(uri: Uri.parse('/'));
     }

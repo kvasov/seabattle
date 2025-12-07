@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:seabattle/core/storage/storage_models.dart';
@@ -18,7 +17,7 @@ class SettingsViewModelNotifier extends AsyncNotifier<SettingsViewModelState> {
       final settingsOperation = await ref.read(settingsRepositoryProvider).getSettings();
       SettingsModel? settings = settingsOperation.data;
       if (settings == null) {
-        debugPrint('🤍🧡🤍 build: settings == null, создаем новые настройки');
+        debugPrint('build: settings == null, создаем новые настройки');
         settings = SettingsModel(
           language: 'ru',
           isSoundEnabled: true,
@@ -27,15 +26,15 @@ class SettingsViewModelNotifier extends AsyncNotifier<SettingsViewModelState> {
           themeModeIndex: settings?.convertThemeModeToInt(ThemeMode.system) ?? 0,
           seedColorValue: SettingsModel.colorToInt(Colors.teal),
         );
-        debugPrint('🤍🧡🤍 build: сохраняем новые настройки');
+        debugPrint('build: сохраняем новые настройки');
         await ref.read(settingsRepositoryProvider).saveSettings(settings);
       }
 
       return SettingsViewModelState(settings: settings);
 
     } catch (e, stackTrace) {
-      debugPrint('🤍🧡🤍 build: ОШИБКА при получении settings: $e');
-      debugPrint('🤍🧡🤍 build: StackTrace: $stackTrace');
+      debugPrint('build: ОШИБКА при получении settings: $e');
+      debugPrint('build: StackTrace: $stackTrace');
       rethrow;
     }
   }
@@ -49,11 +48,4 @@ class SettingsViewModelNotifier extends AsyncNotifier<SettingsViewModelState> {
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
-
-  // Future<void> getSettings() async {
-  //   state = AsyncValue.data(
-  //     SettingsViewModelState(
-  //       settings: await ref.read(settingsRepositoryProvider).getSettings()),
-  //   );
-  // }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/features/battle/providers/battle_provider.dart';
 
@@ -47,13 +46,12 @@ class CheaterNotifier extends Notifier<CheaterState> {
     );
   }
 
+  // вызывается при тапе
   void trySetCheaterMode() {
     if (state.isCheater == true) {
-      // debugPrint('🔴 Читер уже включен');
       return;
     }
 
-    // debugPrint('🟢 Попытка включить читера: ${state.countTaps + 1}');
     state = state.copyWith(countTaps: state.countTaps + 1);
 
     if (state.isStartCheaterMode == false) {
@@ -73,7 +71,7 @@ class CheaterNotifier extends Notifier<CheaterState> {
   }
 
   void resetCheaterMode() {
-    // state = state.copyWith(isCheater: false);
+    state = state.copyWith(isCheater: false);
   }
 }
 

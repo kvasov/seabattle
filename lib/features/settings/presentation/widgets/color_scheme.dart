@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/app_theme_provider.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
 
 class ColorSchemeWidget extends ConsumerWidget {
   const ColorSchemeWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.t;
+
     final state = ref.watch(appThemeProvider);
     final controller = ref.read(appThemeProvider.notifier);
 
@@ -22,8 +25,8 @@ class ColorSchemeWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Выбор цветовой схемы',
+            Text(
+              t.settings.colorSchemeSelection,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),

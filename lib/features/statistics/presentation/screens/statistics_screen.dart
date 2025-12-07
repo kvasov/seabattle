@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/games_pie_widget.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/parts/hits_shots_widget.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/reset_btn.dart';
@@ -10,7 +11,7 @@ class StatisticsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
+    final t = context.t;
 
     final statistics = ref.watch(statisticsViewModelProvider);
     final totalGames = statistics.value?.statistics?.totalGames ?? 0;
@@ -26,7 +27,7 @@ class StatisticsScreen extends ConsumerWidget {
           },
           icon: Icon(Icons.arrow_back_rounded),
         ),
-        title: Text('Statistics'),
+        title: Text(t.statistics.title),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -47,7 +48,7 @@ class StatisticsScreen extends ConsumerWidget {
                   SizedBox(height: 20),
                   ResetStatisticsButton(),
                 ] else
-                  const Center(child: Text('No games played yet')),
+                  Center(child: Text(t.statistics.noGamesPlayedYet)),
               ],
             ),
           ),

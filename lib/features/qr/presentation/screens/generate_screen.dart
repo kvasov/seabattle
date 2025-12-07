@@ -5,6 +5,7 @@ import 'package:seabattle/app/i18n/strings.g.dart';
 import 'package:seabattle/features/qr/presentation/styles/buttons.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/presentation/widgets/my_error_widget.dart';
+import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:qr_bar_code/qr/qr.dart';
 
 class GenerateQRScreen extends ConsumerStatefulWidget {
@@ -18,6 +19,9 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(battleViewModelProvider.future);
+    });
   }
 
   @override

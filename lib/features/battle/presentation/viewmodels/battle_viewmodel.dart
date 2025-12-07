@@ -98,7 +98,18 @@ class BattleViewModelState {
 class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   @override
   Future<BattleViewModelState> build() async {
-    return _initialState();
+    return BattleViewModelState(
+      ships: [],
+      shots: [],
+      opponentShips: [],
+      opponentShots: [],
+      gridSize: 10,
+      isLoading: false,
+      isError: false,
+      errorMessage: '',
+      myMove: false,
+      cursorPosition: GridPosition(0, 0),
+    );
   }
 
   // Обработка сообщения от ESP32
@@ -128,11 +139,10 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
   // Установка кораблей (собственные или противника)
   void setShips({required String mode, required List<Ship> ships}) {
-    final currentState = _currentState();
     state = AsyncValue.data(
       mode == 'self'
-        ? currentState.copyWith(ships: ships)
-        : currentState.copyWith(opponentShips: ships),
+        ? state.value!.copyWith(ships: ships)
+        : state.value!.copyWith(opponentShips: ships),
     );
   }
 
@@ -156,14 +166,14 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
   // Выстрел по координатам шарика
   Future<void> handleBallTapDown(int ballX, int ballY) async {
-    debugPrint('💚❤️ handleBallTapDown: $ballX, $ballY');
+    // debugPrint('handleBallTapDown: $ballX, $ballY');
     if (!state.value!.myMove) {
       return;
     }
     final cellSize = ref.watch(cellSizeProvider);
     final x = (ballX ~/ cellSize).clamp(0, state.value!.gridSize - 1);
     final y = (ballY ~/ cellSize).clamp(0, state.value!.gridSize - 1);
-    debugPrint('💚❤️ x: $x, y: $y');
+    // debugPrint('x: $x, y: $y');
     await makeShot(x, y);
   }
 
@@ -268,7 +278,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     try {
       final result = await ref.read(battleRepositoryProvider).sendShotToOpponent(id, userUniqueId, x, y, isHit(x, y));
       if (result.isError) {
-        debugPrint('💚❤️♠️ sendShot error: ${result.error?.description ?? 'Unknown error'}');
+        // debugPrint('sendShot error: ${result.error?.description ?? 'Unknown error'}');
         state = AsyncValue.data(
           state.value!.copyWith(isError: true, errorMessage: result.error?.description ?? 'Unknown error'),
         );
@@ -288,7 +298,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       }
 
     } catch (e) {
-      debugPrint('💚❤️♠️ sendShot error: $e');
+      debugPrint('sendShot error: $e');
       state = AsyncValue.data(
         state.value!.copyWith(isError: true, errorMessage: e.toString()),
       );
@@ -336,36 +346,23 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
 
   void resetBattle() {
     state = AsyncValue.data(
-      _initialState(),
-    );
-  }
-
-  BattleViewModelState _currentState() {
-    return state.maybeWhen(
-      data: (value) => value,
-      orElse: () => _initialState(),
-    );
+      state.value!.copyWith(
+        ships: [],
+        shots: [],
+        opponentShips: [],
+        opponentShots: [],
+        gridSize: 10,
+        isLoading: false,
+        isError: false,
+        errorMessage: '',
+        myMove: false,
+        cursorPosition: GridPosition(0, 0),
+    ));
   }
 
   void setMyMove(bool value) {
-    final current = _currentState();
     state = AsyncValue.data(
-      current.copyWith(myMove: value),
-    );
-  }
-
-  BattleViewModelState _initialState() {
-    return BattleViewModelState(
-      ships: [],
-      shots: [],
-      opponentShips: [],
-      opponentShots: [],
-      gridSize: 10,
-      isLoading: false,
-      isError: false,
-      errorMessage: '',
-      myMove: false,
-      cursorPosition: GridPosition(0, 0),
+      state.value!.copyWith(myMove: value),
     );
   }
 }

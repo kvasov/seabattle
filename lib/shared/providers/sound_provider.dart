@@ -53,12 +53,6 @@ class SoundNotifier extends Notifier<void> {
   }
 }
 
-
-
-
-
-
-
 final soundNotifierProvider = NotifierProvider<SoundNotifier, void>(() {
   return SoundNotifier();
 });

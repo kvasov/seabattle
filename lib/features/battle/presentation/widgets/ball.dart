@@ -57,16 +57,8 @@ class _BallWidgetState extends ConsumerState<BallWidget> {
     final accelerometerData = accelerometerBallState.value;
 
     if (accelerometerData?.isReceivingData ?? false) {
-      // Получаем ускорение от акселерометра
-      // При увеличении X акселерометра → шарик катится влево (уменьшается ballX)
-      // При уменьшении X акселерометра → шарик катится вправо (увеличивается ballX)
-      final accelX = -accelerometerData!.x; // Обратный знак для движения влево при увеличении X
-
-      // При увеличении Y акселерометра → шарик катится вниз (увеличивается ballY)
-      // При уменьшении Y акселерометра → шарик катится вверх (уменьшается ballY)
+      final accelX = -accelerometerData!.x;
       final accelY = accelerometerData.y;
-
-      // Обновляем скорость на основе ускорения
       _velocityX += accelX * _accelerationFactor;
       _velocityY += accelY * _accelerationFactor;
 

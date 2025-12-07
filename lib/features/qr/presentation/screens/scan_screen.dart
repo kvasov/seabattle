@@ -6,6 +6,7 @@ import 'package:seabattle/features/qr/providers/qr_scan_viewmodel_provider.dart'
 import 'package:seabattle/shared/providers/game_provider.dart';
 import 'package:seabattle/shared/presentation/widgets/my_error_widget.dart';
 import 'package:seabattle/app/i18n/strings.g.dart';
+import 'package:seabattle/features/battle/providers/battle_provider.dart';
 
 class ScanQRScreen extends ConsumerStatefulWidget {
   const ScanQRScreen({super.key});
@@ -15,6 +16,14 @@ class ScanQRScreen extends ConsumerStatefulWidget {
 }
 
 class _ScanQRScreenState extends ConsumerState<ScanQRScreen> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(battleViewModelProvider.future);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final gameNotifier = ref.watch(gameNotifierProvider);

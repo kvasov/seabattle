@@ -37,8 +37,11 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsBattleEn battle = TranslationsBattleEn._(_root);
 	late final TranslationsEtcEn etc = TranslationsEtcEn._(_root);
 	late final TranslationsHomeEn home = TranslationsHomeEn._(_root);
+	late final TranslationsModalsEn modals = TranslationsModalsEn._(_root);
 	late final TranslationsQrEn qr = TranslationsQrEn._(_root);
+	late final TranslationsSettingsEn settings = TranslationsSettingsEn._(_root);
 	late final TranslationsSetupshipsEn setupships = TranslationsSetupshipsEn._(_root);
+	late final TranslationsStatisticsEn statistics = TranslationsStatisticsEn._(_root);
 }
 
 // Path: battle
@@ -70,6 +73,8 @@ class TranslationsEtcEn {
 	);
 
 	late final TranslationsEtcLanguageEn language = TranslationsEtcLanguageEn._(_root);
+	late final TranslationsEtcCheaterEn cheater = TranslationsEtcCheaterEn._(_root);
+	late final TranslationsEtcDrawerEn drawer = TranslationsEtcDrawerEn._(_root);
 }
 
 // Path: home
@@ -91,6 +96,45 @@ class TranslationsHomeEn {
 
 	/// en: 'Settings'
 	String get settings => 'Settings';
+}
+
+// Path: modals
+class TranslationsModalsEn {
+	TranslationsModalsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'OK'
+	String get modalButtonOk => 'OK';
+
+	/// en: 'You lost :('
+	String get loseModalTitle => 'You lost :(';
+
+	/// en: 'You won!'
+	String get winModalTitle => 'You won!';
+
+	/// en: 'Cancel game?'
+	String get cancelGameModalTitle => 'Cancel game?';
+
+	/// en: 'Are you sure you want to cancel game #$gameId?'
+	String cancelGameModalContent({required Object gameId}) => 'Are you sure you want to cancel game #${gameId}?';
+
+	/// en: 'No'
+	String get cancelGameModalButtonNo => 'No';
+
+	/// en: 'Yes'
+	String get cancelGameModalButtonYes => 'Yes';
+
+	/// en: 'Game canceled by opponent'
+	String get canceledGameModalTitle => 'Game canceled by opponent';
+
+	/// en: 'Game already accepted by someone else'
+	String get acceptedGameModalTitle => 'Game already accepted by someone else';
+
+	/// en: 'Connection to server interrupted (due to player inactivity or some error)'
+	String get webSocketClosedModalTitle => 'Connection to server interrupted (due to player inactivity or some error)';
 }
 
 // Path: qr
@@ -123,6 +167,39 @@ class TranslationsQrEn {
 	String get cancelGame => 'Cancel game';
 }
 
+// Path: settings
+class TranslationsSettingsEn {
+	TranslationsSettingsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Go to statistics'
+	String get settingsButtonStatistics => 'Go to statistics';
+
+	/// en: 'Use accelerometer'
+	String get accelerometerBall => 'Use accelerometer';
+
+	/// en: 'Connected'
+	String get bleConnected => 'Connected';
+
+	/// en: 'BLE not connected'
+	String get bleNotConnected => 'BLE not connected';
+
+	/// en: 'Click to scan'
+	String get bleClickToScan => 'Click to scan';
+
+	/// en: 'Color scheme selection'
+	String get colorSchemeSelection => 'Color scheme selection';
+
+	/// en: 'Sound'
+	String get sound => 'Sound';
+
+	/// en: 'Dark theme'
+	String get darkTheme => 'Dark theme';
+}
+
 // Path: setupships
 class TranslationsSetupshipsEn {
 	TranslationsSetupshipsEn._(this._root);
@@ -135,6 +212,54 @@ class TranslationsSetupshipsEn {
 	String get title => 'Sea Battle: place your ships';
 
 	late final TranslationsSetupshipsButtonsEn buttons = TranslationsSetupshipsButtonsEn._(_root);
+}
+
+// Path: statistics
+class TranslationsStatisticsEn {
+	TranslationsStatisticsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Statistics'
+	String get title => 'Statistics';
+
+	/// en: 'No games played yet'
+	String get noGamesPlayedYet => 'No games played yet';
+
+	/// en: 'Hits'
+	String get hits => 'Hits';
+
+	/// en: 'Misses'
+	String get misses => 'Misses';
+
+	/// en: 'Accuracy'
+	String get accuracy => 'Accuracy';
+
+	/// en: 'Losses'
+	String get losses => 'Losses';
+
+	/// en: 'Wins'
+	String get wins => 'Wins';
+
+	/// en: 'Cancelled'
+	String get cancelled => 'Cancelled';
+
+	/// en: 'Total games'
+	String get totalGames => 'Total games';
+
+	/// en: 'Total wins'
+	String get totalWins => 'Total wins';
+
+	/// en: 'Total losses'
+	String get totalLosses => 'Total losses';
+
+	/// en: 'Total cancelled'
+	String get totalCancelled => 'Total cancelled';
+
+	/// en: 'Reset statistics'
+	String get resetStatistics => 'Reset statistics';
 }
 
 // Path: etc.bottomNavigationBar
@@ -165,6 +290,30 @@ class TranslationsEtcLanguageEn {
 
 	/// en: 'Russian'
 	String get ru => 'Russian';
+}
+
+// Path: etc.cheater
+class TranslationsEtcCheaterEn {
+	TranslationsEtcCheaterEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Congratulations,\nnow you are a cheater'
+	String get title => 'Congratulations,\nnow you are a cheater';
+}
+
+// Path: etc.drawer
+class TranslationsEtcDrawerEn {
+	TranslationsEtcDrawerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Sea Battle'
+	String get title => 'Sea Battle';
 }
 
 // Path: setupships.buttons

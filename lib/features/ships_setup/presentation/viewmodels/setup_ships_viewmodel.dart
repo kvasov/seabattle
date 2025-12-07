@@ -67,7 +67,7 @@ class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState
     // Проверяем состояние подключения ESP (по умолчанию false, если провайдер еще не инициализирован)
     final bleStateAsync = ref.read(bleNotifierProvider);
     final isConnected = bleStateAsync.value?.isConnected ?? false;
-    debugPrint('💚! isConnected: $isConnected');
+    debugPrint('isConnected: $isConnected');
 
     return SetupShipsViewModelState(
       ships: [],

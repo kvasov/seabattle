@@ -12,7 +12,7 @@ import 'package:seabattle/shared/presentation/widgets/drawer.dart';
 import 'package:seabattle/shared/presentation/widgets/menu_btn.dart';
 import 'package:seabattle/shared/presentation/widgets/firework.dart';
 import 'package:seabattle/shared/presentation/widgets/my_error_widget.dart';
-import 'package:seabattle/features/battle/presentation/widgets/arrow_rive.dart';
+// import 'package:seabattle/features/battle/presentation/widgets/arrow_rive.dart';
 import 'package:seabattle/features/battle/presentation/widgets/arrow_lottie.dart';
 
 class BattleScreen extends ConsumerStatefulWidget {
@@ -36,7 +36,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: DrawerWidget(),
-      body: _buildBody(gameNotifier, battleViewModelNotifier, gameState, battleViewModelState),
+      body: _buildBody(gameNotifier, battleViewModelNotifier, gameState, battleViewModelState, t),
     );
   }
 
@@ -45,6 +45,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     AsyncValue<BattleViewModelState> battleViewModelNotifier,
     GameState? gameState,
     BattleViewModelState? battleViewModelState,
+    Translations t,
   ) {
     // Проверяем состояние ошибки для обоих провайдеров
     if (gameNotifier.hasError) {
@@ -116,16 +117,12 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                   ),
                 ),
               ),
-              // Center(
-              //   child: TextButton(
-              //     onPressed: () => ref.read(battleViewModelProvider.notifier).showFirework(), child: const Text('Show Firework')),
-              // ),
             ],
           ),
         ),
         MenuBtn(scaffoldKey: _scaffoldKey),
         if (battleViewModelState?.showFirework == true) ...[
-          const FireworkWidget(text: 'Поздравляем,\nтеперь вы читер'),
+          FireworkWidget(text: t.etc.cheater.title),
         ],
       ],
     );

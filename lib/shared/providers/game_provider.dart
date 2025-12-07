@@ -84,7 +84,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
       ref.read(webSocketNotifierProvider.notifier).connect(gameData.id);
       state = AsyncValue.data(newState);
     } catch (e) {
-      debugPrint('🔄🤍 createGame: исключение - $e');
+      debugPrint('createGame: исключение - $e');
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
@@ -95,14 +95,14 @@ class GameNotifier extends AsyncNotifier<GameState> {
   }
 
   Future<void> updateGame(int id, GameAction action) async {
-    debugPrint('🔄🤍 updateGame: id: $id, action: $action');
+    debugPrint('updateGame: id: $id, action: $action');
     final currentState = state.value;
     state = const AsyncValue.loading();
 
     try {
       final game = await ref.read(prepareRepositoryProvider).updateGame(id, action, ref.read(userUniqueIdProvider));
-      debugPrint('🔄🤍 updateGame: получен результат - isSuccess: ${game.isSuccess}, isError: ${game.isError}, data: ${game.data}, error: ${game.error}');
-      debugPrint('🔄🤍 updateGame: currentState = $currentState');
+      debugPrint('updateGame: получен результат - isSuccess: ${game.isSuccess}, isError: ${game.isError}, data: ${game.data}, error: ${game.error}');
+      debugPrint('updateGame: currentState = $currentState');
       if (game.isSuccess) {
         // Создаем новое состояние, используя currentState если он есть, иначе создаем новое
         final newState = currentState?.copyWith(
@@ -114,9 +114,9 @@ class GameNotifier extends AsyncNotifier<GameState> {
           errorMessage: '',
         );
         state = AsyncValue.data(newState);
-        debugPrint('🔄🤍!!!!!!!!!! updateGame: id: $id, action: $action');
+        debugPrint('updateGame: id: $id, action: $action');
         if (action == GameAction.accept) {
-          debugPrint('🔄🤍 updateGame: action == GameAction.accept');
+          debugPrint('updateGame: action == GameAction.accept');
           // Игру принять может только slave - обновляем master флаг перед переходом
           final gameWithMaster = game.data!.copyWith(master: false);
           state = AsyncValue.data(
@@ -141,7 +141,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
         }
       }
       else if (game.isError) {
-        debugPrint('🔄🤍 updateGame: ошибка - ${game.error}');
+        debugPrint('updateGame: ошибка - ${game.error}');
         final failure = game.error;
         if (failure?.description == 'already_accepted') {
           ref.read(navigationProvider.notifier).pushAcceptedGameDialogScreen();
@@ -150,11 +150,11 @@ class GameNotifier extends AsyncNotifier<GameState> {
         }
         state = AsyncValue.error(game.error?.description ?? 'Unknown error', StackTrace.current);
       } else {
-        debugPrint('🔄🤍 updateGame: неизвестное состояние - ни success, ни error');
+        debugPrint('updateGame: неизвестное состояние - ни success, ни error');
       }
     } catch (e, stackTrace) {
-      debugPrint('🔄🤍 updateGame: исключение - $e');
-      debugPrint('🔄🤍 updateGame: stackTrace - $stackTrace');
+      debugPrint('updateGame: исключение - $e');
+      debugPrint('updateGame: stackTrace - $stackTrace');
       state = AsyncValue.error(e.toString(), StackTrace.current);
     }
   }
@@ -187,7 +187,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
     );
 
     if (result.isError) {
-      debugPrint('🔥 startGame: ошибка - ${result.error}');
+      debugPrint('startGame: ошибка - ${result.error}');
       state = AsyncValue.error(result.error?.description ?? 'Unknown error', StackTrace.current);
       return;
     }
@@ -203,17 +203,17 @@ class GameNotifier extends AsyncNotifier<GameState> {
     // Сохраняем существующие opponentShips перед инициализацией, если они есть
     List<Ship>? existingOpponentShips;
 
-    debugPrint('💚🧡🧡 startGame: battleState: $battleState');
+    debugPrint('startGame: battleState: $battleState');
 
     if (battleState.hasValue && battleState.value!.opponentShips.isNotEmpty) {
       existingOpponentShips = battleState.value!.opponentShips;
-      debugPrint('💚 startGame: сохранены существующие opponentShips (${existingOpponentShips.length} кораблей)');
+      debugPrint('startGame: сохранены существующие opponentShips (${existingOpponentShips.length} кораблей)');
     }
 
     if (!battleState.hasValue) {
-      debugPrint('🔄🤍 startGame: инициализация battleViewModelProvider...');
+      debugPrint('startGame: инициализация battleViewModelProvider...');
       await ref.read(battleViewModelProvider.future);
-      debugPrint('🔄🤍 startGame: battleViewModelProvider инициализирован');
+      debugPrint('startGame: battleViewModelProvider инициализирован');
     }
 
     final shipsToSet = ref.read(setupShipsViewModelProvider.notifier).state.value?.ships ?? [];
@@ -227,16 +227,14 @@ class GameNotifier extends AsyncNotifier<GameState> {
 
     // Восстанавливаем opponentShips, если они были сохранены
     if (existingOpponentShips != null && existingOpponentShips.isNotEmpty) {
-      debugPrint('💚 startGame: восстановление opponentShips (${existingOpponentShips.length} кораблей)');
+      debugPrint('startGame: восстановление opponentShips (${existingOpponentShips.length} кораблей)');
       battleNotifier.setShips(
         mode: 'opponent',
         ships: existingOpponentShips
       );
     }
-
     battleNotifier.setMyMove(myMove);
 
-    // Переходим на экран битвы
     ref.read(navigationProvider.notifier).pushBattleScreen();
 
     final newState = currentState!.copyWith(game: newGame);

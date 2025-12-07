@@ -4,12 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExplosionImagesCache {
   ExplosionImagesCache(this._images);
-
   final Map<String, ui.Image> _images;
-
   ui.Image? imageForType(String type) => _images[type];
-
-  // Iterable<String> get availableSizes => _images.keys;
 }
 
 final explosionImagesProvider = FutureProvider<ExplosionImagesCache>((ref) async {
@@ -37,7 +33,6 @@ Future<ui.Image> _loadImage(String assetPath) async {
     final frame = await codec.getNextFrame();
     return frame.image;
   } catch (error) {
-    // Пробрасываем ошибку выше, чтобы FutureProvider перешёл в состояние error.
     rethrow;
   }
 }

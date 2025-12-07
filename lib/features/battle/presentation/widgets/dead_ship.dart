@@ -81,22 +81,6 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
     });
   }
 
-  // void _waitForContextAndExplode() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (!mounted) return;
-
-  //     final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-  //     if (boundary == null) {
-  //       // Контекст ещё не готов, повторяем попытку
-  //       _waitForContextAndExplode();
-  //       return;
-  //     }
-
-  //     // Контекст готов, запускаем взрыв сразу (появление уже завершено)
-  //     _explode();
-  //   });
-  // }
-
   @override
   void dispose() {
     _fadeInController.dispose();
@@ -140,6 +124,7 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
 
         if (a > 50) {
           final color = Color.fromARGB(a, r, g, b);
+          // Случайная скорость по X и Y
           final vx = (Random().nextDouble() - 0.5) * 2;
           final vy = (Random().nextDouble() - 1.0) * 2;
 

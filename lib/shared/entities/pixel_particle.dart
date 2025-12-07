@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Пиксельная частица, участвующая в "взрыве"
 class PixelParticle {
   Offset position;
   Offset velocity;

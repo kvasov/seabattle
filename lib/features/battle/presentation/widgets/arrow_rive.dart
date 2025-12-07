@@ -50,7 +50,7 @@ class _ArrowRiveState extends ConsumerState<ArrowRive> {
           _updateMyMoveInput(battleProvider.value!.myMove);
         }
       } else {
-        debugPrint('  ❌ fav input не найден');
+        debugPrint('fav input не найден');
       }
     } catch (e) {
       debugPrint('Ошибка при инициализации: $e');

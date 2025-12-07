@@ -13,6 +13,7 @@ List<List<CellState>> makeField({
     gridSize,
     (_) => List.generate(gridSize, (_) => CellState.empty),
   );
+
   for (final ship in ships) {
     // Сначала отмечаем клетки корабля
     final shipCells = <Offset>[];

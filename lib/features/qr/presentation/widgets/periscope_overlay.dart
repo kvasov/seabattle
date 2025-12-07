@@ -31,7 +31,7 @@ class _CircleClipper extends CustomClipper<Path> {
         center: Offset(size.width / 2, size.height / 2),
         radius: size.width / 2.5, // Радиус круга
       ))
-      ..fillType = PathFillType.evenOdd; // Это создает "дырку" в пути
+      ..fillType = PathFillType.evenOdd;
 
     return path;
   }
