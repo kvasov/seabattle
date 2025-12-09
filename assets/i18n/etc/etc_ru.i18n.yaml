@@ -1,11 +1,6 @@
 bottomNavigationBar:
   settings: 'Настройки'
   home: 'Главная'
-hours:
-  zero: ""
-  one: "$n час"
-  few: "$n часа"
-  many: "$n часов"
 language:
   en: 'Английский'
   ru: 'Русский'

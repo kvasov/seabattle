@@ -49,6 +49,7 @@ class _TranslationsBattleRu implements TranslationsBattleEn {
 
 	// Translations
 	@override String get cancelGame => 'Отменить игру';
+	@override String get waitingForOpponentToBeReady => 'Ждем соперника...';
 }
 
 // Path: etc

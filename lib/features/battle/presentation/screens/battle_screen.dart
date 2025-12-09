@@ -87,8 +87,8 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                 const CircularProgressIndicator(),
               if (gameState?.game?.opponentReady == false)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: const Text('Waiting for opponent to be ready'),
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: Text(t.battle.waitingForOpponentToBeReady),
                 )
               else ...[
                 Center(

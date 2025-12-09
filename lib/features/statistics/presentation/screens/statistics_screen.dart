@@ -5,6 +5,7 @@ import 'package:seabattle/features/statistics/presentation/widgets/games_pie_wid
 import 'package:seabattle/features/statistics/presentation/widgets/parts/hits_shots_widget.dart';
 import 'package:seabattle/features/statistics/presentation/widgets/reset_btn.dart';
 import 'package:seabattle/features/statistics/providers/statistics_provider.dart';
+import 'package:seabattle/shared/providers/game_provider.dart';
 
 class StatisticsScreen extends ConsumerWidget {
   const StatisticsScreen({super.key});
@@ -14,10 +15,15 @@ class StatisticsScreen extends ConsumerWidget {
     final t = context.t;
 
     final statistics = ref.watch(statisticsViewModelProvider);
-    final totalGames = statistics.value?.statistics?.totalGames ?? 0;
+    var totalGames = statistics.value?.statistics?.totalGames ?? 0;
+    if (ref.read(gameNotifierProvider).value?.game != null) {
+      totalGames--;
+    }
     final totalWins = statistics.value?.statistics?.totalWins ?? 0;
     final totalCancelled = statistics.value?.statistics?.totalCancelled ?? 0;
     final totalLosses = totalGames - totalWins - totalCancelled;
+
+    debugPrint('statistics: totalGames: $totalGames, totalWins: $totalWins, totalCancelled: $totalCancelled, totalLosses: $totalLosses');
 
     return Scaffold(
       appBar: AppBar(

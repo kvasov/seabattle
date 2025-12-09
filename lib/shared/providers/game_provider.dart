@@ -82,6 +82,7 @@ class GameNotifier extends AsyncNotifier<GameState> {
         game: gameWithMaster,
       );
       ref.read(webSocketNotifierProvider.notifier).connect(gameData.id);
+      await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
       state = AsyncValue.data(newState);
     } catch (e) {
       debugPrint('createGame: исключение - $e');

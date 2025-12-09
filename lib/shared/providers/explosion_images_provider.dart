@@ -17,7 +17,7 @@ final explosionImagesProvider = FutureProvider<ExplosionImagesCache>((ref) async
   return ExplosionImagesCache(images);
 });
 
-// Соответствие размера корабля (число палуб) пути к ассету.
+// Соответствие картинки пути к ассету.
 const Map<String, String> _assetsBySize = {
   'wounded': 'assets/images/wounded.png',
   'dead': 'assets/images/dead.png',

@@ -63,7 +63,7 @@ class AccelerometerNotifier extends AsyncNotifier<AccelerometerBallState> {
     final currentState = state.value;
     state = AsyncValue.loading();
 
-    // debugPrint('😘🤩🤩 Received accelerometer data: ${data.x}, ${data.y}, ${data.z}');
+    // debugPrint('Received accelerometer data: ${data.x}, ${data.y}, ${data.z}');
     final newState = currentState!.copyWith(isReceivingData: true, x: data.x, y: data.y, z: data.z);
     state = AsyncValue.data(newState);
   }

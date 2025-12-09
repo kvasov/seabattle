@@ -72,7 +72,6 @@ class WebSocketNotifier extends AsyncNotifier<WebSocketState> {
                 debugPrint('Провайдер статистики не инициализирован, инициализируем...');
                 await ref.read(statisticsViewModelProvider.future);
               }
-              await ref.read(statisticsViewModelProvider.notifier).incrementStatistic('totalGames');
               ref.read(navigationProvider.notifier).goToSetupShipsScreen();
             }
             if (decoded['mode'] == 'cancelled') {

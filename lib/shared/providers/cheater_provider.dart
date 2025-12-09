@@ -38,7 +38,7 @@ class CheaterNotifier extends Notifier<CheaterState> {
   @override
   CheaterState build() {
     return CheaterState(
-      isCheater: true,
+      isCheater: false,
       isSetCheaterMode: false,
       isStartCheaterMode: false,
       countTaps: 0,

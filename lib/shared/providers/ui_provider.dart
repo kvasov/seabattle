@@ -12,6 +12,7 @@ class CellSizeNotifier extends Notifier<double> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final width = MediaQuery.sizeOf(context).width;
       final cellSize = (width - 120) / 10;
+      // Для больших экранов не нужно делать большие клетки
       state = cellSize > 50 ? 50 : cellSize;
     });
   }

@@ -366,4 +366,3 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     );
   }
 }
-

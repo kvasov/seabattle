@@ -54,6 +54,9 @@ class TranslationsBattleEn {
 
 	/// en: 'Cancel game'
 	String get cancelGame => 'Cancel game';
+
+	/// en: 'Waiting for opponent...'
+	String get waitingForOpponentToBeReady => 'Waiting for opponent...';
 }
 
 // Path: etc
