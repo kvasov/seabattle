@@ -72,7 +72,7 @@ class _ArrowRiveState extends ConsumerState<ArrowRive> {
         RiveLoading() => const Center(child: CircularProgressIndicator()),
         RiveFailed() => Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               const Icon(Icons.error, size: 48, color: Colors.red),
               const SizedBox(height: 8),

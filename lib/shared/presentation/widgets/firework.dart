@@ -54,7 +54,7 @@ class FireworkPainter extends CustomPainter {
       Paint()..color = Colors.black.withValues(alpha: alphaValue),
     );
 
-    final paint = Paint()..style = PaintingStyle.fill;
+    final paint = Paint()..style = .fill;
 
     for (var particle in particles) {
       // Прозрачность зависит от прогресса анимации (от 1.0 до 0.0)
@@ -74,15 +74,15 @@ class FireworkPainter extends CustomPainter {
       final style = (textStyle ?? const TextStyle(
         color: Colors.white,
         fontSize: 36,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       )).copyWith(
         color: (textStyle?.color ?? Colors.white).withValues(alpha: textOpacity),
       );
 
       final textPainter = TextPainter(
         text: TextSpan(text: text, style: style),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr,
+        textAlign: .center,
+        textDirection: .ltr,
       );
 
       textPainter.layout();

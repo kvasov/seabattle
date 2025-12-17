@@ -21,7 +21,7 @@ class AcceptGameButton extends ConsumerWidget {
           ref.read(navigationProvider.notifier).pushScanQRScreen();
         },
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(
               Icons.camera_alt,
@@ -30,7 +30,7 @@ class AcceptGameButton extends ConsumerWidget {
             ),
             Text(
               t.home.joinGame,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: gameBtnTextStyle(context),
             ),
           ],

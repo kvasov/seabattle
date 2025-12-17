@@ -12,7 +12,7 @@ double btnWidth(BuildContext context) {
 ButtonStyle gameBtnStyle(BuildContext context) {
   return simpleButtonStyle(context).copyWith(
     padding: WidgetStateProperty.all(
-      const EdgeInsets.symmetric(vertical: 20),
+      const .symmetric(vertical: 20),
     ),
   );
 }
@@ -31,8 +31,8 @@ ButtonStyle settingsBtnStyle(BuildContext context) {
   return simpleButtonStyle(context).copyWith(
     padding: WidgetStateProperty.all(
       deviceType(context) == DeviceType.tablet
-          ? EdgeInsets.symmetric(vertical: 16, horizontal: 24)
-          : EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          ? .symmetric(vertical: 16, horizontal: 24)
+          : .symmetric(vertical: 8, horizontal: 16),
     ),
   );
 }

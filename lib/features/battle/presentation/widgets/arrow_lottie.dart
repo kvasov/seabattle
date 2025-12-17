@@ -40,7 +40,7 @@ class _ArrowLottieWidget extends StatelessWidget {
       height: size,
       child: Lottie.asset(
         path,
-        fit: BoxFit.contain,
+        fit: .contain,
         animate: true,
         repeat: true,
       ),

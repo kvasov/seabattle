@@ -25,27 +25,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: bgImage,
-            fit: BoxFit.cover,
+            fit: .cover,
           ),
         ),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
             children: [
               Transform.translate(
                 offset: Offset(0, -MediaQuery.of(context).size.height * 0.1),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const .all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: .center,
                     children: [
                       TitleWidget(),
                       SizedBox(height: 50),
                       Row(
                         mainAxisAlignment: deviceType(context) == DeviceType.tablet
-                            ? MainAxisAlignment.center
-                            : MainAxisAlignment.spaceAround,
+                            ? .center
+                            : .spaceAround,
                         children: [
                           CreateGameButton(),
                           SizedBox(width: deviceType(context) == DeviceType.tablet ? 20 : 16),

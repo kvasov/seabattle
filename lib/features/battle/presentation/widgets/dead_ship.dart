@@ -201,7 +201,7 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
                                 opacity: _fadeAnimation.value,
                                 child: Transform.scale(
                                   scale: scale,
-                                  alignment: Alignment.center,
+                                  alignment: .center,
                                   child: SizedBox(
                                     width: widget.ship.orientation == ShipOrientation.horizontal ? widget.ship.size * cellSize : cellSize,
                                     height: widget.ship.orientation == ShipOrientation.vertical ? widget.ship.size * cellSize : cellSize,

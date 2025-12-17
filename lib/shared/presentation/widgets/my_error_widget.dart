@@ -9,35 +9,40 @@ class MyErrorWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
+      width: .infinity,
+      height: .infinity,
       child: Stack(
         children: [
-          Image.asset('assets/images/error.jpg', width: double.infinity, height: double.infinity, fit: BoxFit.cover),
+          Image.asset(
+            'assets/images/error.jpg',
+            width: .infinity,
+            height: .infinity,
+            fit: .cover
+          ),
           Container(
-            padding: const EdgeInsets.only(left: 32, right: 32, top: 64, bottom: 64),
+            padding: const .only(left: 32, right: 32, top: 64, bottom: 64),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .spaceBetween,
+              crossAxisAlignment: .center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const .symmetric(horizontal: 16.0),
                   child: Text.rich(
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     softWrap: true,
                     TextSpan(
                       children: [
                         WidgetSpan(
                           child: Icon(Icons.error, color: Colors.red, size: 24),
-                          alignment: PlaceholderAlignment.bottom,
+                          alignment: .bottom,
                         ),
                         const TextSpan(
                           text: ' Ошибка: ',
-                          style: TextStyle(color: Colors.red, fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.red, fontSize: 20, fontWeight: .bold),
                         ),
                         TextSpan(
                           text: error,
-                          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: .bold),
                         ),
                       ],
                     ),

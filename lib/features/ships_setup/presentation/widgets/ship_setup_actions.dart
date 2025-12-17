@@ -15,7 +15,7 @@ class ShipSetupActions extends ConsumerWidget {
     final iconSize = deviceType(context) == DeviceType.phone ? 24.0 : 36.0;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         TextButton(
           onPressed: () => setupShipsNotifier.rotateSelectedOrientation(),

@@ -35,17 +35,17 @@ class SeaBattlePainter extends CustomPainter {
     final emptyPaint =
         Paint()
           ..color = Colors.blue.shade50
-          ..style = PaintingStyle.fill;
+          ..style = .fill;
     // Заливка запрещенных клеток
     final forbiddenPaint =
         Paint()
           ..color = const Color.fromARGB(255, 38, 141, 220).withValues(alpha: 0.3)
-          ..style = PaintingStyle.fill;
+          ..style = .fill;
     // Заливка промахов
     final missedPaint =
         Paint()
           ..color = Colors.white
-          ..style = PaintingStyle.fill;
+          ..style = .fill;
 
     // Рисуем клетки
     for (int y = 0; y < field.length; y++) {
@@ -99,7 +99,7 @@ class SeaBattlePainter extends CustomPainter {
     final gridPaint =
         Paint()
           ..color = Colors.blue.shade200
-          ..style = PaintingStyle.stroke
+          ..style = .stroke
           ..strokeWidth = 1.5;
     for (int i = 0; i <= field.length; i++) {
       canvas.drawLine(
@@ -156,7 +156,7 @@ class SeaBattlePainter extends CustomPainter {
           canvas: canvas,
           rect: drawRect,
           image: shipImage,
-          fit: BoxFit.fill,
+          fit: .fill,
           opacity: myShips == false
             ? isCheaterMode == true ? 0.3 : 0
             : 1,
@@ -175,7 +175,7 @@ class SeaBattlePainter extends CustomPainter {
             woundedImage,
             Rect.fromLTWH(0, 0, woundedImage.width.toDouble(), woundedImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            Paint()..blendMode = BlendMode.srcOver,
+            Paint()..blendMode = .srcOver,
           );
         } else if (field[y][x] == CellState.miss) {
           final missImage = explosionImagesCache!.imageForType('miss');
@@ -184,7 +184,7 @@ class SeaBattlePainter extends CustomPainter {
             missImage,
             Rect.fromLTWH(0, 0, missImage.width.toDouble(), missImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            Paint()..blendMode = BlendMode.srcOver,
+            Paint()..blendMode = .srcOver,
           );
         } else if (field[y][x] == CellState.dead) {
           final deadImage = explosionImagesCache!.imageForType('dead');
@@ -193,7 +193,7 @@ class SeaBattlePainter extends CustomPainter {
             deadImage,
             Rect.fromLTWH(0, 0, deadImage.width.toDouble(), deadImage.height.toDouble()),
             Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize),
-            Paint()..blendMode = BlendMode.srcOver,
+            Paint()..blendMode = .srcOver,
           );
         }
       }

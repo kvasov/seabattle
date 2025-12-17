@@ -38,7 +38,7 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
         titleTextStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
           fontSize: 20,
-          fontWeight: FontWeight.bold
+          fontWeight: .bold
         ),
 
         leading: IconButton(
@@ -53,10 +53,10 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
       body:
         gameNotifier.when(
           data: (data) => SizedBox(
-            width: double.infinity,
+            width: .infinity,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
               children: [
               if (gameNotifier.value?.game?.id == null)
                 ElevatedButton(
@@ -68,7 +68,7 @@ class _GenerateQRScreenState extends ConsumerState<GenerateQRScreen> {
                 QRCode(
                   data: gameNotifier.value?.game?.id.toString() ?? '',
                   size: deviceType(context) == DeviceType.phone ? 300 : 400,
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const .all(10.0),
                   backgroundColor: Colors.transparent,
                 ),
                 SizedBox(height: 32),

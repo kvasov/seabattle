@@ -15,8 +15,8 @@ class BLEWidget extends ConsumerWidget {
 
     return Card(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: .start,
+        mainAxisAlignment: .start,
         children: [
           if (!bleState.isLoading && bleState.value != null && bleState.value!.isConnected)
             ListTile(
@@ -43,9 +43,9 @@ class BLEWidget extends ConsumerWidget {
 
           if (bleState.isLoading)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const .symmetric(vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   const CircularProgressIndicator(),
                 ],

@@ -21,7 +21,7 @@ class CreateGameButton extends ConsumerWidget {
           ref.read(navigationProvider.notifier).pushCreateGameScreen();
         },
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(
               Icons.qr_code,
@@ -30,7 +30,7 @@ class CreateGameButton extends ConsumerWidget {
             ),
             Text(
               t.home.proposeGame,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: gameBtnTextStyle(context),
             ),
           ],

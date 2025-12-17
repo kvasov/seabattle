@@ -21,13 +21,13 @@ class ColorSchemeWidget extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const .all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Text(
               t.settings.colorSchemeSelection,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: .bold),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -61,13 +61,13 @@ class _ColorChoice extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: .circular(24),
       child: Container(
         width: 44,
         height: 44,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: .circular(24),
           border: Border.all(color: selected ? scheme.inverseSurface : scheme.outline, width: selected ? 3 : 1),
         ),
         child: selected

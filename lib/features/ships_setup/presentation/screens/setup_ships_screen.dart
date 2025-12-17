@@ -51,10 +51,10 @@ class _SetupShipsScreenState extends ConsumerState<SetupShipsScreen> {
                 ),
                 SafeArea(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           ShipSelectRow(),
                           ShipSetupActions(),

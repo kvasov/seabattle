@@ -108,7 +108,7 @@ class _WavePainter extends CustomPainter {
 
       final wavePaint = Paint()
         ..color = color
-        ..style = PaintingStyle.fill;
+        ..style = .fill;
 
       canvas.drawPath(wavePath, wavePaint);
     }

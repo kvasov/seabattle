@@ -3,6 +3,7 @@
 ///
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
+// dart format off
 
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +11,7 @@ import 'package:slang/generated.dart';
 import 'strings.g.dart';
 
 // Path: <root>
-class TranslationsRu implements Translations {
+class TranslationsRu with BaseTranslations<AppLocale, Translations> implements Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
 	TranslationsRu({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta})
@@ -60,12 +61,6 @@ class _TranslationsEtcRu implements TranslationsEtcEn {
 
 	// Translations
 	@override late final _TranslationsEtcBottomNavigationBarRu bottomNavigationBar = _TranslationsEtcBottomNavigationBarRu._(_root);
-	@override String hours({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
-		zero: '',
-		one: '${n} час',
-		few: '${n} часа',
-		many: '${n} часов',
-	);
 	@override late final _TranslationsEtcLanguageRu language = _TranslationsEtcLanguageRu._(_root);
 	@override late final _TranslationsEtcCheaterRu cheater = _TranslationsEtcCheaterRu._(_root);
 	@override late final _TranslationsEtcDrawerRu drawer = _TranslationsEtcDrawerRu._(_root);

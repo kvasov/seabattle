@@ -58,7 +58,7 @@ class _ScanQRScreenState extends ConsumerState<ScanQRScreen> with WidgetsBinding
                       )
                     else
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const .all(8.0),
                         child: Text(
                           t.qr.invalidQrCode,
                           style: const TextStyle(color: Colors.red),

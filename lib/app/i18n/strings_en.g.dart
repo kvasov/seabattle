@@ -3,12 +3,13 @@
 ///
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
+// dart format off
 
 part of 'strings.g.dart';
 
 // Path: <root>
 typedef TranslationsEn = Translations; // ignore: unused_element
-class Translations implements BaseTranslations<AppLocale, Translations> {
+class Translations with BaseTranslations<AppLocale, Translations> {
 	/// Returns the current translations of the given [context].
 	///
 	/// Usage:
@@ -67,14 +68,6 @@ class TranslationsEtcEn {
 
 	// Translations
 	late final TranslationsEtcBottomNavigationBarEn bottomNavigationBar = TranslationsEtcBottomNavigationBarEn._(_root);
-
-	/// en: '(zero) {} (one) {$n hour} (other) {$n hours}'
-	String hours({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-		zero: '',
-		one: '${n} hour',
-		other: '${n} hours',
-	);
-
 	late final TranslationsEtcLanguageEn language = TranslationsEtcLanguageEn._(_root);
 	late final TranslationsEtcCheaterEn cheater = TranslationsEtcCheaterEn._(_root);
 	late final TranslationsEtcDrawerEn drawer = TranslationsEtcDrawerEn._(_root);

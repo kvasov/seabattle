@@ -53,7 +53,7 @@ class _PeriscopeRulerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white.withValues(alpha: 0.5)
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = 1;
 
     // вертикальная линия основная

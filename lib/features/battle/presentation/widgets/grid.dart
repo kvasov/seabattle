@@ -87,7 +87,6 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
     final isCheater = ref.watch(cheaterProvider).isCheater;
     final accelerometerBallData = ref.watch(accelerometerNotifierProvider).value;
 
-
     final gridWidget = shipsImages.when(
       data: (shipsCache) => explosionImages.when(
         data: (explosionCache) => Stack(
@@ -123,7 +122,6 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
             BallWidget(containerSize: cellSize * gridSize),
             if (battleViewModelState?.showDeathOfShip == true && !widget.myShips)
               DeadShipWidget(ship: battleViewModelState!.lastDeadShip!, gridSize: gridSize),
-
           ],
         ),
         error: (error, stack) => Center(child: Text('Ошибка загрузки взрывов: $error')),

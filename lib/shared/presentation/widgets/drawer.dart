@@ -19,7 +19,7 @@ class DrawerWidget extends ConsumerWidget {
 
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: .zero,
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
@@ -29,13 +29,13 @@ class DrawerWidget extends ConsumerWidget {
                   Color.fromARGB(255, 221, 209, 185),
                 ],
                 stops: [0.0, 1],
-                center: Alignment.topLeft,
+                center: .topLeft,
                 radius: 2.0,
               ),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .start,
               children: [
                 GestureDetector(onTap: () {
                   ref.read(cheaterProvider.notifier).trySetCheaterMode();

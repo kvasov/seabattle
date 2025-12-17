@@ -38,7 +38,7 @@ class StatisticsScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          padding: .symmetric(horizontal: 20.0),
           child: SingleChildScrollView(
             child: Column(
               children: [

@@ -29,8 +29,8 @@ class GamesPieWidget extends ConsumerWidget {
     final colorCancelled = Theme.of(context).colorScheme.surfaceContainer;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: .center,
+      crossAxisAlignment: .center,
       children: [
         Flexible(
           child: ConstrainedBox(
@@ -54,7 +54,7 @@ class GamesPieWidget extends ConsumerWidget {
         ),
         SizedBox(width: 20),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Legend(title: t.statistics.losses, color: colorLosses),
             Legend(title: t.statistics.wins, color: colorWins),

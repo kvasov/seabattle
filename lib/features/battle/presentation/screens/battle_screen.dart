@@ -80,14 +80,14 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
       children: [
         SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
             children: [
               if (gameState?.isLoading == true)
                 const CircularProgressIndicator(),
               if (gameState?.game?.opponentReady == false)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
+                  padding: const .only(bottom: 32.0),
                   child: Text(t.battle.waitingForOpponentToBeReady),
                 )
               else ...[
@@ -96,7 +96,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                 ),
                 // Rive стал платным, поэтому берем анимацию из otus.food
                 // Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                //   padding: const .symmetric(vertical: 8.0),
                 //   child: ArrowRive(),
                 // ),
                 ArrowLottie(isMyMove: battleViewModelState?.myMove == true),
@@ -106,7 +106,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  padding: const .only(top: 16.0),
                   child: ElevatedButton(
                     onPressed: () => ref.read(gameNotifierProvider.notifier).cancelGame(),
                     style: cancelGameBtnStyle(context),

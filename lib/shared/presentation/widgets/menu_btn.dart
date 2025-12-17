@@ -11,14 +11,14 @@ class MenuBtn extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(12),
-            bottomRight: Radius.circular(12),
+          borderRadius: .only(
+            topRight: .circular(12),
+            bottomRight: .circular(12),
           ),
         ),
         child: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
-          padding: EdgeInsets.all(12),
+          padding: .all(12),
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
           },

@@ -14,22 +14,22 @@ class Settings extends ConsumerWidget {
     final t = context.t;
 
     return Align(
-      alignment: Alignment.center,
+      alignment: .center,
       child: ElevatedButton(
         style: settingsBtnStyle(context),
         onPressed: () {
           ref.read(navigationProvider.notifier).pushSettingsScreen();
         },
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: .min,
+          mainAxisAlignment: .center,
+          crossAxisAlignment: .center,
           children: [
             Icon(Icons.settings, color: Theme.of(context).extension<ButtonColors>()?.textColor ?? Colors.black, size: 20),
             SizedBox(width: 5),
             Text(
               t.home.settings,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: TextStyle(
                 color: Theme.of(context).extension<ButtonColors>()?.textColor,
                 fontSize: deviceType(context) == DeviceType.tablet ? 20 : 16,

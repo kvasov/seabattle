@@ -4,10 +4,10 @@ import 'package:seabattle/app/styles/widgets/simple_button.dart';
 
 EdgeInsets btnPadding(BuildContext context) {
   return deviceType(context) == DeviceType.tablet
-      ? EdgeInsets.symmetric(vertical: 32, horizontal: 48)
+      ? .symmetric(vertical: 32, horizontal: 48)
       : deviceType(context) == DeviceType.phone
-          ? EdgeInsets.symmetric(vertical: 16, horizontal: 24)
-          : EdgeInsets.symmetric(vertical: 10, horizontal: 16);
+          ? .symmetric(vertical: 16, horizontal: 24)
+          : .symmetric(vertical: 10, horizontal: 16);
 }
 
 ButtonStyle createGameBtnStyle(BuildContext context) {

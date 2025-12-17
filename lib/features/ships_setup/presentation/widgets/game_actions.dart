@@ -27,9 +27,9 @@ class GameActions extends ConsumerWidget {
     final needPlaceShips = setupShipsNotifier.countNeedPlaceShips();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const .symmetric(vertical: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           ElevatedButton(
             onPressed: needPlaceShips > 0

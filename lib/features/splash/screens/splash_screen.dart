@@ -41,10 +41,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ),
         child: Center(
           child: Padding(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.4),
+            padding: .only(top: MediaQuery.of(context).size.height * 0.4),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .start,
+              crossAxisAlignment: .center,
               children: [
                 TextMaskWidget(),
                 SizedBox(height: 64),

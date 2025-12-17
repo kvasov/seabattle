@@ -51,9 +51,9 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
         final scaleImage = 1.0 + 0.2 * (1 + math.sin(2 * math.pi * _controller.value));
         return Transform.scale(
           scale: scaleText,
-          alignment: Alignment.center,
+          alignment: .center,
           child: ShaderMask(
-            blendMode: BlendMode.srcIn,
+            blendMode: .srcIn,
             shaderCallback: (bounds) {
               // Размеры области текста и изображения
               final double imageWidth = image!.width.toDouble();
@@ -80,14 +80,14 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
 
               return ImageShader(
                 image!,
-                TileMode.clamp,
-                TileMode.clamp,
+                .clamp,
+                .clamp,
                 matrix.storage,
               );
             },
             child: Text(
               'МОРСКОЙ\nБОЙ',
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontVariations: [FontVariation('wght', 900)],

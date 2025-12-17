@@ -11,7 +11,7 @@ class TitleWidget extends StatelessWidget {
 
     return Text(
       t.home.title,
-      textAlign: TextAlign.center,
+      textAlign: .center,
       style: TextStyle(
         color: Colors.white,
         shadows: [

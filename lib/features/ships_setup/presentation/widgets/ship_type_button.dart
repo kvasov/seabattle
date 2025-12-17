@@ -15,7 +15,7 @@ class ShipTypeButton extends ConsumerWidget {
     final setupShipsState = setupShipsProvider.value;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const .symmetric(horizontal: 8),
       child: ElevatedButton(
         onPressed:
           () => setupShipsNotifier.setSelectedShipSize(shipSize),

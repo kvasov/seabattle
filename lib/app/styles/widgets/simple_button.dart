@@ -7,14 +7,14 @@ ButtonStyle simpleButtonStyle(BuildContext context) {
     backgroundColor: Theme.of(context).extension<ButtonColors>()?.backgroundColor,
     foregroundColor: Theme.of(context).extension<ButtonColors>()?.textColor,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: .circular(10),
     ),
     textStyle: TextStyle(
       color: Theme.of(context).extension<ButtonColors>()?.textColor,
       fontFamily: 'Roboto',
       fontSize: 16,
       height: 1.2,
-      fontWeight: FontWeight.bold,
+      fontWeight: .bold,
     ),
   );
 }
@@ -24,7 +24,7 @@ ButtonStyle simpleButtonTextStyle(BuildContext context) {
     foregroundColor: Theme.of(context).extension<ButtonColors>()?.textColor,
     textStyle: TextStyle(
       fontSize: deviceType(context) == DeviceType.phone ? 14.0 : 24.0,
-      fontWeight: FontWeight.w600,
+      fontWeight: .w600,
     ),
   );
 }

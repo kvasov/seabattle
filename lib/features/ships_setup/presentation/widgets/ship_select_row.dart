@@ -7,7 +7,7 @@ class ShipSelectRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         for (final s in [4, 3, 2, 1])
           ShipTypeButton(shipSize: s),

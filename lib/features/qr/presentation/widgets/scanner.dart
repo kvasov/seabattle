@@ -54,22 +54,22 @@ class _ScannerWidgetState extends ConsumerState<ScannerWidget> with WidgetsBindi
       width: deviceType(context) == DeviceType.phone ? 300 : 600,
       height: deviceType(context) == DeviceType.phone ? 300 : 600,
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const .all(24.0),
         child: AspectRatio(
           aspectRatio: 1,
           child: Stack(
             children: [
               SizedBox(
-                width: double.infinity,
-                height: double.infinity,
+                width: .infinity,
+                height: .infinity,
                 child: MobileScanner(
                   controller: controller,
                   onDetect: qrScanNotifier.handleBarcode,
                 ),
               ),
               SizedBox(
-                width: double.infinity,
-                height: double.infinity,
+                width: .infinity,
+                height: .infinity,
                 child: Container(
                   color: const Color.fromARGB(103, 62, 184, 228),
                   child: null,

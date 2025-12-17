@@ -28,26 +28,26 @@ class _IsolateWidgetState extends State<IsolateWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: .center,
+      crossAxisAlignment: .center,
       children: [
         Text(
           '500 000 автоматических размещений кораблей выполняется за:',
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: isolateDescriptionTextStyle(context),
         ),
         if (calculating)
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const .all(16.0),
             child: CircularProgressIndicator(),
           ),
         if (done && !calculating)
           Text(
             '${totalSeconds.toStringAsFixed(3)} секунд',
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               color: Colors.green
             ),
           ),

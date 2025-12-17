@@ -22,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(t.etc.bottomNavigationBar.settings),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const .all(16),
         children: [
           const ThemeWidget(),
           const SizedBox(height: 12),
