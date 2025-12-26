@@ -4,16 +4,26 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/shared/entities/pixel_particle.dart';
 import 'package:seabattle/utils/pixel_painter.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет для анимации уничтожения корабля.
+///
+/// Отображает анимацию взрыва корабля с эффектом пиксельных частиц.
 class DeadShipWidget extends ConsumerStatefulWidget {
+  /// Создает виджет уничтоженного корабля.
+  ///
+  /// [ship] - корабль для анимации уничтожения.
+  /// [gridSize] - размер игрового поля.
   const DeadShipWidget({super.key, required this.ship, required this.gridSize});
 
+  /// Корабль для анимации уничтожения.
   final Ship ship;
+
+  /// Размер игрового поля.
   final int gridSize;
 
   @override
@@ -41,16 +51,16 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
       duration: const Duration(milliseconds: shipFadeInDuration),
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeInController, curve: Curves.easeIn),
+      CurvedAnimation(parent: _fadeInController, curve: fadeAnimationCurve),
     );
 
     // Контроллер для плавного исчезновения подложки
     _fadeOutController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: shipFadeOutDuration,
     );
     _fadeOutAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _fadeOutController, curve: Curves.easeIn),
+      CurvedAnimation(parent: _fadeOutController, curve: fadeAnimationCurve),
     );
 
     // Контроллер для взрыва
@@ -122,7 +132,7 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
         final b = bytes[index + 2];
         final a = bytes[index + 3];
 
-        if (a > 50) {
+        if (a > deadShipAlphaThreshold) {
           final color = Color.fromARGB(a, r, g, b);
           // Случайная скорость по X и Y
           final vx = (Random().nextDouble() - 0.5) * 2;
@@ -195,7 +205,7 @@ class _DeadShipWidgetState extends ConsumerState<DeadShipWidget> with TickerProv
                           child: AnimatedBuilder(
                             animation: _fadeAnimation,
                             builder: (context, child) {
-                              final scale = 1.4 - (0.4 * _fadeAnimation.value);
+                              final scale = scaleShip - (deadShipScaleReduction * _fadeAnimation.value);
                               final fileName = widget.ship.orientation == ShipOrientation.horizontal ? 'x${widget.ship.size}.png' : 'x${widget.ship.size}_v.png';
                               return Opacity(
                                 opacity: _fadeAnimation.value,

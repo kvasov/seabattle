@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seabattle/core/constants/animations.dart';
 import 'package:seabattle/features/ships_setup/presentation/viewmodels/setup_ships_viewmodel.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/utils/ship_painter.dart';
@@ -8,6 +9,10 @@ import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/shared/providers/ships_images_provider.dart';
 import 'package:seabattle/utils/cursor.dart';
 
+/// Виджет игрового поля для расстановки кораблей.
+///
+/// Отображает игровое поле с возможностью размещения кораблей,
+/// курсором (при подключенном BLE) и анимацией волн.
 class ShipSetupGrid extends ConsumerStatefulWidget {
   const ShipSetupGrid({super.key});
 
@@ -24,11 +29,11 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
     super.initState();
     _waveController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: waveAnimationDuration,
     )..repeat(reverse: true);
     _waveAnimation = CurvedAnimation(
       parent: _waveController,
-      curve: Curves.linear,
+      curve: waveAnimationCurve,
     );
   }
 
@@ -79,8 +84,8 @@ class _ShipSetupGridState extends ConsumerState<ShipSetupGrid> with SingleTicker
           ),
           if (cursorPosition != null && isCursorVisible)
             AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+              duration: cursorAnimationDuration,
+              curve: cursorAnimationCurve,
               left: cursorPosition.x * cellSize,
               top: cursorPosition.y * cellSize,
               width: cellSize,

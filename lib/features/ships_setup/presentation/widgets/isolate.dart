@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:seabattle/core/constants/game.dart';
 import 'package:seabattle/shared/entities/ship.dart';
-import 'package:seabattle/core/constants/ships.dart';
 import 'package:seabattle/utils/ship_placement_utils.dart';
 import 'package:seabattle/features/ships_setup/presentation/styles/buttons.dart';
 import 'package:seabattle/features/ships_setup/presentation/styles/texts.dart';
@@ -86,7 +86,6 @@ class _IsolateWidgetState extends State<IsolateWidget> {
   for (int i = 0; i < iterations; i++) {
     List<Ship> ships = [];
     Map<int, int> shipsToPlace = {...shipsToPlaceDefault};
-    const int gridSize = 10;
     bool allShipsPlaced = true;
 
     for (final size in [4, 3, 2, 1]) {
@@ -94,13 +93,13 @@ class _IsolateWidgetState extends State<IsolateWidget> {
         bool shipWasPlaced = false;
 
         while (!shipWasPlaced) {
-          int x = random.nextInt(gridSize);
-          int y = random.nextInt(gridSize);
+          int x = random.nextInt(defaultGridSize);
+          int y = random.nextInt(defaultGridSize);
           ShipOrientation orientation = random.nextBool()
               ? ShipOrientation.horizontal
               : ShipOrientation.vertical;
 
-          if (canPlaceShipPure(x, y, size, orientation, ships, gridSize)) {
+          if (canPlaceShipPure(x, y, size, orientation, ships, defaultGridSize)) {
             ships.add(Ship(x, y, size, orientation));
             shipsToPlace[size] = shipsToPlace[size]! - 1;
             shipWasPlaced = true;

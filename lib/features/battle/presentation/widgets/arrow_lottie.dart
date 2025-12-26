@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:seabattle/app/styles/media.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет стрелки, указывающей чей ход.
+///
+/// Отображает анимированную Lottie-стрелку зеленого цвета для своего хода
+/// или красного цвета для хода противника.
 class ArrowLottie extends StatelessWidget {
+  /// Создает виджет стрелки хода.
+  ///
+  /// [isMyMove] - флаг, указывающий, мой ли это ход (true) или ход противника (false).
   const ArrowLottie({super.key, required this.isMyMove});
+
+  /// Флаг, указывающий, мой ли это ход.
   final bool isMyMove;
 
   @override
@@ -11,7 +21,7 @@ class ArrowLottie extends StatelessWidget {
     final path = isMyMove ? 'assets/lottie/green.json' : 'assets/lottie/red.json';
 
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: lottieArrowAnimationDuration,
       child: isMyMove == true
         ? Transform.scale(
             key: const ValueKey('myMoveTrue'),

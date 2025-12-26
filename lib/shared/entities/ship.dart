@@ -1,17 +1,32 @@
 import 'package:equatable/equatable.dart';
 
+/// Состояние ячейки игрового поля.
 enum CellState {
+  /// Пустая ячейка.
   empty,
+  /// Ячейка с кораблем.
   ship,
+  /// Запрещенная для размещения ячейка.
   forbidden,
+  /// Раненый корабль.
   wound,
+  /// Промах.
   miss,
+  /// Убитый корабль.
   dead,
+  /// Позиция курсора.
   cursor
 }
 
-enum ShipOrientation { horizontal, vertical }
+/// Ориентация корабля на поле.
+enum ShipOrientation {
+  /// Горизонтальная ориентация.
+  horizontal,
+  /// Вертикальная ориентация.
+  vertical
+}
 
+/// Представляет корабль на игровом поле.
 class Ship {
   final int x;
   final int y;
@@ -19,6 +34,13 @@ class Ship {
   final ShipOrientation orientation;
   bool dead;
 
+  /// Создает экземпляр корабля.
+  ///
+  /// [x] - координата X левого верхнего угла корабля.
+  /// [y] - координата Y левого верхнего угла корабля.
+  /// [size] - размер корабля (количество палуб).
+  /// [orientation] - ориентация корабля.
+  /// [dead] - флаг, указывающий, убит ли корабль.
   Ship(
     this.x,
     this.y,
@@ -27,6 +49,7 @@ class Ship {
     this.dead = false,
   });
 
+  /// Преобразует корабль в JSON формат.
   Map<String, dynamic> toJson() {
     return {
       'x': x,
@@ -37,6 +60,9 @@ class Ship {
     };
   }
 
+  /// Создает корабль из JSON.
+  ///
+  /// [json] - словарь с данными корабля.
   static Ship fromJson(Map<String, dynamic> json) {
     return Ship(
       json['x'],
@@ -52,6 +78,11 @@ class Ship {
     return 'Ship(x: $x, y: $y, size: $size, orientation: $orientation, dead: $dead)';
   }
 
+  /// Проверяет, ранен ли корабль в указанной позиции.
+  ///
+  /// [x] - координата X.
+  /// [y] - координата Y.
+  /// Возвращает `true`, если корабль ранен в этой позиции.
   bool isWounded(int x, int y) {
     if (orientation == ShipOrientation.horizontal) {
       return this.x <= x && x <= this.x + size - 1 && this.y == y;
@@ -60,6 +91,10 @@ class Ship {
     }
   }
 
+  /// Проверяет, убит ли корабль на основе списка выстрелов.
+  ///
+  /// [shots] - список всех выстрелов.
+  /// Возвращает `true`, если все палубы корабля поражены.
   bool isDead(List<Shot> shots) {
     for (int i = 0; i < size; i++) {
       if (orientation == ShipOrientation.horizontal) {
@@ -75,18 +110,30 @@ class Ship {
     return true;
   }
 
-  // проверить убит ли корабль этим выстрелом
+  /// Проверяет, убит ли корабль данным выстрелом.
+  ///
+  /// [shot] - выстрел для проверки.
+  /// [shots] - список всех выстрелов.
+  /// Возвращает `true`, если корабль ранен этим выстрелом и убит.
   bool isDeadByShot(Shot shot, List<Shot> shots) {
     return isWounded(shot.x, shot.y) && isDead(shots);
   }
 }
 
+/// Представляет выстрел на игровом поле.
 class Shot {
+  /// Координата X выстрела.
   final int x;
+  /// Координата Y выстрела.
   final int y;
 
+  /// Создает экземпляр выстрела.
+  ///
+  /// [x] - координата X.
+  /// [y] - координата Y.
   Shot(this.x, this.y);
 
+  /// Преобразует выстрел в JSON формат.
   Map<String, dynamic> toJson() {
     return {
       'x': x,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seabattle/shared/providers/navigation_provider.dart';
 import 'package:seabattle/features/splash/widgets/shader_mask.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
 
@@ -17,7 +18,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
 
-    Timer(Duration(milliseconds: 1000), () {
+    Timer(splashScreenDelay, () {
       if (!mounted) return;
       ref.read(navigationProvider.notifier).goToHomeScreen();
     });

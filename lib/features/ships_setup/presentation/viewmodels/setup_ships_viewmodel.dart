@@ -1,4 +1,4 @@
-import 'package:seabattle/core/constants/ships.dart';
+import 'package:seabattle/core/constants/game.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/shared/providers/ble_provider.dart';
 import 'package:seabattle/shared/providers/ui_provider.dart';
@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dart:math';
 
+/// Состояние ViewModel для экрана расстановки кораблей.
+///
+/// Содержит информацию о размещенных кораблях, доступных для размещения кораблях,
+/// выбранной ориентации и размере корабля.
 class SetupShipsViewModelState {
   final List<Ship> ships;
   final Map<int, int> shipsToPlace;
@@ -21,6 +25,18 @@ class SetupShipsViewModelState {
   final GridPosition? cursorPosition;
   final bool? isCursorVisible;
 
+  /// Создает состояние ViewModel расстановки кораблей.
+  ///
+  /// [ships] - список размещенных кораблей.
+  /// [shipsToPlace] - карта доступных для размещения кораблей (размер -> количество).
+  /// [selectedOrientation] - выбранная ориентация корабля.
+  /// [selectedShipSize] - выбранный размер корабля.
+  /// [isLoading] - флаг загрузки.
+  /// [isError] - флаг ошибки.
+  /// [errorMessage] - сообщение об ошибке.
+  /// [gridSize] - размер игрового поля.
+  /// [cursorPosition] - позиция курсора.
+  /// [isCursorVisible] - видимость курсора.
   SetupShipsViewModelState({
     required this.ships,
     required this.shipsToPlace,
@@ -61,10 +77,14 @@ class SetupShipsViewModelState {
   }
 }
 
+/// Notifier для управления состоянием расстановки кораблей.
+///
+/// Обрабатывает логику размещения кораблей на поле, проверку валидности размещения,
+/// управление курсором через BLE.
 class SetupShipsViewModelNotifier extends AsyncNotifier<SetupShipsViewModelState> {
   @override
   Future<SetupShipsViewModelState> build() async {
-    // Проверяем состояние подключения ESP (по умолчанию false, если провайдер еще не инициализирован)
+    // Проверяем состояние подключения ESP
     final bleStateAsync = ref.read(bleNotifierProvider);
     final isConnected = bleStateAsync.value?.isConnected ?? false;
     debugPrint('isConnected: $isConnected');

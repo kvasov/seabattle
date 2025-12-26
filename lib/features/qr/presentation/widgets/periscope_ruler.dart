@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет линейки для перископа.
+///
+/// Отображает 2 анимированные линейки
 class PeriscopeRuler extends StatefulWidget {
   const PeriscopeRuler({super.key});
 
@@ -16,11 +20,11 @@ class _PeriscopeRulerState extends State<PeriscopeRuler> with SingleTickerProvid
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: periscopeRulerAnimationDuration,
     )..repeat(reverse: true);
     _controller.addListener(() {
       setState(() {
-        _offset = _controller.value * 60;
+        _offset = _controller.value * periscopeRulerOffsetMultiplier;
       });
     });
   }

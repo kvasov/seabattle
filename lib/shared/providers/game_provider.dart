@@ -12,12 +12,21 @@ import 'package:seabattle/features/battle/providers/battle_provider.dart';
 import 'package:seabattle/shared/providers/repositories/prepare_repository_provider.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 
+/// Состояние игры.
+///
+/// Содержит информацию о текущей игре, состоянии загрузки и ошибках.
 class GameState {
   final GameModel? game;
   final bool isLoading;
   final bool isError;
   final String errorMessage;
 
+  /// Создает состояние игры.
+  ///
+  /// [game] - модель игры.
+  /// [isLoading] - флаг загрузки.
+  /// [isError] - флаг ошибки.
+  /// [errorMessage] - сообщение об ошибке.
   GameState({
     this.game,
     required this.isLoading,
@@ -40,6 +49,9 @@ class GameState {
   }
 }
 
+/// Notifier для управления состоянием игры.
+///
+/// Обрабатывает создание игры, подключение к игре, синхронизацию состояния.
 class GameNotifier extends AsyncNotifier<GameState> {
   @override
   Future<GameState> build() async {

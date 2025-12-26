@@ -1,6 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет анимированных фоновых волн.
+///
+/// Отображает несколько слоев анимированных волн для создания
+/// эффекта морского фона.
 class BgWave extends StatefulWidget {
   const BgWave({super.key});
 
@@ -17,11 +22,11 @@ class _BgWaveState extends State<BgWave> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: bgWaveAnimationDuration,
     )..repeat();
     _controller.addListener(() {
       setState(() {
-        _waveOffset += 0.02;
+        _waveOffset += bgWaveOffsetStep;
       });
     });
   }

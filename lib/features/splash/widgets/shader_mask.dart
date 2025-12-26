@@ -3,7 +3,12 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет с текстом, использующий шейдер-маску для анимации.
+///
+/// Отображает текст "МОРСКОЙ БОЙ" с анимированным фоновым изображением,
+/// используя ShaderMask для создания эффекта масштабирования.
 class TextMaskWidget extends StatefulWidget {
   const TextMaskWidget({super.key});
 
@@ -21,7 +26,7 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
     _loadImage();
     _controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: 15),
+        duration: splashScreenDuration,
       )..repeat();
   }
 
@@ -47,8 +52,8 @@ class _TextMaskWidgetState extends State<TextMaskWidget> with SingleTickerProvid
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        final scaleText = 1.0 + 0.1 * (1 + math.sin(2 * math.pi * _controller.value));
-        final scaleImage = 1.0 + 0.2 * (1 + math.sin(2 * math.pi * _controller.value));
+        final scaleText = 1.0 + splashTextScaleFactor * (1 + math.sin(2 * math.pi * _controller.value));
+        final scaleImage = 1.0 + splashImageScaleFactor * (1 + math.sin(2 * math.pi * _controller.value));
         return Transform.scale(
           scale: scaleText,
           alignment: .center,

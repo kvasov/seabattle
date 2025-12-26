@@ -1,13 +1,33 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Частица фейерверка
+///
+/// Представляет отдельную частицу с позицией, скоростью, цветом и жизненным циклом.
 class FireworkParticle {
+  /// Текущая позиция частицы.
   Offset position;
+
+  /// Скорость движения частицы.
   Offset velocity;
+
+  /// Цвет частицы.
   Color color;
+
+  /// Жизненный цикл частицы (от 1.0 до 0.0).
   double life;
+
+  /// Размер частицы.
   double size;
 
+  /// Создает частицу фейерверка.
+  ///
+  /// [position] - начальная позиция частицы.
+  /// [velocity] - начальная скорость частицы.
+  /// [color] - цвет частицы.
+  /// [life] - начальный жизненный цикл частицы.
+  /// [size] - размер частицы (по умолчанию 3.0).
   FireworkParticle({
     required this.position,
     required this.velocity,
@@ -16,23 +36,46 @@ class FireworkParticle {
     this.size = 3.0,
   });
 
+  /// Обновляет состояние частицы на основе прогресса анимации.
+  ///
+  /// [animationProgress] - прогресс анимации от 0.0 до 1.0.
   void update(double animationProgress) {
     // Применяем гравитацию
-    velocity = Offset(velocity.dx * 0.98, velocity.dy * 0.98 + 0.05);
+    velocity = Offset(velocity.dx * 0.98, velocity.dy * 0.98 + fireworkGravityFactor);
     position += velocity;
     life = 1.0 - animationProgress;
   }
 
+  /// Проверяет, мертва ли частица
   bool get isDead => life <= 0;
 }
 
+/// Кастомный отрисовщик для фейерверка.
+///
+/// Отрисовывает частицы фейерверка и текст поверх затемненного фона.
 class FireworkPainter extends CustomPainter {
+  /// Список частиц фейерверка.
   final List<FireworkParticle> particles;
+
+  /// Флаг, указывающий, активна ли анимация.
   final bool isAnimating;
+
+  /// Прогресс анимации от 0.0 до 1.0.
   final double animationProgress;
+
+  /// Опциональный текст для отображения.
   final String? text;
+
+  /// Стиль текста.
   final TextStyle? textStyle;
 
+  /// Создает отрисовщик фейерверка.
+  ///
+  /// [particles] - список частиц для отрисовки.
+  /// [isAnimating] - флаг активности анимации.
+  /// [animationProgress] - прогресс анимации.
+  /// [text] - опциональный текст для отображения.
+  /// [textStyle] - стиль текста.
   FireworkPainter(
     this.particles, {
     this.isAnimating = true,
@@ -45,9 +88,9 @@ class FireworkPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (!isAnimating) return;
 
-    final alphaValue = animationProgress >= 0.7
-      ? 0.7 * (1.0 - (animationProgress - 0.7) / 0.3)
-      : 0.7;
+    final alphaValue = animationProgress >= fireworkAlphaThreshold
+      ? fireworkAlphaThreshold * (1.0 - (animationProgress - fireworkAlphaThreshold) / fireworkAlphaFadeRange)
+      : fireworkAlphaThreshold;
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
@@ -107,11 +150,21 @@ class FireworkPainter extends CustomPainter {
   }
 }
 
+/// Виджет фейерверка
+///
+/// Отображает анимированный фейерверк с частицами и опциональным текстом.
 class FireworkWidget extends StatefulWidget {
+  /// Создает виджет фейерверка.
+  ///
+  /// [particleCount] - общее количество частиц (по умолчанию 800).
+  /// [duration] - длительность анимации.
+  /// [fireworkCount] - количество фейерверков (по умолчанию 5).
+  /// [text] - опциональный текст для отображения.
+  /// [textStyle] - стиль текста.
   const FireworkWidget({
     super.key,
     this.particleCount = 800,
-    this.duration = const Duration(seconds: 2),
+    this.duration = fireworkDuration,
     this.fireworkCount = 5,
     this.text,
     this.textStyle,
@@ -167,7 +220,7 @@ class _FireworkWidgetState extends State<FireworkWidget>
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && _lastSize != null) {
               _createFireworksWithSize(_lastSize!);
-              Future.delayed(const Duration(milliseconds: 200), () {
+              Future.delayed(fireworkDelayDuration, () {
                 if (mounted) {
                   _controller.forward();
                 }

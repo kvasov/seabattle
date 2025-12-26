@@ -16,12 +16,19 @@ import 'package:seabattle/features/battle/presentation/widgets/modal/lose_modal.
 import 'package:seabattle/features/battle/presentation/widgets/modal/win_modal.dart';
 import 'package:seabattle/features/statistics/presentation/screens/statistics_screen.dart';
 
+/// Делегат роутера для управления навигацией в приложении.
+///
+/// Отвечает за создание страниц на основе маршрутов и управление стеком навигации.
 class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<List<AppRoute>> {
 
+  /// Референс на провайдеры Riverpod.
   final WidgetRef ref;
   late final ProviderSubscription<List<AppRoute>> _subscription;
 
+  /// Создает делегат роутера.
+  ///
+  /// [ref] - референс на провайдеры Riverpod.
   AppRouterDelegate(this.ref) {
     _subscription = ref.listenManual(
       navigationProvider,
@@ -56,6 +63,7 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
     );
   }
 
+  /// Строит список страниц на основе текущей конфигурации маршрутов.
   List<Page> _buildPages() {
     return currentConfiguration.asMap().entries.map((entry) {
       final index = entry.key;
@@ -64,6 +72,10 @@ class AppRouterDelegate extends RouterDelegate<List<AppRoute>>
     }).toList();
   }
 
+  /// Создает страницу на основе маршрута.
+  ///
+  /// [route] - маршрут для создания страницы.
+  /// [index] - индекс маршрута в стеке.
   Page _createPage(AppRoute route, int index) {
     Widget screen;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seabattle/core/constants/ships.dart';
+import 'package:seabattle/core/constants/game.dart';
+import 'package:seabattle/core/constants/animations.dart';
 import 'package:seabattle/shared/entities/ship.dart';
 import 'package:seabattle/features/battle/providers/repositories/battle_repository_provider.dart';
 import 'package:seabattle/shared/providers/game_provider.dart';
@@ -14,6 +15,9 @@ import 'package:seabattle/shared/providers/ui_provider.dart';
 import 'package:seabattle/shared/providers/accelerometer_provider.dart';
 import 'package:seabattle/shared/providers/sound_provider.dart';
 
+/// Состояние ViewModel для экрана битвы.
+///
+/// Содержит информацию о кораблях, выстрелах, состоянии игры и UI.
 class BattleViewModelState {
   final List<Ship> ships;
   final List<Shot> shots;
@@ -30,6 +34,22 @@ class BattleViewModelState {
   final Ship? lastDeadShip;
   final bool showFirework;
 
+  /// Создает состояние ViewModel битвы.
+  ///
+  /// [ships] - список своих кораблей.
+  /// [shots] - список своих выстрелов.
+  /// [opponentShips] - список кораблей противника.
+  /// [opponentShots] - список выстрелов противника.
+  /// [isLoading] - флаг загрузки.
+  /// [isError] - флаг ошибки.
+  /// [errorMessage] - сообщение об ошибке.
+  /// [gridSize] - размер игрового поля.
+  /// [myMove] - флаг, указывающий, мой ли это ход.
+  /// [cursorPosition] - позиция курсора.
+  /// [lastShot] - последний выстрел.
+  /// [showDeathOfShip] - флаг отображения анимации смерти корабля.
+  /// [lastDeadShip] - последний убитый корабль.
+  /// [showFirework] - флаг отображения фейерверка.
   BattleViewModelState({
     required this.ships,
     required this.shots,
@@ -95,6 +115,10 @@ class BattleViewModelState {
   }
 }
 
+/// Notifier для управления состоянием битвы.
+///
+/// Обрабатывает логику игры: выстрелы, проверку победы/поражения,
+/// синхронизацию с сервером через WebSocket.
 class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
   @override
   Future<BattleViewModelState> build() async {
@@ -103,7 +127,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       shots: [],
       opponentShips: [],
       opponentShots: [],
-      gridSize: 10,
+      gridSize: defaultGridSize,
       isLoading: false,
       isError: false,
       errorMessage: '',
@@ -202,7 +226,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
       // Проверяем, был ли уничтожен корабль этим выстрелом
       for (var ship in updatedOpponentShips) {
         if (ship.isDeadByShot(shot, updatedShots)) {
-          delay = 200;
+          delay = shipDestroyDelayDuration;
           state = AsyncValue.data(
             state.value!.copyWith(showDeathOfShip: true, lastDeadShip: ship),
           );
@@ -337,7 +361,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
     state = AsyncValue.data(
       state.value!.copyWith(showFirework: true),
     );
-    Future.delayed(const Duration(milliseconds: 2200), () {
+    Future.delayed(fireworkDuration, () {
       state = AsyncValue.data(
         state.value!.copyWith(showFirework: false),
       );
@@ -351,7 +375,7 @@ class BattleViewModelNotifier extends AsyncNotifier<BattleViewModelState> {
         shots: [],
         opponentShips: [],
         opponentShots: [],
-        gridSize: 10,
+        gridSize: defaultGridSize,
         isLoading: false,
         isError: false,
         errorMessage: '',

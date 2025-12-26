@@ -6,6 +6,10 @@ import 'package:seabattle/features/home/presentation/widgets/accept_game.dart';
 import 'package:seabattle/features/home/presentation/widgets/settings.dart';
 import 'package:seabattle/features/home/presentation/widgets/title.dart';
 
+/// Главный экран приложения.
+///
+/// Отображает заголовок, кнопки создания и принятия игры,
+/// а также кнопку настроек.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 

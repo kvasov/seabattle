@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:seabattle/core/router/app_router_model.dart';
 
+/// Парсер информации о маршрутах для роутера.
+///
+/// Преобразует URL в стек маршрутов и обратно для поддержки веб-навигации.
 class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
 
-  // URL -> stack
+  /// Преобразует информацию о маршруте (URL) в стек маршрутов.
+  ///
+  /// [routeInformation] - информация о маршруте из URL.
+  /// Возвращает стек маршрутов.
   @override
   Future<List<AppRoute>> parseRouteInformation(RouteInformation routeInformation) async {
     final uri = routeInformation.uri;
@@ -36,7 +42,10 @@ class AppRouteInformationParser extends RouteInformationParser<List<AppRoute>> {
     return [AppRoute.homeScreen()];
   }
 
-  // stack -> URL
+  /// Восстанавливает информацию о маршруте (URL) из стека маршрутов.
+  ///
+  /// [configuration] - стек маршрутов.
+  /// Возвращает информацию о маршруте для URL.
   @override
   RouteInformation restoreRouteInformation(List<AppRoute> configuration) {
     // Пустой стек или только главный экран - корневой путь

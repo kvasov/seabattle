@@ -13,15 +13,27 @@ import 'package:seabattle/utils/make_field.dart';
 import 'package:seabattle/utils/cursor.dart';
 import 'package:seabattle/features/battle/presentation/widgets/ball.dart';
 import 'package:seabattle/shared/providers/accelerometer_provider.dart';
+import 'package:seabattle/core/constants/animations.dart';
 
+/// Виджет игрового поля для битвы.
+///
+/// Отображает игровое поле с кораблями, выстрелами, курсором и анимацией волн.
+/// Может отображать как свои корабли, так и корабли противника.
 class BattleGrid extends ConsumerStatefulWidget {
+  /// Создает виджет игрового поля.
+  ///
+  /// [myShips] - флаг, указывающий, отображать ли свои корабли (true) или корабли противника (false).
+  /// [ships] - список кораблей для отображения.
   const BattleGrid({
     super.key,
     required this.myShips,
     this.ships = const [],
   });
 
+  /// Флаг, указывающий, отображать свои или чужие корабли.
   final bool myShips;
+
+  /// Список кораблей.
   final List<Ship>? ships;
 
   @override
@@ -37,11 +49,11 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
     super.initState();
     _waveController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: waveAnimationDuration,
     )..repeat(reverse: true);
     _waveAnimation = CurvedAnimation(
       parent: _waveController,
-      curve: Curves.linear,
+      curve: waveAnimationCurve,
     );
   }
 
@@ -110,8 +122,8 @@ class _BattleGridState extends ConsumerState<BattleGrid> with SingleTickerProvid
             ),
           if (cursorPosition != null && isCursorVisible && battleViewModelState?.myMove == true)
             AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+              duration: cursorAnimationDuration,
+              curve: cursorAnimationCurve,
               left: cursorPosition.x * cellSize,
               top: cursorPosition.y * cellSize,
               width: cellSize,
